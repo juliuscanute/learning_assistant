@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:learning_assistant/data/event.dart';
+import 'package:learning_assistant/data/event_repository.dart';
+import 'package:intl/intl.dart';
 
 class AddEventView extends StatefulWidget {
+  final EventRepository eventRepository;
+  final Function onClose;
+  const AddEventView(
+      {required this.eventRepository, required this.onClose, Key? key})
+      : super(key: key);
   @override
   _AddEventViewState createState() => _AddEventViewState();
 }
@@ -8,11 +16,15 @@ class AddEventView extends StatefulWidget {
 class _AddEventViewState extends State<AddEventView> {
   final _formKey = GlobalKey<FormState>();
 
-  bool isFirstDayChecked = false;
-  bool isSecondDayChecked = false;
-  bool isSeventhDayChecked = false;
-  bool isFifteenthDayChecked = false;
-  bool isThirtythDayChecked = false;
+  DateTime _selectedDate = DateTime.now();
+  DateFormat dateFomat = DateFormat("d MMMM y");
+
+  String _description = '';
+  bool isFirstDayChecked = true;
+  bool isSecondDayChecked = true;
+  bool isSeventhDayChecked = true;
+  bool isFifteenthDayChecked = true;
+  bool isThirtythDayChecked = true;
 
   @override
   Widget build(BuildContext context) {
@@ -28,23 +40,42 @@ class _AddEventViewState extends State<AddEventView> {
               SizedBox(height: 16.0),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a date';
+                child: GestureDetector(
+                  onTap: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: _selectedDate,
+                      firstDate: DateTime(2015),
+                      lastDate: DateTime(2050),
+                    );
+                    if (picked != null && picked != _selectedDate) {
+                      DateTime utcDate = picked.toUtc();
+                      setState(() {
+                        _selectedDate = picked;
+                      });
                     }
-                    return null;
                   },
-                  decoration: InputDecoration(
-                    labelText: 'Date',
-                    border: OutlineInputBorder(),
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      controller: TextEditingController(
+                          text: dateFomat.format(_selectedDate.toLocal())),
+                      decoration: const InputDecoration(
+                        labelText: 'Date',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      _description = value;
+                    });
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an entry';
@@ -52,7 +83,7 @@ class _AddEventViewState extends State<AddEventView> {
                     return null;
                   },
                   maxLines: null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Add Entry Here',
                     border: OutlineInputBorder(),
                   ),
@@ -111,16 +142,9 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate() &&
-                      (isFirstDayChecked ||
-                          isSecondDayChecked ||
-                          isSeventhDayChecked ||
-                          isFifteenthDayChecked ||
-                          isThirtythDayChecked)) {
-                    // Form is valid and at least one checkbox is checked
-                    // TODO: Implement form submission
-                  }
+                // move onpressed to a separate function
+                onPressed: () async {
+                  onSave();
                 },
                 child: Text('Add Event'),
               ),
@@ -130,5 +154,43 @@ class _AddEventViewState extends State<AddEventView> {
         ),
       ),
     );
+  }
+
+  void onSave() async {
+    if (_formKey.currentState!.validate() &&
+        (isFirstDayChecked ||
+            isSecondDayChecked ||
+            isSeventhDayChecked ||
+            isFifteenthDayChecked ||
+            isThirtythDayChecked)) {
+      _formKey.currentState!.save();
+      if (isFirstDayChecked) {
+        widget.eventRepository.insertEvent(
+            Event(_description, _selectedDate.add(const Duration(days: 1))));
+      }
+
+      if (isSecondDayChecked) {
+        widget.eventRepository.insertEvent(
+            Event(_description, _selectedDate.add(const Duration(days: 2))));
+      }
+
+      if (isSeventhDayChecked) {
+        widget.eventRepository.insertEvent(
+            Event(_description, _selectedDate.add(const Duration(days: 7))));
+      }
+
+      if (isFifteenthDayChecked) {
+        widget.eventRepository.insertEvent(
+            Event(_description, _selectedDate.add(const Duration(days: 15))));
+      }
+
+      if (isThirtythDayChecked) {
+        widget.eventRepository.insertEvent(
+            Event(_description, _selectedDate.add(const Duration(days: 30))));
+      }
+
+      Navigator.pop(context);
+      widget.onClose(_selectedDate);
+    }
   }
 }
