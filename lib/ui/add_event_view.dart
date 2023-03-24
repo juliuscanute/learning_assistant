@@ -21,7 +21,7 @@ class _AddEventViewState extends State<AddEventView> {
 
   String _description = '';
   bool isFirstDayChecked = true;
-  bool isSecondDayChecked = true;
+  bool isThirdDayChecked = true;
   bool isSeventhDayChecked = true;
   bool isFifteenthDayChecked = true;
   bool isThirtythDayChecked = true;
@@ -102,11 +102,11 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('2nd Day'),
-                value: isSecondDayChecked,
+                title: Text('3rd Day'),
+                value: isThirdDayChecked,
                 onChanged: (value) {
                   setState(() {
-                    isSecondDayChecked = value ?? false;
+                    isThirdDayChecked = value ?? false;
                   });
                 },
               ),
@@ -159,7 +159,7 @@ class _AddEventViewState extends State<AddEventView> {
   void onSave() async {
     if (_formKey.currentState!.validate() &&
         (isFirstDayChecked ||
-            isSecondDayChecked ||
+            isThirdDayChecked ||
             isSeventhDayChecked ||
             isFifteenthDayChecked ||
             isThirtythDayChecked)) {
@@ -169,9 +169,9 @@ class _AddEventViewState extends State<AddEventView> {
             Event(_description, _selectedDate.add(const Duration(days: 1))));
       }
 
-      if (isSecondDayChecked) {
+      if (isThirdDayChecked) {
         widget.eventRepository.insertEvent(
-            Event(_description, _selectedDate.add(const Duration(days: 2))));
+            Event(_description, _selectedDate.add(const Duration(days: 3))));
       }
 
       if (isSeventhDayChecked) {
