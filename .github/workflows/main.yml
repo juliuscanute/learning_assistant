@@ -16,7 +16,7 @@ jobs:
       id: decode_keystore
       uses: timheuer/base64-to-file@v1
       with:
-        fileName: 'keystore/assistant_keystore.jks'
+        fileName: '~/keystore/assistant_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE_FILE }}
         
     - name: Set up JDK 11
@@ -32,7 +32,7 @@ jobs:
       run: flutter build appbundle --release --target-platform android-arm,android-arm64,android-x64
       
     - name: Sign App Bundle
-      run: jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore keystore/assistant_keystore.jk -storepass ${{ secrets.KEYSTORE_PASSWORD }} ./build/app/outputs/bundle/release/app.aab ${{ secrets.KEY_ALIAS }}
+      run: jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ~/keystore/assistant_keystore.jk -storepass ${{ secrets.KEYSTORE_PASSWORD }} ./build/app/outputs/bundle/release/app.aab ${{ secrets.KEY_ALIAS }}
       
     - name: Verify Signed App Bundle
       run: jarsigner -verify -verbose -certs ./build/app/outputs/bundle/release/app.aab
