@@ -35,7 +35,7 @@ jobs:
         STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        STORE_FILE: ./keystore/assistant_keystore.jks   
+        STORE_FILE: ${{ github.workspace }}/keystore/assistant_keystore.jks   
       
     - name: Upload App Bundle to Play Console
       uses: r0adkll/upload-google-play@v1
