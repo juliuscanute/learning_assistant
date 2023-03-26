@@ -31,12 +31,11 @@ jobs:
       
     - name: Build Android App Bundle
       run: flutter build appbundle --release
-
-    - name: Sign App Bundle
-      run: jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore keystore/assistant_keystore.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} ./build/app/outputs/bundle/release/app-release.aab ${{ secrets.KEY_ALIAS }}
-
-    - name: Verify Signed App Bundle
-      run: jarsigner -verify -verbose -certs ./build/app/outputs/bundle/release/app-release.aab     
+      env:
+        STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        STORE_FILE: ./keystore/assistant_keystore.jks   
       
     - name: Upload App Bundle to Play Console
       uses: r0adkll/upload-google-play@v1
