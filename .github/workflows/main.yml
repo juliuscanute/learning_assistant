@@ -35,8 +35,8 @@ jobs:
     - name: Upload App Bundle to Play Console
       uses: r0adkll/upload-google-play@v1
       with:
-        service_account_json: ${{ secrets.GOOGLE_PLAY_CONSOLE_JSON }}
-        package_name: com.juliuscanute.learningassistant
+        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_CONSOLE_JSON }}
+        packageName: com.juliuscanute.learningassistant
         track: internal
-        release_status: completed
-        app_files: ./build/app/outputs/bundle/release/app-release.aab
+        status: completed
+        releaseFiles: ./build/app/outputs/bundle/release/app-release.aab
