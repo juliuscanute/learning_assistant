@@ -30,7 +30,7 @@ jobs:
       uses: subosito/flutter-action@v1
       
     - name: Build Android App Bundle
-      run: flutter build appbundle --release
+      run: flutter build appbundle --release --build-number ${{ github.run_number }}
       env:
         STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
