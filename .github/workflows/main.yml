@@ -32,12 +32,6 @@ jobs:
     - name: Build Android App Bundle
       run: flutter build appbundle --release --target-platform android-arm,android-arm64,android-x64
       
-    - name: Sign App Bundle
-      run: jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore keystore/assistant_keystore.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} ./build/app/outputs/bundle/release/app-release.aab ${{ secrets.KEY_ALIAS }}
-      
-    - name: Verify Signed App Bundle
-      run: jarsigner -verify -verbose -certs ./build/app/outputs/bundle/release/app-release.aab
-      
     - name: Upload App Bundle to Play Console
       uses: r0adkll/upload-google-play@v1
       with:
