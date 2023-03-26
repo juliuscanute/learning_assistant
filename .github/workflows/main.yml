@@ -30,7 +30,7 @@ jobs:
       uses: subosito/flutter-action@v1
       
     - name: Build Android App Bundle
-      run: flutter build appbundle --no-signing-config
+      run: flutter build appbundle --release
 
     - name: Sign App Bundle
       run: jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore keystore/assistant_keystore.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} ./build/app/outputs/bundle/release/app-release.aab ${{ secrets.KEY_ALIAS }}
