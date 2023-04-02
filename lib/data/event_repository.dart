@@ -1,15 +1,24 @@
+import 'dart:async';
+
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/event.dart';
 
 class EventRepository {
   final Isar isar;
+  final _eventController = StreamController<List<Event>>();
+  Stream<List<Event>> get events => _eventController.stream;
 
   EventRepository(this.isar);
 
   Future<void> insertEvent(Event event) async {
     await isar.writeTxn(() async {
       await isar.events.put(event);
+      _eventController.add(await getEventsOnDate(DateTime.now()));
     });
+  }
+
+  Future<void> filterEventsOnDate(DateTime date) async {
+    _eventController.add(await getEventsOnDate(date));
   }
 
   Future<List<Event>> getEventsOnDate(DateTime date) async {
@@ -21,5 +30,16 @@ class EventRepository {
     final events =
         await isar.events.filter().dateBetween(startOfDay, endOfDay).findAll();
     return events;
+  }
+
+  Future<void> updateReviewed(Id eventId) async {
+    await isar.writeTxn(() async {
+      final existingEvent = await isar.events.get(eventId);
+      if (existingEvent != null) {
+        existingEvent.isReviewed = !existingEvent.isReviewed;
+        await isar.events.put(existingEvent);
+        _eventController.add(await getEventsOnDate(existingEvent.date));
+      }
+    });
   }
 }

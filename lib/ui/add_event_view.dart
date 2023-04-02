@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/event_repository.dart';
 import 'package:intl/intl.dart';
+import 'package:learning_assistant/di/service_locator.dart';
 
 class AddEventView extends StatefulWidget {
-  final EventRepository eventRepository;
-  final Function onClose;
-  const AddEventView(
-      {required this.eventRepository, required this.onClose, Key? key})
-      : super(key: key);
+  final eventRepository = ServiceLocator.instance.get<EventRepository>();
+  AddEventView({Key? key}) : super(key: key);
   @override
   _AddEventViewState createState() => _AddEventViewState();
 }
@@ -165,32 +163,31 @@ class _AddEventViewState extends State<AddEventView> {
             isThirtythDayChecked)) {
       _formKey.currentState!.save();
       if (isFirstDayChecked) {
-        widget.eventRepository.insertEvent(
-            Event(_description, _selectedDate.add(const Duration(days: 1))));
+        widget.eventRepository.insertEvent(Event(
+            _description, _selectedDate.add(const Duration(days: 1)), false));
       }
 
       if (isThirdDayChecked) {
-        widget.eventRepository.insertEvent(
-            Event(_description, _selectedDate.add(const Duration(days: 3))));
+        widget.eventRepository.insertEvent(Event(
+            _description, _selectedDate.add(const Duration(days: 3)), false));
       }
 
       if (isSeventhDayChecked) {
-        widget.eventRepository.insertEvent(
-            Event(_description, _selectedDate.add(const Duration(days: 7))));
+        widget.eventRepository.insertEvent(Event(
+            _description, _selectedDate.add(const Duration(days: 7)), false));
       }
 
       if (isFifteenthDayChecked) {
-        widget.eventRepository.insertEvent(
-            Event(_description, _selectedDate.add(const Duration(days: 15))));
+        widget.eventRepository.insertEvent(Event(
+            _description, _selectedDate.add(const Duration(days: 15)), false));
       }
 
       if (isThirtythDayChecked) {
-        widget.eventRepository.insertEvent(
-            Event(_description, _selectedDate.add(const Duration(days: 30))));
+        widget.eventRepository.insertEvent(Event(
+            _description, _selectedDate.add(const Duration(days: 30)), false));
       }
 
       Navigator.pop(context);
-      widget.onClose(_selectedDate);
     }
   }
 }

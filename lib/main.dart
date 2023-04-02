@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/event.dart';
-import 'package:learning_assistant/data/event_repository.dart';
+import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/ui/add_event_view.dart';
 import 'package:learning_assistant/ui/event_view.dart';
 
 void main() async {
   final isar = await openIsar();
-  final eventRepository = EventRepository(isar);
-  runApp(MyApp(eventRepository: eventRepository));
+  ServiceLocator.setup(isar);
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  EventRepository eventRepository;
-  MyApp({required this.eventRepository, Key? key});
+  MyApp();
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +26,10 @@ class MyApp extends StatelessWidget {
         // Define the routes
         '/': (context) => Scaffold(
               appBar: AppBar(title: const Text('Learning Assistant')),
-              body: EventView(
-                eventRepository: eventRepository,
-              ),
+              body: EventView(),
             ),
         '/create-entry': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
-          return AddEventView(
-            eventRepository: eventRepository,
-            onClose: args['reloadList'],
-          );
+          return AddEventView();
         }
       },
     );

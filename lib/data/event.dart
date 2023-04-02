@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:isar/isar.dart';
 
 part 'event.g.dart';
@@ -8,6 +10,7 @@ class Event {
 
   late String description;
   late DateTime date;
+  bool isReviewed = false;
 
-  Event(this.description, this.date);
+  Event(this.description, this.date, this.isReviewed);
 }

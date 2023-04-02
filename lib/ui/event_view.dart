@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/event_repository.dart';
+import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/ui/list_item_card_view.dart';
 
 class EventView extends StatefulWidget {
-  final EventRepository eventRepository;
-  const EventView({required this.eventRepository, Key? key}) : super(key: key);
+  final eventRepository = ServiceLocator.instance.get<EventRepository>();
+  EventView({Key? key}) : super(key: key);
 
   @override
   _EventViewState createState() => _EventViewState();
@@ -13,6 +16,12 @@ class EventView extends StatefulWidget {
 class _EventViewState extends State<EventView> {
   DateTime selectedDate = DateTime.now();
 
+  @override
+  void initState() {
+    super.initState();
+    widget.eventRepository.filterEventsOnDate(selectedDate);
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -20,10 +29,12 @@ class _EventViewState extends State<EventView> {
       firstDate: DateTime(1980, 1),
       lastDate: DateTime(2100, 12),
     );
-    if (pickedDate != null && pickedDate != selectedDate)
+    if (pickedDate != null && pickedDate != selectedDate) {
       setState(() {
         selectedDate = pickedDate;
+        widget.eventRepository.filterEventsOnDate(selectedDate);
       });
+    }
   }
 
   @override
@@ -39,8 +50,8 @@ class _EventViewState extends State<EventView> {
           ),
         ),
         Expanded(
-          child: FutureBuilder(
-            future: widget.eventRepository.getEventsOnDate(selectedDate),
+          child: StreamBuilder<List<Event>>(
+            stream: widget.eventRepository.events,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
@@ -53,8 +64,10 @@ class _EventViewState extends State<EventView> {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext context, int index) {
                     final event = snapshot.data![index];
-                    return ListTile(
-                      title: Text(event.description),
+                    return ListItemCard(
+                      id: event.id,
+                      description: event.description,
+                      isReviewed: event.isReviewed,
                     );
                   },
                 );
@@ -75,9 +88,7 @@ class _EventViewState extends State<EventView> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/create-entry', arguments: {
-                    'reloadList': _reloadList,
-                  });
+                  Navigator.pushNamed(context, '/create-entry');
                 },
                 child: Text('Add Entry'),
               ),
@@ -86,11 +97,5 @@ class _EventViewState extends State<EventView> {
         ),
       ],
     );
-  }
-
-  void _reloadList(DateTime date) {
-    setState(() {
-      selectedDate = date;
-    });
   }
 }

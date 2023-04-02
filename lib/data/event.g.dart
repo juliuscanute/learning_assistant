@@ -26,6 +26,11 @@ const EventSchema = CollectionSchema(
       id: 1,
       name: r'description',
       type: IsarType.string,
+    ),
+    r'isReviewed': PropertySchema(
+      id: 2,
+      name: r'isReviewed',
+      type: IsarType.bool,
     )
   },
   estimateSize: _eventEstimateSize,
@@ -60,6 +65,7 @@ void _eventSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.date);
   writer.writeString(offsets[1], object.description);
+  writer.writeBool(offsets[2], object.isReviewed);
 }
 
 Event _eventDeserialize(
@@ -71,6 +77,7 @@ Event _eventDeserialize(
   final object = Event(
     reader.readString(offsets[1]),
     reader.readDateTime(offsets[0]),
+    reader.readBool(offsets[2]),
   );
   object.id = id;
   return object;
@@ -87,6 +94,8 @@ P _eventDeserializeProp<P>(
       return (reader.readDateTime(offset)) as P;
     case 1:
       return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -414,6 +423,16 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Event, Event, QAfterFilterCondition> isReviewedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isReviewed',
+        value: value,
+      ));
+    });
+  }
 }
 
 extension EventQueryObject on QueryBuilder<Event, Event, QFilterCondition> {}
@@ -442,6 +461,18 @@ extension EventQuerySortBy on QueryBuilder<Event, Event, QSortBy> {
   QueryBuilder<Event, Event, QAfterSortBy> sortByDescriptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterSortBy> sortByIsReviewed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReviewed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterSortBy> sortByIsReviewedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReviewed', Sort.desc);
     });
   }
 }
@@ -482,6 +513,18 @@ extension EventQuerySortThenBy on QueryBuilder<Event, Event, QSortThenBy> {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
+
+  QueryBuilder<Event, Event, QAfterSortBy> thenByIsReviewed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReviewed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterSortBy> thenByIsReviewedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReviewed', Sort.desc);
+    });
+  }
 }
 
 extension EventQueryWhereDistinct on QueryBuilder<Event, Event, QDistinct> {
@@ -495,6 +538,12 @@ extension EventQueryWhereDistinct on QueryBuilder<Event, Event, QDistinct> {
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'description', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Event, Event, QDistinct> distinctByIsReviewed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isReviewed');
     });
   }
 }
@@ -515,6 +564,12 @@ extension EventQueryProperty on QueryBuilder<Event, Event, QQueryProperty> {
   QueryBuilder<Event, String, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<Event, bool, QQueryOperations> isReviewedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isReviewed');
     });
   }
 }
