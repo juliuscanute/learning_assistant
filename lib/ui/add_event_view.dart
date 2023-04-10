@@ -162,29 +162,46 @@ class _AddEventViewState extends State<AddEventView> {
             isFifteenthDayChecked ||
             isThirtythDayChecked)) {
       _formKey.currentState!.save();
+      final eventLog = await widget.eventRepository.insertEventLog();
+      final eventId = eventLog!.id;
       if (isFirstDayChecked) {
-        widget.eventRepository.insertEvent(Event(
-            _description, _selectedDate.add(const Duration(days: 1)), false));
+        final firstDayEvent = Event(
+            _description, _selectedDate.add(const Duration(days: 1)), false);
+        firstDayEvent.eventLog.value = eventLog;
+        widget.eventRepository.insertEvent(firstDayEvent, eventLog);
+        widget.eventRepository.updateEventLog(eventId, firstDayEvent);
       }
 
       if (isThirdDayChecked) {
-        widget.eventRepository.insertEvent(Event(
-            _description, _selectedDate.add(const Duration(days: 3)), false));
+        final thirdDayEvent = Event(
+            _description, _selectedDate.add(const Duration(days: 3)), false);
+        thirdDayEvent.eventLog.value = eventLog;
+        widget.eventRepository.insertEvent(thirdDayEvent, eventLog);
+        widget.eventRepository.updateEventLog(eventId, thirdDayEvent);
       }
 
       if (isSeventhDayChecked) {
-        widget.eventRepository.insertEvent(Event(
-            _description, _selectedDate.add(const Duration(days: 7)), false));
+        final seventhDayEvent = Event(
+            _description, _selectedDate.add(const Duration(days: 7)), false);
+        seventhDayEvent.eventLog.value = eventLog;
+        widget.eventRepository.insertEvent(seventhDayEvent, eventLog);
+        widget.eventRepository.updateEventLog(eventId, seventhDayEvent);
       }
 
       if (isFifteenthDayChecked) {
-        widget.eventRepository.insertEvent(Event(
-            _description, _selectedDate.add(const Duration(days: 15)), false));
+        final fifteenthDayEvent = Event(
+            _description, _selectedDate.add(const Duration(days: 15)), false);
+        fifteenthDayEvent.eventLog.value = eventLog;
+        widget.eventRepository.insertEvent(fifteenthDayEvent, eventLog);
+        widget.eventRepository.updateEventLog(eventId, fifteenthDayEvent);
       }
 
       if (isThirtythDayChecked) {
-        widget.eventRepository.insertEvent(Event(
-            _description, _selectedDate.add(const Duration(days: 30)), false));
+        final thirtythDayEvent = Event(
+            _description, _selectedDate.add(const Duration(days: 30)), false);
+        thirtythDayEvent.eventLog.value = eventLog;
+        widget.eventRepository.insertEvent(thirtythDayEvent, eventLog);
+        widget.eventRepository.updateEventLog(eventId, thirtythDayEvent);
       }
 
       Navigator.pop(context);

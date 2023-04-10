@@ -37,5 +37,5 @@ class MyApp extends StatelessWidget {
 }
 
 Future<Isar> openIsar() async {
-  return await Isar.open([EventSchema]);
+  return await Isar.open([EventSchema, EventLogSchema]);
 }

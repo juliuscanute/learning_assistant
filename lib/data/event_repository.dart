@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/event.dart';
@@ -10,9 +11,28 @@ class EventRepository {
 
   EventRepository(this.isar);
 
-  Future<void> insertEvent(Event event) async {
+  Future<EventLog?> insertEventLog() async {
+    return await isar.writeTxn(() async {
+      final eventLog = EventLog();
+      final id = await isar.eventLogs.put(eventLog);
+      return isar.eventLogs.get(id);
+    });
+  }
+
+  Future<void> updateEventLog(int eventLogId, Event event) async {
+    await isar.writeTxn(() async {
+      final existingEventLog = await isar.eventLogs.get(eventLogId);
+      if (existingEventLog != null) {
+        existingEventLog.events.add(event);
+        await isar.eventLogs.put(existingEventLog);
+      }
+    });
+  }
+
+  Future<void> insertEvent(Event event, EventLog eventLog) async {
     await isar.writeTxn(() async {
       await isar.events.put(event);
+      await event.eventLog.save();
       _eventController.add(await getEventsOnDate(DateTime.now()));
     });
   }

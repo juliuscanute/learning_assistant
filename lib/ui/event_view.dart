@@ -68,6 +68,7 @@ class _EventViewState extends State<EventView> {
                       id: event.id,
                       description: event.description,
                       isReviewed: event.isReviewed,
+                      eventLog: event.eventLog.value!,
                     );
                   },
                 );
