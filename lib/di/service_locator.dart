@@ -5,7 +5,7 @@ import 'package:learning_assistant/data/event_repository.dart';
 class ServiceLocator {
   static final GetIt instance = GetIt.instance;
 
-  static void setup(Isar isar) {
+  static void setup(Isar isar) async {
     instance.registerSingleton(isar);
     instance.registerLazySingleton(() => EventRepository(instance.get()));
   }

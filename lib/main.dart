@@ -4,15 +4,17 @@ import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/ui/add_event_view.dart';
 import 'package:learning_assistant/ui/event_view.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final isar = await openIsar();
   ServiceLocator.setup(isar);
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp();
+  const MyApp();
 
   @override
   Widget build(BuildContext context) {
@@ -37,5 +39,9 @@ class MyApp extends StatelessWidget {
 }
 
 Future<Isar> openIsar() async {
-  return await Isar.open([EventSchema, EventLogSchema]);
+  final dir = await getApplicationDocumentsDirectory();
+  return await Isar.open(
+    [EventSchema, EventLogSchema],
+    directory: dir.path,
+  );
 }
