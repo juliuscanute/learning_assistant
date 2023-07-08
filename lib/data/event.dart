@@ -1,23 +1,22 @@
-import 'dart:ffi';
-
 import 'package:isar/isar.dart';
 
 part 'event.g.dart';
 
 @collection
-class Event {
+class EventGroup {
   Id id = Isar.autoIncrement;
-  late String description;
-  late DateTime date;
-  bool isReviewed = false;
-  @Backlink(to: 'events')
-  final eventLog = IsarLink<EventLog>();
-
-  Event(this.description, this.date, this.isReviewed);
+  List<Event> events;
+  EventGroup(this.events);
 }
 
-@collection
-class EventLog {
-  Id id = Isar.autoIncrement;
-  final events = IsarLinks<Event>();
+@embedded
+class Event {
+  late DateTime date;
+  late List<Description> descriptions;
+}
+
+@embedded
+class Description {
+  late String description;
+  late bool isReviewed;
 }

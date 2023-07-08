@@ -7,91 +7,88 @@ part of 'event.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetEventCollection on Isar {
-  IsarCollection<Event> get events => this.collection();
+extension GetEventGroupCollection on Isar {
+  IsarCollection<EventGroup> get eventGroups => this.collection();
 }
 
-const EventSchema = CollectionSchema(
-  name: r'Event',
-  id: 2102939193127251002,
+const EventGroupSchema = CollectionSchema(
+  name: r'EventGroup',
+  id: -3437146512434179851,
   properties: {
-    r'date': PropertySchema(
+    r'events': PropertySchema(
       id: 0,
-      name: r'date',
-      type: IsarType.dateTime,
-    ),
-    r'description': PropertySchema(
-      id: 1,
-      name: r'description',
-      type: IsarType.string,
-    ),
-    r'isReviewed': PropertySchema(
-      id: 2,
-      name: r'isReviewed',
-      type: IsarType.bool,
+      name: r'events',
+      type: IsarType.objectList,
+      target: r'Event',
     )
   },
-  estimateSize: _eventEstimateSize,
-  serialize: _eventSerialize,
-  deserialize: _eventDeserialize,
-  deserializeProp: _eventDeserializeProp,
+  estimateSize: _eventGroupEstimateSize,
+  serialize: _eventGroupSerialize,
+  deserialize: _eventGroupDeserialize,
+  deserializeProp: _eventGroupDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {
-    r'eventLog': LinkSchema(
-      id: 1259302473431534917,
-      name: r'eventLog',
-      target: r'EventLog',
-      single: true,
-      linkName: r'events',
-    )
-  },
-  embeddedSchemas: {},
-  getId: _eventGetId,
-  getLinks: _eventGetLinks,
-  attach: _eventAttach,
-  version: '3.0.5',
+  links: {},
+  embeddedSchemas: {r'Event': EventSchema, r'Description': DescriptionSchema},
+  getId: _eventGroupGetId,
+  getLinks: _eventGroupGetLinks,
+  attach: _eventGroupAttach,
+  version: '3.1.0+1',
 );
 
-int _eventEstimateSize(
-  Event object,
+int _eventGroupEstimateSize(
+  EventGroup object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.description.length * 3;
+  bytesCount += 3 + object.events.length * 3;
+  {
+    final offsets = allOffsets[Event]!;
+    for (var i = 0; i < object.events.length; i++) {
+      final value = object.events[i];
+      bytesCount += EventSchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
   return bytesCount;
 }
 
-void _eventSerialize(
-  Event object,
+void _eventGroupSerialize(
+  EventGroup object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.date);
-  writer.writeString(offsets[1], object.description);
-  writer.writeBool(offsets[2], object.isReviewed);
+  writer.writeObjectList<Event>(
+    offsets[0],
+    allOffsets,
+    EventSchema.serialize,
+    object.events,
+  );
 }
 
-Event _eventDeserialize(
+EventGroup _eventGroupDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Event(
-    reader.readString(offsets[1]),
-    reader.readDateTime(offsets[0]),
-    reader.readBool(offsets[2]),
+  final object = EventGroup(
+    reader.readObjectList<Event>(
+          offsets[0],
+          EventSchema.deserialize,
+          allOffsets,
+          Event(),
+        ) ??
+        [],
   );
   object.id = id;
   return object;
 }
 
-P _eventDeserializeProp<P>(
+P _eventGroupDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -99,39 +96,42 @@ P _eventDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
-    case 1:
-      return (reader.readString(offset)) as P;
-    case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readObjectList<Event>(
+            offset,
+            EventSchema.deserialize,
+            allOffsets,
+            Event(),
+          ) ??
+          []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-Id _eventGetId(Event object) {
+Id _eventGroupGetId(EventGroup object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _eventGetLinks(Event object) {
-  return [object.eventLog];
+List<IsarLinkBase<dynamic>> _eventGroupGetLinks(EventGroup object) {
+  return [];
 }
 
-void _eventAttach(IsarCollection<dynamic> col, Id id, Event object) {
+void _eventGroupAttach(IsarCollection<dynamic> col, Id id, EventGroup object) {
   object.id = id;
-  object.eventLog.attach(col, col.isar.collection<EventLog>(), r'eventLog', id);
 }
 
-extension EventQueryWhereSort on QueryBuilder<Event, Event, QWhere> {
-  QueryBuilder<Event, Event, QAfterWhere> anyId() {
+extension EventGroupQueryWhereSort
+    on QueryBuilder<EventGroup, EventGroup, QWhere> {
+  QueryBuilder<EventGroup, EventGroup, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension EventQueryWhere on QueryBuilder<Event, Event, QWhereClause> {
-  QueryBuilder<Event, Event, QAfterWhereClause> idEqualTo(Id id) {
+extension EventGroupQueryWhere
+    on QueryBuilder<EventGroup, EventGroup, QWhereClause> {
+  QueryBuilder<EventGroup, EventGroup, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -140,7 +140,7 @@ extension EventQueryWhere on QueryBuilder<Event, Event, QWhereClause> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<EventGroup, EventGroup, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -162,7 +162,7 @@ extension EventQueryWhere on QueryBuilder<Event, Event, QWhereClause> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<EventGroup, EventGroup, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -171,7 +171,7 @@ extension EventQueryWhere on QueryBuilder<Event, Event, QWhereClause> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<EventGroup, EventGroup, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -180,7 +180,7 @@ extension EventQueryWhere on QueryBuilder<Event, Event, QWhereClause> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterWhereClause> idBetween(
+  QueryBuilder<EventGroup, EventGroup, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -194,6 +194,300 @@ extension EventQueryWhere on QueryBuilder<Event, Event, QWhereClause> {
         includeUpper: includeUpper,
       ));
     });
+  }
+}
+
+extension EventGroupQueryFilter
+    on QueryBuilder<EventGroup, EventGroup, QFilterCondition> {
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition>
+      eventsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'events',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition> eventsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'events',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition>
+      eventsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'events',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition>
+      eventsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'events',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition>
+      eventsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'events',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition>
+      eventsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'events',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition> idEqualTo(
+      Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition> idGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition> idLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition> idBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+}
+
+extension EventGroupQueryObject
+    on QueryBuilder<EventGroup, EventGroup, QFilterCondition> {
+  QueryBuilder<EventGroup, EventGroup, QAfterFilterCondition> eventsElement(
+      FilterQuery<Event> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'events');
+    });
+  }
+}
+
+extension EventGroupQueryLinks
+    on QueryBuilder<EventGroup, EventGroup, QFilterCondition> {}
+
+extension EventGroupQuerySortBy
+    on QueryBuilder<EventGroup, EventGroup, QSortBy> {}
+
+extension EventGroupQuerySortThenBy
+    on QueryBuilder<EventGroup, EventGroup, QSortThenBy> {
+  QueryBuilder<EventGroup, EventGroup, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<EventGroup, EventGroup, QAfterSortBy> thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+}
+
+extension EventGroupQueryWhereDistinct
+    on QueryBuilder<EventGroup, EventGroup, QDistinct> {}
+
+extension EventGroupQueryProperty
+    on QueryBuilder<EventGroup, EventGroup, QQueryProperty> {
+  QueryBuilder<EventGroup, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<EventGroup, List<Event>, QQueryOperations> eventsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'events');
+    });
+  }
+}
+
+// **************************************************************************
+// IsarEmbeddedGenerator
+// **************************************************************************
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const EventSchema = Schema(
+  name: r'Event',
+  id: 2102939193127251002,
+  properties: {
+    r'date': PropertySchema(
+      id: 0,
+      name: r'date',
+      type: IsarType.dateTime,
+    ),
+    r'descriptions': PropertySchema(
+      id: 1,
+      name: r'descriptions',
+      type: IsarType.objectList,
+      target: r'Description',
+    )
+  },
+  estimateSize: _eventEstimateSize,
+  serialize: _eventSerialize,
+  deserialize: _eventDeserialize,
+  deserializeProp: _eventDeserializeProp,
+);
+
+int _eventEstimateSize(
+  Event object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.descriptions.length * 3;
+  {
+    final offsets = allOffsets[Description]!;
+    for (var i = 0; i < object.descriptions.length; i++) {
+      final value = object.descriptions[i];
+      bytesCount += DescriptionSchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
+  return bytesCount;
+}
+
+void _eventSerialize(
+  Event object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeDateTime(offsets[0], object.date);
+  writer.writeObjectList<Description>(
+    offsets[1],
+    allOffsets,
+    DescriptionSchema.serialize,
+    object.descriptions,
+  );
+}
+
+Event _eventDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = Event();
+  object.date = reader.readDateTime(offsets[0]);
+  object.descriptions = reader.readObjectList<Description>(
+        offsets[1],
+        DescriptionSchema.deserialize,
+        allOffsets,
+        Description(),
+      ) ??
+      [];
+  return object;
+}
+
+P _eventDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readDateTime(offset)) as P;
+    case 1:
+      return (reader.readObjectList<Description>(
+            offset,
+            DescriptionSchema.deserialize,
+            allOffsets,
+            Description(),
+          ) ??
+          []) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
   }
 }
 
@@ -251,7 +545,177 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionEqualTo(
+  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'descriptions',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'descriptions',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'descriptions',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'descriptions',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterFilterCondition>
+      descriptionsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'descriptions',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'descriptions',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+}
+
+extension EventQueryObject on QueryBuilder<Event, Event, QFilterCondition> {
+  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsElement(
+      FilterQuery<Description> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'descriptions');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const DescriptionSchema = Schema(
+  name: r'Description',
+  id: 405142296649109475,
+  properties: {
+    r'description': PropertySchema(
+      id: 0,
+      name: r'description',
+      type: IsarType.string,
+    ),
+    r'isReviewed': PropertySchema(
+      id: 1,
+      name: r'isReviewed',
+      type: IsarType.bool,
+    )
+  },
+  estimateSize: _descriptionEstimateSize,
+  serialize: _descriptionSerialize,
+  deserialize: _descriptionDeserialize,
+  deserializeProp: _descriptionDeserializeProp,
+);
+
+int _descriptionEstimateSize(
+  Description object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.description.length * 3;
+  return bytesCount;
+}
+
+void _descriptionSerialize(
+  Description object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeString(offsets[0], object.description);
+  writer.writeBool(offsets[1], object.isReviewed);
+}
+
+Description _descriptionDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = Description();
+  object.description = reader.readString(offsets[0]);
+  object.isReviewed = reader.readBool(offsets[1]);
+  return object;
+}
+
+P _descriptionDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readBool(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension DescriptionQueryFilter
+    on QueryBuilder<Description, Description, QFilterCondition> {
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -264,7 +728,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionGreaterThan(
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -279,7 +744,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionLessThan(
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -294,7 +760,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionBetween(
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -313,7 +780,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionStartsWith(
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -326,7 +794,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionEndsWith(
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -339,9 +808,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionContains(
-      String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'description',
@@ -351,9 +819,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'description',
@@ -363,7 +830,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionIsEmpty() {
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'description',
@@ -372,7 +840,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionIsNotEmpty() {
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      descriptionIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'description',
@@ -381,60 +850,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Event, Event, QAfterFilterCondition> idEqualTo(Id value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> isReviewedEqualTo(
-      bool value) {
+  QueryBuilder<Description, Description, QAfterFilterCondition>
+      isReviewedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isReviewed',
@@ -444,459 +861,5 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
   }
 }
 
-extension EventQueryObject on QueryBuilder<Event, Event, QFilterCondition> {}
-
-extension EventQueryLinks on QueryBuilder<Event, Event, QFilterCondition> {
-  QueryBuilder<Event, Event, QAfterFilterCondition> eventLog(
-      FilterQuery<EventLog> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'eventLog');
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> eventLogIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'eventLog', 0, true, 0, true);
-    });
-  }
-}
-
-extension EventQuerySortBy on QueryBuilder<Event, Event, QSortBy> {
-  QueryBuilder<Event, Event, QAfterSortBy> sortByDate() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> sortByDateDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> sortByDescription() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> sortByDescriptionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> sortByIsReviewed() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isReviewed', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> sortByIsReviewedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isReviewed', Sort.desc);
-    });
-  }
-}
-
-extension EventQuerySortThenBy on QueryBuilder<Event, Event, QSortThenBy> {
-  QueryBuilder<Event, Event, QAfterSortBy> thenByDate() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> thenByDateDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> thenByDescription() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> thenByDescriptionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> thenByIsReviewed() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isReviewed', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterSortBy> thenByIsReviewedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isReviewed', Sort.desc);
-    });
-  }
-}
-
-extension EventQueryWhereDistinct on QueryBuilder<Event, Event, QDistinct> {
-  QueryBuilder<Event, Event, QDistinct> distinctByDate() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'date');
-    });
-  }
-
-  QueryBuilder<Event, Event, QDistinct> distinctByDescription(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'description', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Event, Event, QDistinct> distinctByIsReviewed() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'isReviewed');
-    });
-  }
-}
-
-extension EventQueryProperty on QueryBuilder<Event, Event, QQueryProperty> {
-  QueryBuilder<Event, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
-  }
-
-  QueryBuilder<Event, DateTime, QQueryOperations> dateProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'date');
-    });
-  }
-
-  QueryBuilder<Event, String, QQueryOperations> descriptionProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'description');
-    });
-  }
-
-  QueryBuilder<Event, bool, QQueryOperations> isReviewedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'isReviewed');
-    });
-  }
-}
-
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
-
-extension GetEventLogCollection on Isar {
-  IsarCollection<EventLog> get eventLogs => this.collection();
-}
-
-const EventLogSchema = CollectionSchema(
-  name: r'EventLog',
-  id: 288085404374050446,
-  properties: {},
-  estimateSize: _eventLogEstimateSize,
-  serialize: _eventLogSerialize,
-  deserialize: _eventLogDeserialize,
-  deserializeProp: _eventLogDeserializeProp,
-  idName: r'id',
-  indexes: {},
-  links: {
-    r'events': LinkSchema(
-      id: -8652929041592077311,
-      name: r'events',
-      target: r'Event',
-      single: false,
-    )
-  },
-  embeddedSchemas: {},
-  getId: _eventLogGetId,
-  getLinks: _eventLogGetLinks,
-  attach: _eventLogAttach,
-  version: '3.0.5',
-);
-
-int _eventLogEstimateSize(
-  EventLog object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  return bytesCount;
-}
-
-void _eventLogSerialize(
-  EventLog object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {}
-EventLog _eventLogDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  final object = EventLog();
-  object.id = id;
-  return object;
-}
-
-P _eventLogDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
-    default:
-      throw IsarError('Unknown property with id $propertyId');
-  }
-}
-
-Id _eventLogGetId(EventLog object) {
-  return object.id;
-}
-
-List<IsarLinkBase<dynamic>> _eventLogGetLinks(EventLog object) {
-  return [object.events];
-}
-
-void _eventLogAttach(IsarCollection<dynamic> col, Id id, EventLog object) {
-  object.id = id;
-  object.events.attach(col, col.isar.collection<Event>(), r'events', id);
-}
-
-extension EventLogQueryWhereSort on QueryBuilder<EventLog, EventLog, QWhere> {
-  QueryBuilder<EventLog, EventLog, QAfterWhere> anyId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
-  }
-}
-
-extension EventLogQueryWhere on QueryBuilder<EventLog, EventLog, QWhereClause> {
-  QueryBuilder<EventLog, EventLog, QAfterWhereClause> idEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterWhereClause> idNotEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-}
-
-extension EventLogQueryFilter
-    on QueryBuilder<EventLog, EventLog, QFilterCondition> {
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> idEqualTo(Id value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-}
-
-extension EventLogQueryObject
-    on QueryBuilder<EventLog, EventLog, QFilterCondition> {}
-
-extension EventLogQueryLinks
-    on QueryBuilder<EventLog, EventLog, QFilterCondition> {
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> events(
-      FilterQuery<Event> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'events');
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> eventsLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'events', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> eventsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'events', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> eventsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'events', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> eventsLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'events', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition>
-      eventsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'events', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterFilterCondition> eventsLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'events', lower, includeLower, upper, includeUpper);
-    });
-  }
-}
-
-extension EventLogQuerySortBy on QueryBuilder<EventLog, EventLog, QSortBy> {}
-
-extension EventLogQuerySortThenBy
-    on QueryBuilder<EventLog, EventLog, QSortThenBy> {
-  QueryBuilder<EventLog, EventLog, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
-  }
-
-  QueryBuilder<EventLog, EventLog, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-}
-
-extension EventLogQueryWhereDistinct
-    on QueryBuilder<EventLog, EventLog, QDistinct> {}
-
-extension EventLogQueryProperty
-    on QueryBuilder<EventLog, EventLog, QQueryProperty> {
-  QueryBuilder<EventLog, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
-  }
-}
+extension DescriptionQueryObject
+    on QueryBuilder<Description, Description, QFilterCondition> {}

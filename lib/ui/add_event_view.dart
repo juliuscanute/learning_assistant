@@ -8,10 +8,10 @@ class AddEventView extends StatefulWidget {
   final eventRepository = ServiceLocator.instance.get<EventRepository>();
   AddEventView({Key? key}) : super(key: key);
   @override
-  _AddEventViewState createState() => _AddEventViewState();
+  AddEventViewState createState() => AddEventViewState();
 }
 
-class _AddEventViewState extends State<AddEventView> {
+class AddEventViewState extends State<AddEventView> {
   final _formKey = GlobalKey<FormState>();
 
   DateTime _selectedDate = DateTime.now();
@@ -28,16 +28,16 @@ class _AddEventViewState extends State<AddEventView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Event'),
+        title: const Text('Add Event'),
       ),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: GestureDetector(
                   onTap: () async {
                     final DateTime? picked = await showDatePicker(
@@ -47,7 +47,6 @@ class _AddEventViewState extends State<AddEventView> {
                       lastDate: DateTime(2050),
                     );
                     if (picked != null && picked != _selectedDate) {
-                      DateTime utcDate = picked.toUtc();
                       setState(() {
                         _selectedDate = picked;
                       });
@@ -87,10 +86,10 @@ class _AddEventViewState extends State<AddEventView> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('1st Day'),
+                title: const Text('1st Day'),
                 value: isFirstDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -100,7 +99,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('3rd Day'),
+                title: const Text('3rd Day'),
                 value: isThirdDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -110,7 +109,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('7th Day'),
+                title: const Text('7th Day'),
                 value: isSeventhDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -120,7 +119,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('15th Day'),
+                title: const Text('15th Day'),
                 value: isFifteenthDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -130,7 +129,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('30th Day'),
+                title: const Text('30th Day'),
                 value: isThirtythDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -138,15 +137,15 @@ class _AddEventViewState extends State<AddEventView> {
                   });
                 },
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 // move onpressed to a separate function
                 onPressed: () async {
                   onSave();
                 },
-                child: Text('Add Event'),
+                child: const Text('Add Event'),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
             ],
           ),
         ),
@@ -162,49 +161,48 @@ class _AddEventViewState extends State<AddEventView> {
             isFifteenthDayChecked ||
             isThirtythDayChecked)) {
       _formKey.currentState!.save();
-      final eventLog = await widget.eventRepository.insertEventLog();
-      final eventId = eventLog!.id;
+      List<Event> events = [];
       if (isFirstDayChecked) {
-        final firstDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 1)), false);
-        firstDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(firstDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, firstDayEvent);
+        final firstDayEvent = createEvent(const Duration(days: 1));
+        events.add(firstDayEvent);
       }
 
       if (isThirdDayChecked) {
-        final thirdDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 3)), false);
-        thirdDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(thirdDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, thirdDayEvent);
+        final thirdDayEvent = createEvent(const Duration(days: 3));
+        events.add(thirdDayEvent);
       }
 
       if (isSeventhDayChecked) {
-        final seventhDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 7)), false);
-        seventhDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(seventhDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, seventhDayEvent);
+        final seventhDayEvent = createEvent(const Duration(days: 7));
+        events.add(seventhDayEvent);
       }
 
       if (isFifteenthDayChecked) {
-        final fifteenthDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 15)), false);
-        fifteenthDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(fifteenthDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, fifteenthDayEvent);
+        final fifteenthDayEvent = createEvent(const Duration(days: 15));
+        events.add(fifteenthDayEvent);
       }
 
       if (isThirtythDayChecked) {
-        final thirtythDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 30)), false);
-        thirtythDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(thirtythDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, thirtythDayEvent);
+        final thirtythDayEvent = createEvent(const Duration(days: 30));
+        events.add(thirtythDayEvent);
       }
 
+      widget.eventRepository.insertEventLog(EventGroup(events));
       Navigator.pop(context);
     }
+  }
+
+  Event createEvent(Duration duration) {
+    return Event()
+      ..date = _selectedDate.add(duration)
+      ..descriptions = splitStringByNewLine(_description)
+          .map((e) => Description()
+            ..description = e
+            ..isReviewed = false)
+          .toList();
+  }
+
+  List<String> splitStringByNewLine(String text) {
+    return text.split('\n');
   }
 }
