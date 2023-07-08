@@ -65,10 +65,7 @@ class _EventViewState extends State<EventView> {
                   itemBuilder: (BuildContext context, int index) {
                     final event = snapshot.data![index];
                     return ListItemCard(
-                      id: event.id,
-                      description: event.description,
-                      isReviewed: event.isReviewed,
-                      eventLog: event.eventLog.value!,
+                      event: event,
                     );
                   },
                 );

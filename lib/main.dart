@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
 Future<Isar> openIsar() async {
   final dir = await getApplicationDocumentsDirectory();
   return await Isar.open(
-    [EventSchema, EventLogSchema],
+    [EventGroupSchema],
     directory: dir.path,
   );
 }

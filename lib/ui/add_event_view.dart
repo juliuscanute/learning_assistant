@@ -162,49 +162,48 @@ class _AddEventViewState extends State<AddEventView> {
             isFifteenthDayChecked ||
             isThirtythDayChecked)) {
       _formKey.currentState!.save();
-      final eventLog = await widget.eventRepository.insertEventLog();
-      final eventId = eventLog!.id;
+      List<Event> events = [];
       if (isFirstDayChecked) {
-        final firstDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 1)), false);
-        firstDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(firstDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, firstDayEvent);
+        final firstDayEvent = createEvent(const Duration(days: 1));
+        events.add(firstDayEvent);
       }
 
       if (isThirdDayChecked) {
-        final thirdDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 3)), false);
-        thirdDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(thirdDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, thirdDayEvent);
+        final thirdDayEvent = createEvent(const Duration(days: 3));
+        events.add(thirdDayEvent);
       }
 
       if (isSeventhDayChecked) {
-        final seventhDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 7)), false);
-        seventhDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(seventhDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, seventhDayEvent);
+        final seventhDayEvent = createEvent(const Duration(days: 7));
+        events.add(seventhDayEvent);
       }
 
       if (isFifteenthDayChecked) {
-        final fifteenthDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 15)), false);
-        fifteenthDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(fifteenthDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, fifteenthDayEvent);
+        final fifteenthDayEvent = createEvent(const Duration(days: 15));
+        events.add(fifteenthDayEvent);
       }
 
       if (isThirtythDayChecked) {
-        final thirtythDayEvent = Event(
-            _description, _selectedDate.add(const Duration(days: 30)), false);
-        thirtythDayEvent.eventLog.value = eventLog;
-        widget.eventRepository.insertEvent(thirtythDayEvent, eventLog);
-        widget.eventRepository.updateEventLog(eventId, thirtythDayEvent);
+        final thirtythDayEvent = createEvent(const Duration(days: 30));
+        events.add(thirtythDayEvent);
       }
 
+      widget.eventRepository.insertEventLog(EventGroup(events));
       Navigator.pop(context);
     }
+  }
+
+  Event createEvent(Duration duration) {
+    return Event()
+      ..date = _selectedDate.add(duration)
+      ..descriptions = splitStringByNewLine(_description)
+          .map((e) => Description()
+            ..description = e
+            ..isReviewed = false)
+          .toList();
+  }
+
+  List<String> splitStringByNewLine(String text) {
+    return text.split('\n');
   }
 }

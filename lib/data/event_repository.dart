@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/event.dart';
@@ -11,34 +10,11 @@ class EventRepository {
 
   EventRepository(this.isar);
 
-  Future<EventLog?> insertEventLog() async {
+  Future<void> insertEventLog(EventGroup group) async {
     return await isar.writeTxn(() async {
-      final eventLog = EventLog();
-      final id = await isar.eventLogs.put(eventLog);
-      return isar.eventLogs.get(id);
-    });
-  }
-
-  Future<void> updateEventLog(int eventLogId, Event event) async {
-    await isar.writeTxn(() async {
-      final existingEventLog = await isar.eventLogs.get(eventLogId);
-      if (existingEventLog != null) {
-        existingEventLog.events.add(event);
-        await isar.eventLogs.put(existingEventLog);
-      }
-    });
-  }
-
-  Future<void> insertEvent(Event event, EventLog eventLog) async {
-    await isar.writeTxn(() async {
-      await isar.events.put(event);
-      await event.eventLog.save();
+      await isar.eventGroups.put(group);
       _eventController.add(await getEventsOnDate(DateTime.now()));
     });
-  }
-
-  Future<void> filterEventsOnDate(DateTime date) async {
-    _eventController.add(await getEventsOnDate(date));
   }
 
   Future<List<Event>> getEventsOnDate(DateTime date) async {
@@ -47,18 +23,45 @@ class EventRepository {
         .add(const Duration(days: 1))
         .subtract(const Duration(milliseconds: 1));
 
-    final events =
-        await isar.events.filter().dateBetween(startOfDay, endOfDay).findAll();
-    return events;
+    final groups = await isar.eventGroups
+        .filter()
+        .eventsElement((event) => event.dateBetween(startOfDay, endOfDay))
+        .findAll();
+    return groups
+        .expand((e) => e.events)
+        .toList()
+        .where((element) =>
+            element.date!.isAfter(startOfDay) &&
+            element.date!.isBefore(endOfDay))
+        .toList();
   }
 
-  Future<void> updateReviewed(Id eventId) async {
+  Future<void> filterEventsOnDate(DateTime date) async {
+    _eventController.add(await getEventsOnDate(date));
+  }
+
+  Future<EventGroup?> getEventGroup(
+      DateTime timeOfEvent, String description) async {
+    return await isar.eventGroups
+        .filter()
+        .eventsElement((event) => event.dateEqualTo(timeOfEvent))
+        .and()
+        .eventsElement((event) => event.descriptionsElement(
+            (desc) => desc.descriptionContains(description)))
+        .findFirst();
+  }
+
+  Future<void> updateReviewed(DateTime timeOfEvent, String description) async {
+    EventGroup? group = await getEventGroup(timeOfEvent, description);
     await isar.writeTxn(() async {
-      final existingEvent = await isar.events.get(eventId);
-      if (existingEvent != null) {
-        existingEvent.isReviewed = !existingEvent.isReviewed;
-        await isar.events.put(existingEvent);
-        _eventController.add(await getEventsOnDate(existingEvent.date));
+      if (group != null) {
+        Event event = group.events.firstWhere(
+            (element) => element.date!.isAtSameMomentAs(timeOfEvent));
+        Description desc = event.descriptions!
+            .firstWhere((element) => element.description == description);
+        desc.isReviewed = !desc.isReviewed!;
+        await isar.eventGroups.put(group);
+        _eventController.add(await getEventsOnDate(timeOfEvent));
       }
     });
   }
