@@ -425,18 +425,12 @@ int _eventEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.descriptions.length * 3;
   {
-    final list = object.descriptions;
-    if (list != null) {
-      bytesCount += 3 + list.length * 3;
-      {
-        final offsets = allOffsets[Description]!;
-        for (var i = 0; i < list.length; i++) {
-          final value = list[i];
-          bytesCount +=
-              DescriptionSchema.estimateSize(value, offsets, allOffsets);
-        }
-      }
+    final offsets = allOffsets[Description]!;
+    for (var i = 0; i < object.descriptions.length; i++) {
+      final value = object.descriptions[i];
+      bytesCount += DescriptionSchema.estimateSize(value, offsets, allOffsets);
     }
   }
   return bytesCount;
@@ -464,13 +458,14 @@ Event _eventDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Event();
-  object.date = reader.readDateTimeOrNull(offsets[0]);
+  object.date = reader.readDateTime(offsets[0]);
   object.descriptions = reader.readObjectList<Description>(
-    offsets[1],
-    DescriptionSchema.deserialize,
-    allOffsets,
-    Description(),
-  );
+        offsets[1],
+        DescriptionSchema.deserialize,
+        allOffsets,
+        Description(),
+      ) ??
+      [];
   return object;
 }
 
@@ -482,38 +477,23 @@ P _eventDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 1:
       return (reader.readObjectList<Description>(
-        offset,
-        DescriptionSchema.deserialize,
-        allOffsets,
-        Description(),
-      )) as P;
+            offset,
+            DescriptionSchema.deserialize,
+            allOffsets,
+            Description(),
+          ) ??
+          []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
 extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
-  QueryBuilder<Event, Event, QAfterFilterCondition> dateIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'date',
-      ));
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> dateIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'date',
-      ));
-    });
-  }
-
   QueryBuilder<Event, Event, QAfterFilterCondition> dateEqualTo(
-      DateTime? value) {
+      DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'date',
@@ -523,7 +503,7 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
   }
 
   QueryBuilder<Event, Event, QAfterFilterCondition> dateGreaterThan(
-    DateTime? value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -536,7 +516,7 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
   }
 
   QueryBuilder<Event, Event, QAfterFilterCondition> dateLessThan(
-    DateTime? value, {
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -549,8 +529,8 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
   }
 
   QueryBuilder<Event, Event, QAfterFilterCondition> dateBetween(
-    DateTime? lower,
-    DateTime? upper, {
+    DateTime lower,
+    DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -561,22 +541,6 @@ extension EventQueryFilter on QueryBuilder<Event, Event, QFilterCondition> {
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'descriptions',
-      ));
-    });
-  }
-
-  QueryBuilder<Event, Event, QAfterFilterCondition> descriptionsIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'descriptions',
       ));
     });
   }
@@ -706,12 +670,7 @@ int _descriptionEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.description;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.description.length * 3;
   return bytesCount;
 }
 
@@ -732,8 +691,8 @@ Description _descriptionDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Description();
-  object.description = reader.readStringOrNull(offsets[0]);
-  object.isReviewed = reader.readBoolOrNull(offsets[1]);
+  object.description = reader.readString(offsets[0]);
+  object.isReviewed = reader.readBool(offsets[1]);
   return object;
 }
 
@@ -745,9 +704,9 @@ P _descriptionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readBoolOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -756,26 +715,8 @@ P _descriptionDeserializeProp<P>(
 extension DescriptionQueryFilter
     on QueryBuilder<Description, Description, QFilterCondition> {
   QueryBuilder<Description, Description, QAfterFilterCondition>
-      descriptionIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'description',
-      ));
-    });
-  }
-
-  QueryBuilder<Description, Description, QAfterFilterCondition>
-      descriptionIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'description',
-      ));
-    });
-  }
-
-  QueryBuilder<Description, Description, QAfterFilterCondition>
       descriptionEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -789,7 +730,7 @@ extension DescriptionQueryFilter
 
   QueryBuilder<Description, Description, QAfterFilterCondition>
       descriptionGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -805,7 +746,7 @@ extension DescriptionQueryFilter
 
   QueryBuilder<Description, Description, QAfterFilterCondition>
       descriptionLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -821,8 +762,8 @@ extension DescriptionQueryFilter
 
   QueryBuilder<Description, Description, QAfterFilterCondition>
       descriptionBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -910,25 +851,7 @@ extension DescriptionQueryFilter
   }
 
   QueryBuilder<Description, Description, QAfterFilterCondition>
-      isReviewedIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'isReviewed',
-      ));
-    });
-  }
-
-  QueryBuilder<Description, Description, QAfterFilterCondition>
-      isReviewedIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'isReviewed',
-      ));
-    });
-  }
-
-  QueryBuilder<Description, Description, QAfterFilterCondition>
-      isReviewedEqualTo(bool? value) {
+      isReviewedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isReviewed',

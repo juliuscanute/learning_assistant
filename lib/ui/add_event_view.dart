@@ -8,10 +8,10 @@ class AddEventView extends StatefulWidget {
   final eventRepository = ServiceLocator.instance.get<EventRepository>();
   AddEventView({Key? key}) : super(key: key);
   @override
-  _AddEventViewState createState() => _AddEventViewState();
+  AddEventViewState createState() => AddEventViewState();
 }
 
-class _AddEventViewState extends State<AddEventView> {
+class AddEventViewState extends State<AddEventView> {
   final _formKey = GlobalKey<FormState>();
 
   DateTime _selectedDate = DateTime.now();
@@ -28,16 +28,16 @@ class _AddEventViewState extends State<AddEventView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Event'),
+        title: const Text('Add Event'),
       ),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: GestureDetector(
                   onTap: () async {
                     final DateTime? picked = await showDatePicker(
@@ -47,7 +47,6 @@ class _AddEventViewState extends State<AddEventView> {
                       lastDate: DateTime(2050),
                     );
                     if (picked != null && picked != _selectedDate) {
-                      DateTime utcDate = picked.toUtc();
                       setState(() {
                         _selectedDate = picked;
                       });
@@ -87,10 +86,10 @@ class _AddEventViewState extends State<AddEventView> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('1st Day'),
+                title: const Text('1st Day'),
                 value: isFirstDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -100,7 +99,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('3rd Day'),
+                title: const Text('3rd Day'),
                 value: isThirdDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -110,7 +109,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('7th Day'),
+                title: const Text('7th Day'),
                 value: isSeventhDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -120,7 +119,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('15th Day'),
+                title: const Text('15th Day'),
                 value: isFifteenthDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -130,7 +129,7 @@ class _AddEventViewState extends State<AddEventView> {
               ),
               CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
-                title: Text('30th Day'),
+                title: const Text('30th Day'),
                 value: isThirtythDayChecked,
                 onChanged: (value) {
                   setState(() {
@@ -138,15 +137,15 @@ class _AddEventViewState extends State<AddEventView> {
                   });
                 },
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 // move onpressed to a separate function
                 onPressed: () async {
                   onSave();
                 },
-                child: Text('Add Event'),
+                child: const Text('Add Event'),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
             ],
           ),
         ),

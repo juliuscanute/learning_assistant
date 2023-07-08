@@ -10,10 +10,10 @@ class EventView extends StatefulWidget {
   EventView({Key? key}) : super(key: key);
 
   @override
-  _EventViewState createState() => _EventViewState();
+  EventViewState createState() => EventViewState();
 }
 
-class _EventViewState extends State<EventView> {
+class EventViewState extends State<EventView> {
   DateTime selectedDate = DateTime.now();
 
   @override
@@ -43,10 +43,10 @@ class _EventViewState extends State<EventView> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          margin: EdgeInsets.only(top: 10.0),
+          margin: const EdgeInsets.only(top: 10.0),
           child: Text(
             'Revision List for ${DateFormat('d MMMM y').format(selectedDate)}',
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
@@ -74,7 +74,7 @@ class _EventViewState extends State<EventView> {
           ),
         ),
         Container(
-          margin: EdgeInsets.symmetric(vertical: 10.0),
+          margin: const EdgeInsets.symmetric(vertical: 10.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -82,13 +82,13 @@ class _EventViewState extends State<EventView> {
                 onPressed: () {
                   _selectDate(context);
                 },
-                child: Text('View Calendar'),
+                child: const Text('View Calendar'),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/create-entry');
                 },
-                child: Text('Add Entry'),
+                child: const Text('Add Entry'),
               ),
             ],
           ),

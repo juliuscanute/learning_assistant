@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:isar/isar.dart';
 
 part 'event.g.dart';
@@ -13,12 +11,12 @@ class EventGroup {
 
 @embedded
 class Event {
-  DateTime? date;
-  List<Description>? descriptions;
+  late DateTime date;
+  late List<Description> descriptions;
 }
 
 @embedded
 class Description {
-  String? description;
-  bool? isReviewed;
+  late String description;
+  late bool isReviewed;
 }

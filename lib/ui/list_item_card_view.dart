@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/event_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
@@ -15,10 +14,10 @@ class ListItemCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ListItemCardState createState() => _ListItemCardState();
+  ListItemCardState createState() => ListItemCardState();
 }
 
-class _ListItemCardState extends State<ListItemCard> {
+class ListItemCardState extends State<ListItemCard> {
   bool isExpanded = false;
   List<Event> events = [];
 
@@ -40,47 +39,51 @@ class _ListItemCardState extends State<ListItemCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    children: widget.event.descriptions!
-                        .map((desc) => Row(
-                              children: [
-                                Text(
-                                  desc.description ?? "",
-                                  maxLines: isExpanded ? null : 4,
-                                  overflow: isExpanded
-                                      ? TextOverflow.visible
-                                      : TextOverflow.ellipsis,
-                                ),
-                                Spacer(),
-                                Checkbox(
-                                  value: desc.isReviewed,
-                                  onChanged: (value) async {
-                                    await widget.eventRepository.updateReviewed(
-                                        widget.event.date!,
-                                        desc.description ?? "");
-                                    updateEvents();
-                                  },
-                                ),
-                              ],
-                            ))
-                        .toList(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Column(
+                      children: widget.event.descriptions
+                          .map((desc) => Row(
+                                children: [
+                                  Text(
+                                    desc.description,
+                                    maxLines: isExpanded ? null : 4,
+                                    overflow: isExpanded
+                                        ? TextOverflow.visible
+                                        : TextOverflow.ellipsis,
+                                  ),
+                                  const Spacer(),
+                                  Checkbox(
+                                    value: desc.isReviewed,
+                                    onChanged: (value) async {
+                                      await widget.eventRepository
+                                          .updateReviewed(widget.event.date,
+                                              desc.description);
+                                      updateEvents();
+                                    },
+                                  ),
+                                ],
+                              ))
+                          .toList(),
+                    ),
                   ),
                   if (isExpanded)
                     Column(
                         children: events.map((element) {
                       return Padding(
-                        padding:
-                            const EdgeInsets.only(right: 12.0, bottom: 8.0),
+                        padding: const EdgeInsets.all(12.0),
                         child: Row(
                           children: [
                             Text(
-                              DateFormat('d MMMM y').format(element.date!),
+                              DateFormat('d MMMM y').format(element.date),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             CircleAvatar(
                                 radius: 10,
                                 backgroundColor:
-                                    determineColor(element.descriptions ?? [])),
+                                    determineColor(element.descriptions)),
                           ],
                         ),
                       );
@@ -96,7 +99,7 @@ class _ListItemCardState extends State<ListItemCard> {
 
   void updateEvents() async {
     EventGroup? group = await widget.eventRepository.getEventGroup(
-        widget.event.date!, widget.event.descriptions!.first.description!);
+        widget.event.date, widget.event.descriptions.first.description);
     setState(() {
       events = group?.events ?? [];
     });

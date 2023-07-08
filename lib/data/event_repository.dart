@@ -31,8 +31,7 @@ class EventRepository {
         .expand((e) => e.events)
         .toList()
         .where((element) =>
-            element.date!.isAfter(startOfDay) &&
-            element.date!.isBefore(endOfDay))
+            element.date.isAfter(startOfDay) && element.date.isBefore(endOfDay))
         .toList();
   }
 
@@ -56,10 +55,10 @@ class EventRepository {
     await isar.writeTxn(() async {
       if (group != null) {
         Event event = group.events.firstWhere(
-            (element) => element.date!.isAtSameMomentAs(timeOfEvent));
-        Description desc = event.descriptions!
+            (element) => element.date.isAtSameMomentAs(timeOfEvent));
+        Description desc = event.descriptions
             .firstWhere((element) => element.description == description);
-        desc.isReviewed = !desc.isReviewed!;
+        desc.isReviewed = !desc.isReviewed;
         await isar.eventGroups.put(group);
         _eventController.add(await getEventsOnDate(timeOfEvent));
       }
