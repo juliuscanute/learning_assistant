@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/di/service_locator.dart';
-import 'package:learning_assistant/ui/add_event_view.dart';
-import 'package:learning_assistant/ui/event_view.dart';
+import 'package:learning_assistant/ui/reminder_navigator.dart';
+import 'package:learning_assistant/ui/revise_navigator.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -19,21 +19,62 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Learning Assistant',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/', // Set the initial route to '/'
-      routes: {
-        // Define the routes
-        '/': (context) => Scaffold(
-              appBar: AppBar(title: const Text('Learning Assistant')),
-              body: EventView(),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  MyHomePageState createState() => MyHomePageState();
+}
+
+class MyHomePageState extends State<MyHomePage> {
+  int _selectedIndex = 0;
+
+  Map<int, GlobalKey> navigatorKeys = {0: GlobalKey(), 1: GlobalKey()};
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.alarm),
+              label: "Reminder",
             ),
-        '/create-entry': (context) {
-          return AddEventView();
-        }
-      },
+            BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: "Revise",
+            )
+          ],
+          currentIndex: _selectedIndex,
+          onTap: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          }),
+      body: SafeArea(
+        top: false,
+        child: WillPopScope(
+          onWillPop: () async {
+            return !await Navigator.maybePop(
+                navigatorKeys[_selectedIndex]!.currentState!.context);
+          },
+          child: IndexedStack(
+            index: _selectedIndex,
+            children: <Widget>[
+              ReminderNavigator(navigatorKey: navigatorKeys[0]!),
+              ReviseNavigator(navigatorKey: navigatorKeys[1]!)
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

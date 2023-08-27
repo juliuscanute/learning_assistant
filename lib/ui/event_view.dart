@@ -39,61 +39,67 @@ class EventViewState extends State<EventView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 10.0),
-          child: Text(
-            'Revision List for ${DateFormat('d MMMM y').format(selectedDate)}',
-            style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Reminders'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 10.0),
+            child: Text(
+              'Revision List for ${DateFormat('d MMMM y').format(selectedDate)}',
+              style:
+                  const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        Expanded(
-          child: StreamBuilder<List<Event>>(
-            stream: widget.eventRepository.events,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.data!.isEmpty) {
-                return const Center(child: Text('No events found.'));
-              } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final event = snapshot.data![index];
-                    return ListItemCard(
-                      event: event,
-                    );
+          Expanded(
+            child: StreamBuilder<List<Event>>(
+              stream: widget.eventRepository.events,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No events found.'));
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final event = snapshot.data![index];
+                      return ListItemCard(
+                        event: event,
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _selectDate(context);
                   },
-                );
-              }
-            },
+                  child: const Text('View Calendar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/create-entry');
+                  },
+                  child: const Text('Add Entry'),
+                ),
+              ],
+            ),
           ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  _selectDate(context);
-                },
-                child: const Text('View Calendar'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/create-entry');
-                },
-                child: const Text('Add Entry'),
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
