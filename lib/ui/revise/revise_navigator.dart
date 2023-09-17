@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:learning_assistant/ui/revise_view.dart';
+import 'package:learning_assistant/ui/revise/revise_add_cards.dart';
+import 'package:learning_assistant/ui/revise/revise_view.dart';
 
 class ReviseNavigator extends StatefulWidget {
   const ReviseNavigator({required this.navigatorKey, super.key});
@@ -7,10 +8,10 @@ class ReviseNavigator extends StatefulWidget {
   final GlobalKey navigatorKey;
 
   @override
-  _ReviseNavigatorState createState() => _ReviseNavigatorState();
+  ReviseNavigatorState createState() => ReviseNavigatorState();
 }
 
-class _ReviseNavigatorState extends State<ReviseNavigator> {
+class ReviseNavigatorState extends State<ReviseNavigator> {
   @override
   Widget build(BuildContext context) {
     return Navigator(
@@ -21,7 +22,9 @@ class _ReviseNavigatorState extends State<ReviseNavigator> {
             builder: (BuildContext context) {
               switch (settings.name) {
                 case '/':
-                  return const ReviseScreen();
+                  return ReviseScreen();
+                case '/add-revise':
+                  return ReviseAddCards();
                 default:
                   return Container();
               }

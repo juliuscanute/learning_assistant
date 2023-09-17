@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/event_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
-import 'package:learning_assistant/ui/list_item_card_view.dart';
+import 'package:learning_assistant/ui/event/list_item_card_view.dart';
 
 class EventView extends StatefulWidget {
   final eventRepository = ServiceLocator.instance.get<EventRepository>();

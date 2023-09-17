@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
+import 'package:learning_assistant/data/card_repository.dart';
 import 'package:learning_assistant/data/event_repository.dart';
 
 class ServiceLocator {
@@ -8,5 +9,6 @@ class ServiceLocator {
   static void setup(Isar isar) async {
     instance.registerSingleton(isar);
     instance.registerLazySingleton(() => EventRepository(instance.get()));
+    instance.registerLazySingleton(() => CardsRepository(instance.get()));
   }
 }

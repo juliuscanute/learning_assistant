@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/di/service_locator.dart';
-import 'package:learning_assistant/ui/reminder_navigator.dart';
-import 'package:learning_assistant/ui/revise_navigator.dart';
+import 'package:learning_assistant/ui/event/reminder_navigator.dart';
+import 'package:learning_assistant/ui/revise/revise_navigator.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -82,7 +83,7 @@ class MyHomePageState extends State<MyHomePage> {
 Future<Isar> openIsar() async {
   final dir = await getApplicationDocumentsDirectory();
   return await Isar.open(
-    [EventGroupSchema],
+    [EventGroupSchema, FlashCardGroupSchema],
     directory: dir.path,
   );
 }
