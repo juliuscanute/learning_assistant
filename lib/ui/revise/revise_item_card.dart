@@ -22,7 +22,8 @@ class ReviseItemCardState extends State<ReviseItemCard> {
     return Card(
       child: InkWell(
         onTap: () async {
-          //TODO: Handle navigate to train
+          Navigator.of(context)
+              .pushNamed('/train', arguments: widget.group.cards);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
