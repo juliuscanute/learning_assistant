@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-class TrainView extends StatefulWidget {
-  final List<String> textList;
+import 'package:learning_assistant/data/cards.dart';
 
-  TrainView({required this.textList});
+class TrainView extends StatefulWidget {
+  final FlashCardGroup group;
+
+  const TrainView({required this.group});
 
   @override
   TrainViewWidgetState createState() => TrainViewWidgetState();
@@ -31,19 +33,19 @@ class TrainViewWidgetState extends State<TrainView> {
     timeGap = 1;
     isStartEnabled = true;
     isFinishEnabled = false;
-    cardValues = widget.textList;
+    cardValues = widget.group.cards;
     _timeGapController.text = timeGap.toString();
     currentIndex = 0;
   }
 
   void _startAutoChange() {
-    if (widget.textList.isNotEmpty && autoChange) {
+    if (widget.group.cards.isNotEmpty && autoChange) {
       textChangeTimer = Timer.periodic(Duration(seconds: timeGap), (timer) {
         setState(() {
           if (randomOrder) {
             cardValues.shuffle();
           }
-          if (currentIndex < widget.textList.length) {
+          if (currentIndex < widget.group.cards.length) {
             currentText = cardValues[currentIndex];
             currentIndex++;
           } else {
@@ -59,7 +61,7 @@ class TrainViewWidgetState extends State<TrainView> {
       if (randomOrder) {
         cardValues.shuffle();
       }
-      if (currentIndex < widget.textList.length) {
+      if (currentIndex < widget.group.cards.length) {
         currentText = cardValues[currentIndex];
         currentIndex++;
       } else {
@@ -197,7 +199,7 @@ class TrainViewWidgetState extends State<TrainView> {
                         _stopAutoChange();
                       }
                       Navigator.of(context)
-                          .popAndPushNamed('/exam', arguments: cardValues);
+                          .popAndPushNamed('/exam', arguments: widget.group);
                     }
                   : null,
               child: const Text("Finish"),

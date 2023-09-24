@@ -1,89 +1,143 @@
 import 'package:flutter/material.dart';
+import 'package:learning_assistant/data/result_repository.dart';
+import 'package:learning_assistant/di/service_locator.dart';
 
 class ExamView extends StatefulWidget {
+  final resultRepository = ServiceLocator.instance.get<ResultRepository>();
   final List<String> actualAnswers;
+  final String title;
 
-  ExamView({required this.actualAnswers});
+  ExamView({required this.actualAnswers, required this.title});
 
   @override
   ExamViewWidgetState createState() => ExamViewWidgetState();
 }
 
 class ExamViewWidgetState extends State<ExamView> {
-  TextEditingController _textEditingController = TextEditingController();
-  List<FormattedEntry> formattedEntries = [];
+  List<String> formattedEntries = [];
+  bool validate = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeFormattedEntries();
+    formattedEntries =
+        List.generate(widget.actualAnswers.length, (index) => "");
   }
 
-  void _initializeFormattedEntries() {
-    formattedEntries = widget.actualAnswers.map((answer) {
-      return FormattedEntry(
-        text: answer,
-        color: Colors.green,
-        isValid: false,
-      );
-    }).toList();
-  }
-
-  void _validateAndHighlightEntries() {
-    List<String> userEntries = _textEditingController.text.split('\n');
+  void updateScore() {
+    int correct = 0;
+    int wrong = 0;
+    int missed = 0;
     for (int i = 0; i < widget.actualAnswers.length; i++) {
-      String answer = widget.actualAnswers[i];
-      bool isValid = userEntries.contains(answer);
-      formattedEntries[i] = FormattedEntry(
-        text: '${i + 1}) $answer',
-        color: isValid ? Colors.green : Colors.red,
-        isValid: isValid,
-      );
+      if (formattedEntries[i].trim() == widget.actualAnswers[i].trim()) {
+        correct++;
+      } else if (formattedEntries[i].isNotEmpty) {
+        wrong++;
+      } else {
+        missed++;
+      }
     }
-    setState(() {});
+    widget.resultRepository
+        .addResult(widget.title, correct, wrong, missed, DateTime.now());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          controller: _textEditingController,
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          textAlign: TextAlign.left,
-        ),
-        RichText(
-          text: TextSpan(
-            children: formattedEntries
-                .map((entry) => TextSpan(
-                      text: entry.text + '\n',
-                      style: TextStyle(
-                        color: entry.color,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Results"), // Change app bar title to "Train"
+      ),
+      body: Column(
+        children: widget.actualAnswers
+            .asMap()
+            .entries
+            .map((entry) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${entry.key})",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                        ),
                       ),
-                    ))
-                .toList(),
-          ),
+                      const SizedBox(
+                        width: 8.0,
+                      ),
+                      (!validate)
+                          ? Expanded(
+                              child: TextField(
+                                keyboardType: TextInputType.text,
+                                onChanged: (value) {
+                                  formattedEntries[entry.key] = value;
+                                },
+                              ),
+                            )
+                          : Expanded(
+                              child: (formattedEntries[entry.key].trim() ==
+                                      widget.actualAnswers[entry.key].trim())
+                                  ? Container(
+                                      color: Colors.green,
+                                      child: Text(
+                                        formattedEntries[entry.key],
+                                        style: const TextStyle(fontSize: 24),
+                                      ),
+                                    )
+                                  : Row(
+                                      children: [
+                                        formattedEntries[entry.key].isNotEmpty
+                                            ? Container(
+                                                color: Colors.red,
+                                                child: Text(
+                                                  formattedEntries[entry.key],
+                                                  style: const TextStyle(
+                                                      fontSize: 24),
+                                                ),
+                                              )
+                                            : Container(),
+                                        Container(
+                                          color: formattedEntries[entry.key]
+                                                  .isEmpty
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                          child: Text(
+                                            widget.actualAnswers[entry.key],
+                                            style:
+                                                const TextStyle(fontSize: 24),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                    ],
+                  ),
+                ))
+            .toList(),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  if (!validate) {
+                    updateScore();
+                  } else {
+                    Navigator.popAndPushNamed(context, '/results',
+                        arguments: widget.title);
+                  }
+                  validate = true;
+                });
+              },
+              child:
+                  !validate ? const Text("Submit") : const Text("View Results"),
+            )
+          ],
         ),
-        ElevatedButton(
-          onPressed: () {
-            _validateAndHighlightEntries();
-          },
-          child: Text("Submit"),
-        )
-      ],
+      ),
     );
   }
-}
-
-class FormattedEntry {
-  final String text;
-  final Color color;
-  final bool isValid;
-
-  FormattedEntry({
-    required this.text,
-    required this.color,
-    required this.isValid,
-  });
 }
