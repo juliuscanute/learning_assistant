@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/ui/revise/exam_view.dart';
 import 'package:learning_assistant/ui/revise/revise_add_cards.dart';
+import 'package:learning_assistant/ui/revise/revise_edit_cards.dart';
 import 'package:learning_assistant/ui/revise/revise_view.dart';
 import 'package:learning_assistant/ui/revise/score_card.dart';
 import 'package:learning_assistant/ui/revise/train_view.dart';
@@ -29,6 +30,11 @@ class ReviseNavigatorState extends State<ReviseNavigator> {
                   return ReviseScreen();
                 case '/add-revise':
                   return ReviseAddCards();
+                case '/edit-revise':
+                  final textList = settings.arguments as FlashCardGroup;
+                  return ReviseEditCards(
+                    group: textList,
+                  );
                 case '/train':
                   final textList = settings.arguments as FlashCardGroup;
                   return TrainView(group: textList);

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:learning_assistant/data/card_repository.dart';
 import 'package:learning_assistant/data/cards.dart';
-import 'package:learning_assistant/data/event_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 
 class ReviseItemCard extends StatefulWidget {
   final FlashCardGroup group;
-  final eventRepository = ServiceLocator.instance.get<EventRepository>();
+  final cardRepository = ServiceLocator.instance.get<CardsRepository>();
 
   ReviseItemCard({
     Key? key,
@@ -39,6 +39,21 @@ class ReviseItemCardState extends State<ReviseItemCard> {
                   )
                 ],
               ),
+            ),
+            ButtonBar(
+              children: [
+                IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed('/edit-revise', arguments: widget.group);
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      widget.cardRepository.deleteDeck(widget.group.id);
+                    }),
+              ],
             ),
           ],
         ),

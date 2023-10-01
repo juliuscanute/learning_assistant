@@ -17,6 +17,23 @@ class CardsRepository {
     });
   }
 
+  void deleteDeck(int id) async {
+    await isar.writeTxn(() async {
+      await isar.flashCardGroups.delete(id);
+      await getFlashGroup();
+    });
+  }
+
+  void updateDeck(int id, String title, List<String> cards) async {
+    await isar.writeTxn(() async {
+      FlashCardGroup group = (await isar.flashCardGroups.get(id))!;
+      group.title = title;
+      group.cards = cards;
+      await isar.flashCardGroups.put(group);
+      await getFlashGroup();
+    });
+  }
+
   Future<List<FlashCardGroup>> getFlashGroup() async {
     final group = await isar.flashCardGroups.where().findAll();
     _eventController.add(group);
