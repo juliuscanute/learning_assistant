@@ -107,7 +107,7 @@ class TrainViewWidgetState extends State<TrainView> {
                               if (currentText
                                   .isNotEmpty) // Conditionally include currentIndex
                                 TextSpan(
-                                  text: "${currentIndex + 1} ",
+                                  text: "$currentIndex ",
                                   style: TextStyle(
                                     color: Colors.yellowAccent,
                                     fontSize: 36,
