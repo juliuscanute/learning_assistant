@@ -95,14 +95,36 @@ class TrainViewWidgetState extends State<TrainView> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Container(
-                    // Wrap the FittedBox with a Container
-                    child: Text(
-                      currentText,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
+                    height: MediaQuery.of(context).size.height / 2,
+                    color: Colors.blue,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        // Wrap the FittedBox with a Container
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              if (currentText
+                                  .isNotEmpty) // Conditionally include currentIndex
+                                TextSpan(
+                                  text: "${currentIndex + 1} ",
+                                  style: TextStyle(
+                                    color: Colors.yellowAccent,
+                                    fontSize: 36,
+                                  ),
+                                ),
+                              TextSpan(
+                                text: currentText,
+                                style: TextStyle(
+                                  color: Colors
+                                      .red, // Change the color to your desired color
+                                  fontSize: 36,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      overflow: TextOverflow.visible,
                     ),
                   ),
                 ),
