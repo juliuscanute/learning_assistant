@@ -47,74 +47,76 @@ class ExamViewWidgetState extends State<ExamView> {
       appBar: AppBar(
         title: const Text("Results"), // Change app bar title to "Train"
       ),
-      body: Column(
-        children: widget.actualAnswers
-            .asMap()
-            .entries
-            .map((entry) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${entry.key + 1})",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24.0,
+      body: SingleChildScrollView(
+        child: Column(
+          children: widget.actualAnswers
+              .asMap()
+              .entries
+              .map((entry) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${entry.key + 1})",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24.0,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 8.0,
-                      ),
-                      (!validate)
-                          ? Expanded(
-                              child: TextField(
-                                keyboardType: TextInputType.text,
-                                onChanged: (value) {
-                                  formattedEntries[entry.key] = value;
-                                },
-                              ),
-                            )
-                          : Expanded(
-                              child: (formattedEntries[entry.key].trim() ==
-                                      widget.actualAnswers[entry.key].trim())
-                                  ? Container(
-                                      color: Colors.green,
-                                      child: Text(
-                                        formattedEntries[entry.key],
-                                        style: const TextStyle(fontSize: 24),
-                                      ),
-                                    )
-                                  : Row(
-                                      children: [
-                                        formattedEntries[entry.key].isNotEmpty
-                                            ? Container(
-                                                color: Colors.red,
-                                                child: Text(
-                                                  formattedEntries[entry.key],
-                                                  style: const TextStyle(
-                                                      fontSize: 24),
-                                                ),
-                                              )
-                                            : Container(),
-                                        Container(
-                                          color: formattedEntries[entry.key]
-                                                  .isEmpty
-                                              ? Colors.yellow
-                                              : Colors.green,
-                                          child: Text(
-                                            widget.actualAnswers[entry.key],
-                                            style:
-                                                const TextStyle(fontSize: 24),
-                                          ),
+                        const SizedBox(
+                          width: 8.0,
+                        ),
+                        (!validate)
+                            ? Expanded(
+                                child: TextField(
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    formattedEntries[entry.key] = value;
+                                  },
+                                ),
+                              )
+                            : Expanded(
+                                child: (formattedEntries[entry.key].trim() ==
+                                        widget.actualAnswers[entry.key].trim())
+                                    ? Container(
+                                        color: Colors.green,
+                                        child: Text(
+                                          formattedEntries[entry.key],
+                                          style: const TextStyle(fontSize: 24),
                                         ),
-                                      ],
-                                    )),
-                    ],
-                  ),
-                ))
-            .toList(),
+                                      )
+                                    : Row(
+                                        children: [
+                                          formattedEntries[entry.key].isNotEmpty
+                                              ? Container(
+                                                  color: Colors.red,
+                                                  child: Text(
+                                                    formattedEntries[entry.key],
+                                                    style: const TextStyle(
+                                                        fontSize: 24),
+                                                  ),
+                                                )
+                                              : Container(),
+                                          Container(
+                                            color: formattedEntries[entry.key]
+                                                    .isEmpty
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                            child: Text(
+                                              widget.actualAnswers[entry.key],
+                                              style:
+                                                  const TextStyle(fontSize: 24),
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                      ],
+                    ),
+                  ))
+              .toList(),
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
