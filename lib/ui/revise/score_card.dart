@@ -83,7 +83,7 @@ class ScoreCardWidget extends StatelessWidget {
           children: [
             const SizedBox(height: 8.0),
             Text(
-              'Date: ${DateFormat('MMM d, y').format(date)}',
+              'Date: ${DateFormat('MMM d, y - HH:mm:ss').format(date)}',
               style: const TextStyle(
                 fontSize: 14.0,
                 color: Colors.grey,
