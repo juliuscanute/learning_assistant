@@ -53,6 +53,13 @@ class ReviseItemCardState extends State<ReviseItemCard> {
                     onPressed: () {
                       widget.cardRepository.deleteDeck(widget.group.id);
                     }),
+                IconButton(
+                  icon: const Icon(Icons.visibility),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamed('/results', arguments: widget.group.title);
+                  },
+                )
               ],
             ),
           ],
