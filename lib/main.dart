@@ -4,9 +4,11 @@ import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/result.dart';
 import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/theme_notifier.dart';
 import 'package:learning_assistant/ui/event/reminder_navigator.dart';
 import 'package:learning_assistant/ui/revise/revise_navigator.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,13 +22,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Learning Assistant',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider(
+      create: (context) => ThemeNotifier(),
+      child: Builder(
+        builder: (context) {
+          final themeNotifier = Provider.of<ThemeNotifier>(context);
+          return MaterialApp(
+            title: 'Learning Assistant',
+            debugShowCheckedModeBanner: false,
+            theme: themeNotifier.getTheme(),
+            home: MyHomePage(),
+          );
+        },
       ),
-      home: MyHomePage(),
     );
   }
 }
