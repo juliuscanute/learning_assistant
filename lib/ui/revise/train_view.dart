@@ -300,24 +300,29 @@ class _FlipContainerState extends State<FlipContainer>
       height: MediaQuery.of(context).size.height / 2,
       color: Colors.blue,
       child: Center(
-        child: RichText(
-          text: TextSpan(children: [
-            if (text.isNotEmpty) // Conditionally include currentIndex
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(children: [
+              if (text.isNotEmpty) // Conditionally include currentIndex
+                TextSpan(
+                  text: "${widget.index}) ",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 36,
+                  ),
+                ),
               TextSpan(
-                text: "${widget.index} ",
+                text: text,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color:
+                      Colors.yellow, // Change the color to your desired color
                   fontSize: 36,
                 ),
               ),
-            TextSpan(
-              text: text,
-              style: const TextStyle(
-                color: Colors.yellow, // Change the color to your desired color
-                fontSize: 36,
-              ),
-            ),
-          ]),
+            ]),
+          ),
         ),
       ),
     );

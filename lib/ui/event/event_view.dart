@@ -83,17 +83,23 @@ class EventViewState extends State<EventView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    _selectDate(context);
-                  },
-                  child: const Text('View Calendar'),
+                Container(
+                  width: 150,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      _selectDate(context);
+                    },
+                    child: const Text('View Calendar'),
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/create-entry');
-                  },
-                  child: const Text('Add Entry'),
+                Container(
+                  width: 150,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/create-entry');
+                    },
+                    child: const Text('Add Entry'),
+                  ),
                 ),
               ],
             ),
