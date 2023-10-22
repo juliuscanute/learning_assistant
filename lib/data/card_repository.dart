@@ -9,9 +9,18 @@ class CardsRepository {
   final _eventController = StreamController<List<FlashCardGroup>>();
   Stream<List<FlashCardGroup>> get events => _eventController.stream;
 
-  void addDeck(String title, List<String> cards) async {
+  void addDeck(String title, List<CardEmbedded> cards) async {
     await isar.writeTxn(() async {
       final group = FlashCardGroup(title, cards);
+      await isar.flashCardGroups.put(group);
+      await getFlashGroup();
+    });
+  }
+
+  void addCard(Id id, CardEmbedded card) async {
+    await isar.writeTxn(() async {
+      final group = (await isar.flashCardGroups.get(id))!;
+      group.cards.add(card);
       await isar.flashCardGroups.put(group);
       await getFlashGroup();
     });
@@ -24,11 +33,22 @@ class CardsRepository {
     });
   }
 
-  void updateDeck(int id, String title, List<String> cards) async {
+  void updateDeck(int id, String title, List<CardEmbedded> cards) async {
     await isar.writeTxn(() async {
       FlashCardGroup group = (await isar.flashCardGroups.get(id))!;
       group.title = title;
       group.cards = cards;
+      await isar.flashCardGroups.put(group);
+      await getFlashGroup();
+    });
+  }
+
+  void updateCard(int id, String title, CardEmbedded card) async {
+    await isar.writeTxn(() async {
+      FlashCardGroup group = (await isar.flashCardGroups.get(id))!;
+      group.title = title;
+      final cards = group.cards;
+      cards[card.index] = card;
       await isar.flashCardGroups.put(group);
       await getFlashGroup();
     });

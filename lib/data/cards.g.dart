@@ -20,7 +20,8 @@ const FlashCardGroupSchema = CollectionSchema(
     r'cards': PropertySchema(
       id: 0,
       name: r'cards',
-      type: IsarType.stringList,
+      type: IsarType.objectList,
+      target: r'CardEmbedded',
     ),
     r'title': PropertySchema(
       id: 1,
@@ -35,7 +36,7 @@ const FlashCardGroupSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {},
-  embeddedSchemas: {},
+  embeddedSchemas: {r'CardEmbedded': CardEmbeddedSchema},
   getId: _flashCardGroupGetId,
   getLinks: _flashCardGroupGetLinks,
   attach: _flashCardGroupAttach,
@@ -50,9 +51,10 @@ int _flashCardGroupEstimateSize(
   var bytesCount = offsets.last;
   bytesCount += 3 + object.cards.length * 3;
   {
+    final offsets = allOffsets[CardEmbedded]!;
     for (var i = 0; i < object.cards.length; i++) {
       final value = object.cards[i];
-      bytesCount += value.length * 3;
+      bytesCount += CardEmbeddedSchema.estimateSize(value, offsets, allOffsets);
     }
   }
   bytesCount += 3 + object.title.length * 3;
@@ -65,7 +67,12 @@ void _flashCardGroupSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeStringList(offsets[0], object.cards);
+  writer.writeObjectList<CardEmbedded>(
+    offsets[0],
+    allOffsets,
+    CardEmbeddedSchema.serialize,
+    object.cards,
+  );
   writer.writeString(offsets[1], object.title);
 }
 
@@ -77,7 +84,13 @@ FlashCardGroup _flashCardGroupDeserialize(
 ) {
   final object = FlashCardGroup(
     reader.readString(offsets[1]),
-    reader.readStringList(offsets[0]) ?? [],
+    reader.readObjectList<CardEmbedded>(
+          offsets[0],
+          CardEmbeddedSchema.deserialize,
+          allOffsets,
+          CardEmbedded(),
+        ) ??
+        [],
   );
   object.id = id;
   return object;
@@ -91,7 +104,13 @@ P _flashCardGroupDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readObjectList<CardEmbedded>(
+            offset,
+            CardEmbeddedSchema.deserialize,
+            allOffsets,
+            CardEmbedded(),
+          ) ??
+          []) as P;
     case 1:
       return (reader.readString(offset)) as P;
     default:
@@ -195,142 +214,6 @@ extension FlashCardGroupQueryWhere
 
 extension FlashCardGroupQueryFilter
     on QueryBuilder<FlashCardGroup, FlashCardGroup, QFilterCondition> {
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'cards',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'cards',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'cards',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'cards',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'cards',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'cards',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'cards',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'cards',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'cards',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
-      cardsElementIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'cards',
-        value: '',
-      ));
-    });
-  }
-
   QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
       cardsLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
@@ -613,7 +496,14 @@ extension FlashCardGroupQueryFilter
 }
 
 extension FlashCardGroupQueryObject
-    on QueryBuilder<FlashCardGroup, FlashCardGroup, QFilterCondition> {}
+    on QueryBuilder<FlashCardGroup, FlashCardGroup, QFilterCondition> {
+  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
+      cardsElement(FilterQuery<CardEmbedded> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'cards');
+    });
+  }
+}
 
 extension FlashCardGroupQueryLinks
     on QueryBuilder<FlashCardGroup, FlashCardGroup, QFilterCondition> {}
@@ -662,12 +552,6 @@ extension FlashCardGroupQuerySortThenBy
 
 extension FlashCardGroupQueryWhereDistinct
     on QueryBuilder<FlashCardGroup, FlashCardGroup, QDistinct> {
-  QueryBuilder<FlashCardGroup, FlashCardGroup, QDistinct> distinctByCards() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'cards');
-    });
-  }
-
   QueryBuilder<FlashCardGroup, FlashCardGroup, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -684,7 +568,8 @@ extension FlashCardGroupQueryProperty
     });
   }
 
-  QueryBuilder<FlashCardGroup, List<String>, QQueryOperations> cardsProperty() {
+  QueryBuilder<FlashCardGroup, List<CardEmbedded>, QQueryOperations>
+      cardsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'cards');
     });
@@ -696,3 +581,417 @@ extension FlashCardGroupQueryProperty
     });
   }
 }
+
+// **************************************************************************
+// IsarEmbeddedGenerator
+// **************************************************************************
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const CardEmbeddedSchema = Schema(
+  name: r'CardEmbedded',
+  id: -6379739090888874357,
+  properties: {
+    r'back': PropertySchema(
+      id: 0,
+      name: r'back',
+      type: IsarType.string,
+    ),
+    r'front': PropertySchema(
+      id: 1,
+      name: r'front',
+      type: IsarType.string,
+    ),
+    r'index': PropertySchema(
+      id: 2,
+      name: r'index',
+      type: IsarType.long,
+    )
+  },
+  estimateSize: _cardEmbeddedEstimateSize,
+  serialize: _cardEmbeddedSerialize,
+  deserialize: _cardEmbeddedDeserialize,
+  deserializeProp: _cardEmbeddedDeserializeProp,
+);
+
+int _cardEmbeddedEstimateSize(
+  CardEmbedded object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.back.length * 3;
+  bytesCount += 3 + object.front.length * 3;
+  return bytesCount;
+}
+
+void _cardEmbeddedSerialize(
+  CardEmbedded object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeString(offsets[0], object.back);
+  writer.writeString(offsets[1], object.front);
+  writer.writeLong(offsets[2], object.index);
+}
+
+CardEmbedded _cardEmbeddedDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = CardEmbedded();
+  object.back = reader.readString(offsets[0]);
+  object.front = reader.readString(offsets[1]);
+  object.index = reader.readLong(offsets[2]);
+  return object;
+}
+
+P _cardEmbeddedDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension CardEmbeddedQueryFilter
+    on QueryBuilder<CardEmbedded, CardEmbedded, QFilterCondition> {
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> backEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'back',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      backGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'back',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> backLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'back',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> backBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'back',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      backStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'back',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> backEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'back',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> backContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'back',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> backMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'back',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      backIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'back',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      backIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'back',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> frontEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'front',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      frontGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'front',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> frontLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'front',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> frontBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'front',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      frontStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'front',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> frontEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'front',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> frontContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'front',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> frontMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'front',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      frontIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'front',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      frontIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'front',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> indexEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'index',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition>
+      indexGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'index',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> indexLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'index',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardEmbedded, CardEmbedded, QAfterFilterCondition> indexBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'index',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+}
+
+extension CardEmbeddedQueryObject
+    on QueryBuilder<CardEmbedded, CardEmbedded, QFilterCondition> {}

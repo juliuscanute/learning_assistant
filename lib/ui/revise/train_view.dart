@@ -14,7 +14,7 @@ class TrainView extends StatefulWidget {
 
 class TrainViewWidgetState extends State<TrainView> {
   final _timeGapController = TextEditingController();
-  late String currentText;
+  late CardEmbedded currentText;
   late bool autoChange;
   late bool randomOrder;
   late int timeGap;
@@ -22,12 +22,15 @@ class TrainViewWidgetState extends State<TrainView> {
   late Timer? textChangeTimer;
   late bool isStartEnabled;
   late bool isFinishEnabled;
-  late List<String> cardValues;
+  late List<CardEmbedded> cardValues;
 
   @override
   void initState() {
     super.initState();
-    currentText = "";
+    currentText = CardEmbedded()
+      ..front = ""
+      ..back = ""
+      ..index = -1;
     autoChange = true;
     randomOrder = false;
     timeGap = 1;
@@ -79,7 +82,8 @@ class TrainViewWidgetState extends State<TrainView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Train"), // Change app bar title to "Train"
+        title: Text(
+            "Train ${widget.group.title}"), // Change app bar title to "Train"
       ),
       body: SingleChildScrollView(
         // Make the body scrollable
@@ -89,45 +93,10 @@ class TrainViewWidgetState extends State<TrainView> {
               onTap: () {
                 _nextCard();
               },
-              child: Container(
-                height: MediaQuery.of(context).size.height / 2,
-                color: Colors.blue,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height / 2,
-                    color: Colors.blue,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        // Wrap the FittedBox with a Container
-                        child: RichText(
-                          text: TextSpan(
-                            children: [
-                              if (currentText
-                                  .isNotEmpty) // Conditionally include currentIndex
-                                TextSpan(
-                                  text: "$currentIndex ",
-                                  style: TextStyle(
-                                    color: Colors.yellowAccent,
-                                    fontSize: 36,
-                                  ),
-                                ),
-                              TextSpan(
-                                text: currentText,
-                                style: TextStyle(
-                                  color: Colors
-                                      .red, // Change the color to your desired color
-                                  fontSize: 36,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              child: FlipContainer(
+                index: currentIndex,
+                front: currentText.front,
+                back: currentText.back,
               ),
             ),
             Padding(
@@ -196,35 +165,41 @@ class TrainViewWidgetState extends State<TrainView> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
-              onPressed: isStartEnabled
-                  ? () {
-                      setState(() {
-                        isFinishEnabled = true;
-                        isStartEnabled = false;
-                      });
-                      if (autoChange) {
-                        _startAutoChange();
+            Container(
+              width: 150,
+              child: OutlinedButton(
+                onPressed: isStartEnabled
+                    ? () {
+                        setState(() {
+                          isFinishEnabled = true;
+                          isStartEnabled = false;
+                        });
+                        if (autoChange) {
+                          _startAutoChange();
+                        }
                       }
-                    }
-                  : null,
-              child: const Text("Start"),
+                    : null,
+                child: const Text("Start"),
+              ),
             ),
-            ElevatedButton(
-              onPressed: isFinishEnabled
-                  ? () {
-                      setState(() {
-                        isFinishEnabled = false;
-                        isStartEnabled = true;
-                      });
-                      if (autoChange) {
-                        _stopAutoChange();
+            Container(
+              width: 150,
+              child: ElevatedButton(
+                onPressed: isFinishEnabled
+                    ? () {
+                        setState(() {
+                          isFinishEnabled = false;
+                          isStartEnabled = true;
+                        });
+                        if (autoChange) {
+                          _stopAutoChange();
+                        }
+                        Navigator.of(context)
+                            .popAndPushNamed('/exam', arguments: widget.group);
                       }
-                      Navigator.of(context)
-                          .popAndPushNamed('/exam', arguments: widget.group);
-                    }
-                  : null,
-              child: const Text("Finish"),
+                    : null,
+                child: const Text("Finish"),
+              ),
             ),
           ],
         ),
@@ -233,16 +208,124 @@ class TrainViewWidgetState extends State<TrainView> {
   }
 }
 
-class NewScreen extends StatelessWidget {
+class FlipContainer extends StatefulWidget {
+  final int index;
+  final String front;
+  final String back;
+
+  const FlipContainer(
+      {required this.index, required this.front, required this.back});
+
+  @override
+  _FlipContainerState createState() => _FlipContainerState();
+}
+
+class _FlipContainerState extends State<FlipContainer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  bool isFront = true;
+
+  @override
+  void initState() {
+    super.initState();
+    isFront = true;
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant FlipContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setState(() {
+      isFront = true;
+      _controller.reverse();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("New Screen"),
-      ),
-      body: Center(
-        child: Text("This is the new screen."),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateY(3.14 * (_controller.value)),
+              child: _controller.value >= 0.5 ? Container() : child,
+            );
+          },
+          child: buildSide(widget.front),
+        ),
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateY(3.14 * (_controller.value - 1)),
+              child: _controller.value < 0.5 ? Container() : child,
+            );
+          },
+          child: buildSide(widget.back),
+        ),
+        if (widget.front.isNotEmpty && widget.back.isNotEmpty)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: IconButton(
+              icon: Icon(Icons.flip, color: Colors.white),
+              onPressed: () {
+                if (isFront) {
+                  _controller.forward();
+                } else {
+                  _controller.reverse();
+                }
+                isFront = !isFront;
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget buildSide(String text) {
+    return Container(
+      height: MediaQuery.of(context).size.height / 2,
+      color: Colors.blue,
+      child: Center(
+        child: RichText(
+          text: TextSpan(children: [
+            if (text.isNotEmpty) // Conditionally include currentIndex
+              TextSpan(
+                text: "${widget.index} ",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 36,
+                ),
+              ),
+            TextSpan(
+              text: text,
+              style: const TextStyle(
+                color: Colors.yellow, // Change the color to your desired color
+                fontSize: 36,
+              ),
+            ),
+          ]),
+        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

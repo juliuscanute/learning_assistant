@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 
 class ExamView extends StatefulWidget {
   final resultRepository = ServiceLocator.instance.get<ResultRepository>();
-  final List<String> actualAnswers;
+  final List<CardEmbedded> actualAnswers;
   final String title;
 
   ExamView({required this.actualAnswers, required this.title});
@@ -29,7 +30,7 @@ class ExamViewWidgetState extends State<ExamView> {
     int wrong = 0;
     int missed = 0;
     for (int i = 0; i < widget.actualAnswers.length; i++) {
-      if (formattedEntries[i].trim() == widget.actualAnswers[i].trim()) {
+      if (formattedEntries[i].trim() == widget.actualAnswers[i].front.trim()) {
         correct++;
       } else if (formattedEntries[i].isNotEmpty) {
         wrong++;
@@ -79,7 +80,8 @@ class ExamViewWidgetState extends State<ExamView> {
                               )
                             : Expanded(
                                 child: (formattedEntries[entry.key].trim() ==
-                                        widget.actualAnswers[entry.key].trim())
+                                        widget.actualAnswers[entry.key].front
+                                            .trim())
                                     ? Container(
                                         color: Colors.green,
                                         child: Text(
@@ -105,7 +107,8 @@ class ExamViewWidgetState extends State<ExamView> {
                                                 ? Colors.yellow
                                                 : Colors.green,
                                             child: Text(
-                                              widget.actualAnswers[entry.key],
+                                              widget.actualAnswers[entry.key]
+                                                  .front,
                                               style:
                                                   const TextStyle(fontSize: 24),
                                             ),
