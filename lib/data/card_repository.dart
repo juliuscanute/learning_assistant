@@ -17,15 +17,6 @@ class CardsRepository {
     });
   }
 
-  void addCard(Id id, CardEmbedded card) async {
-    await isar.writeTxn(() async {
-      final group = (await isar.flashCardGroups.get(id))!;
-      group.cards.add(card);
-      await isar.flashCardGroups.put(group);
-      await getFlashGroup();
-    });
-  }
-
   void deleteDeck(int id) async {
     await isar.writeTxn(() async {
       await isar.flashCardGroups.delete(id);
@@ -38,17 +29,6 @@ class CardsRepository {
       FlashCardGroup group = (await isar.flashCardGroups.get(id))!;
       group.title = title;
       group.cards = cards;
-      await isar.flashCardGroups.put(group);
-      await getFlashGroup();
-    });
-  }
-
-  void updateCard(int id, String title, CardEmbedded card) async {
-    await isar.writeTxn(() async {
-      FlashCardGroup group = (await isar.flashCardGroups.get(id))!;
-      group.title = title;
-      final cards = group.cards;
-      cards[card.index] = card;
       await isar.flashCardGroups.put(group);
       await getFlashGroup();
     });

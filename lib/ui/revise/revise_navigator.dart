@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/ui/revise/exam_view.dart';
-import 'package:learning_assistant/ui/revise/revise_add_cards.dart';
 import 'package:learning_assistant/ui/revise/revise_add_cards_new.dart';
 import 'package:learning_assistant/ui/revise/revise_edit_card_new.dart';
-import 'package:learning_assistant/ui/revise/revise_edit_cards.dart';
 import 'package:learning_assistant/ui/revise/revise_view.dart';
 import 'package:learning_assistant/ui/revise/score_card.dart';
 import 'package:learning_assistant/ui/revise/train_view.dart';
