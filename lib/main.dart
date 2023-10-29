@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/event.dart';
+import 'package:learning_assistant/data/initial_deck.dart';
 import 'package:learning_assistant/data/result.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/theme_notifier.dart';
@@ -9,11 +10,14 @@ import 'package:learning_assistant/ui/event/reminder_navigator.dart';
 import 'package:learning_assistant/ui/revise/revise_navigator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final isar = await openIsar();
   ServiceLocator.setup(isar);
+  final isFirst = await isFirstLaunch();
+  if (isFirst) LoadDeck().initialise();
   runApp(const MyApp());
 }
 
@@ -87,6 +91,13 @@ class MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+Future<bool> isFirstLaunch() async {
+  final prefs = await SharedPreferences.getInstance();
+  final isFirst = prefs.getBool('is_first_launch') ?? true;
+  await prefs.setBool('is_first_launch', false);
+  return isFirst;
 }
 
 Future<Isar> openIsar() async {
