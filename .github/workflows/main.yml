@@ -28,7 +28,15 @@ jobs:
       
     - name: Install Flutter
       uses: subosito/flutter-action@v1
-      
+
+    - name: Setup google-services.json
+      run: |
+        echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+
+    - name: Setup firebase_options.dart
+      run: |
+        echo "${{ secrets.FIREBASE_OPTIONS_DART }}" | base64 -d > lib/firebase_options.dart
+              
     - name: Build Android App Bundle
       run: flutter build appbundle --release --build-number ${{ github.run_number }}
       env:
