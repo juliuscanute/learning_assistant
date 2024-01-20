@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/cards.dart';
@@ -5,6 +6,7 @@ import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/initial_deck.dart';
 import 'package:learning_assistant/data/result.dart';
 import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/firebase_options.dart';
 import 'package:learning_assistant/theme_notifier.dart';
 import 'package:learning_assistant/ui/event/reminder_navigator.dart';
 import 'package:learning_assistant/ui/revise/revise_navigator.dart';
@@ -18,6 +20,9 @@ void main() async {
   ServiceLocator.setup(isar);
   final isFirst = await isFirstLaunch();
   if (isFirst) LoadDeck().initialise();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
