@@ -8,6 +8,7 @@ import 'package:learning_assistant/data/result.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/firebase_options.dart';
 import 'package:learning_assistant/theme_notifier.dart';
+import 'package:learning_assistant/ui/cloud/cloud_view_navigator.dart';
 import 'package:learning_assistant/ui/event/reminder_navigator.dart';
 import 'package:learning_assistant/ui/revise/revise_navigator.dart';
 import 'package:path_provider/path_provider.dart';
@@ -56,7 +57,7 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  Map<int, GlobalKey> navigatorKeys = {0: GlobalKey(), 1: GlobalKey()};
+  Map<int, GlobalKey> navigatorKeys = {0: GlobalKey(), 1: GlobalKey(), 2: GlobalKey()};
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +70,12 @@ class MyHomePageState extends State<MyHomePage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.school),
-              label: "Revise",
-            )
+              label: "Local",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.cloud),
+              label: "Cloud",
+            ),
           ],
           currentIndex: _selectedIndex,
           onTap: (int index) {
@@ -89,7 +94,8 @@ class MyHomePageState extends State<MyHomePage> {
             index: _selectedIndex,
             children: <Widget>[
               ReminderNavigator(navigatorKey: navigatorKeys[0]!),
-              ReviseNavigator(navigatorKey: navigatorKeys[1]!)
+              ReviseNavigator(navigatorKey: navigatorKeys[1]!),
+              CloudViewNavigator(navigatorKey: navigatorKeys[2]!),
             ],
           ),
         ),
