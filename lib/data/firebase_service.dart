@@ -23,13 +23,18 @@ class FirebaseService {
     }
     deckData['title'] = deckSnapshot.data()?['title'] ?? '';
 
-    // Fetch the cards
-    var cardsSnapshot = await deckRef.collection('cards').get();
+    // Fetch the cards ordered by 'position'
+    var cardsSnapshot =
+        await deckRef.collection('cards').orderBy('position').get();
     var cards = cardsSnapshot.docs
-        .map((doc) => {
+        .asMap() // Convert to map to access index
+        .map((index, doc) => MapEntry(index, {
               'front': doc.data()['front'] ?? '',
               'back': doc.data()['back'] ?? '',
-            })
+              'position':
+                  doc.data()['position'] ?? index, // Use map index as fallback
+            }))
+        .values // Convert back to iterable
         .toList();
     deckData['cards'] = cards;
 

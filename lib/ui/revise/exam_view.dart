@@ -84,37 +84,51 @@ class ExamViewWidgetState extends State<ExamView> {
                                             .trim())
                                     ? Container(
                                         color: Colors.green,
+                                        padding: const EdgeInsets.all(8),
                                         child: Text(
                                           formattedEntries[entry.key],
-                                          style: const TextStyle(fontSize: 24),
+                                          style: const TextStyle(fontSize: 20),
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       )
                                     : Row(
                                         children: [
-                                          formattedEntries[entry.key].isNotEmpty
-                                              ? Container(
-                                                  color: Colors.red,
-                                                  child: Text(
-                                                    formattedEntries[entry.key],
-                                                    style: const TextStyle(
-                                                        fontSize: 24),
-                                                  ),
-                                                )
-                                              : Container(),
-                                          Container(
-                                            color: formattedEntries[entry.key]
-                                                    .isEmpty
-                                                ? Colors.yellow
-                                                : Colors.green,
-                                            child: Text(
-                                              widget.actualAnswers[entry.key]
-                                                  .front,
-                                              style:
-                                                  const TextStyle(fontSize: 24),
+                                          Expanded(
+                                            child: Container(
+                                              color: Colors.red,
+                                              padding: const EdgeInsets.all(8),
+                                              child: Text(
+                                                formattedEntries[entry.key]
+                                                        .isNotEmpty
+                                                    ? formattedEntries[
+                                                        entry.key]
+                                                    : "Missed",
+                                                style: const TextStyle(
+                                                    fontSize: 20),
+                                                softWrap: true,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Container(
+                                              color: Colors.yellow,
+                                              padding: const EdgeInsets.all(8),
+                                              child: Text(
+                                                widget.actualAnswers[entry.key]
+                                                    .front,
+                                                style: const TextStyle(
+                                                    fontSize: 20),
+                                                softWrap: true,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
                                           ),
                                         ],
-                                      )),
+                                      ),
+                              ),
                       ],
                     ),
                   ))
