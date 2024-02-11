@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/di/service_locator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DecksScreen extends StatefulWidget {
   final firebaseService = ServiceLocator.instance.get<FirebaseService>();
@@ -12,26 +13,24 @@ class DecksScreen extends StatefulWidget {
 }
 
 class _DecksScreenState extends State<DecksScreen> {
-
   // Add this method to FirebaseService
-Future<FlashCardGroup> fetchCompleteDeck(String deckId) async {
-  // Fetch deck data
-  var deckData = await widget.firebaseService.getDeckData(deckId);
+  Future<FlashCardGroup> fetchCompleteDeck(String deckId) async {
+    // Fetch deck data
+    var deckData = await widget.firebaseService.getDeckData(deckId);
 
-  // Create FlashCardGroup
-  List<CardEmbedded> cards = List<CardEmbedded>.generate(
-    deckData['cards'].length,
-    (index) {
-      var card = deckData['cards'][index];
-      return CardEmbedded()
-        ..index = index // Use the current position in the list as index
-        ..front = card['front']
-        ..back = card['back'];
-    },
-  );
-  return FlashCardGroup(deckData['title'], cards);
-}
-
+    // Create FlashCardGroup
+    List<CardEmbedded> cards = List<CardEmbedded>.generate(
+      deckData['cards'].length,
+      (index) {
+        var card = deckData['cards'][index];
+        return CardEmbedded()
+          ..index = index // Use the current position in the list as index
+          ..front = card['front']
+          ..back = card['back'];
+      },
+    );
+    return FlashCardGroup(deckData['title'], cards);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +52,25 @@ Future<FlashCardGroup> fetchCompleteDeck(String deckId) async {
                 return Card(
                   margin: EdgeInsets.all(8.0),
                   child: ListTile(
-                    title: Text(deck['title'], style: TextStyle(fontSize: 18.0)),
+                    title:
+                        Text(deck['title'], style: TextStyle(fontSize: 18.0)),
+                    trailing: deck['videoUrl'] != null &&
+                            deck['videoUrl'].isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.play_circle_filled),
+                            onPressed: () async {
+                              var url = Uri.parse(deck['videoUrl']);
+                              if (!await launchUrl(url)) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('Could not launch $url')),
+                                );
+                              }
+                            },
+                          )
+                        : null, // Do not show the icon if there is no valid URL
                     onTap: () async {
+                      // Your existing onTap functionality
                       var group = await fetchCompleteDeck(deck['id']);
                       Navigator.pushNamed(context, '/train', arguments: group);
                     },

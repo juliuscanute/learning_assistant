@@ -8,7 +8,6 @@ class Deck {
   Deck({required this.id, required this.title, required this.cards});
 }
 
-
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -22,6 +21,8 @@ class FirebaseService {
       throw Exception("Deck not found");
     }
     deckData['title'] = deckSnapshot.data()?['title'] ?? '';
+    deckData['videoUrl'] =
+        deckSnapshot.data()?['videoUrl'] ?? ''; // Fetching videoUrl
 
     // Fetch the cards ordered by 'position'
     var cardsSnapshot =
@@ -41,11 +42,15 @@ class FirebaseService {
     return deckData;
   }
 
-
   Stream<List<Map<String, dynamic>>> getDecksStream() {
     return _firestore.collection('decks').snapshots().map((snapshot) {
       return snapshot.docs
-          .map((doc) => {'id': doc.id, 'title': doc.data()['title']})
+          .map((doc) => {
+                'id': doc.id,
+                'title': doc.data()['title'],
+                'videoUrl': doc.data()['videoUrl'] ??
+                    '' // Include videoUrl in the stream
+              })
           .toList();
     });
   }
