@@ -17,4 +17,5 @@ class CardEmbedded {
   late int index;
   late String front;
   late String back;
+  String? imageUrl;
 }

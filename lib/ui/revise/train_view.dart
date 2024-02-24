@@ -95,6 +95,7 @@ class TrainViewWidgetState extends State<TrainView> {
               },
               child: FlipContainer(
                 index: currentIndex,
+                imageUrl: currentText.imageUrl ?? "",
                 front: currentText.front,
                 back: currentText.back,
               ),
@@ -212,9 +213,13 @@ class FlipContainer extends StatefulWidget {
   final int index;
   final String front;
   final String back;
+  final String? imageUrl;
 
   const FlipContainer(
-      {required this.index, required this.front, required this.back});
+      {required this.index,
+      required this.front,
+      required this.back,
+      this.imageUrl = ""});
 
   @override
   _FlipContainerState createState() => _FlipContainerState();
@@ -260,7 +265,7 @@ class _FlipContainerState extends State<FlipContainer>
               child: _controller.value >= 0.5 ? Container() : child,
             );
           },
-          child: buildSide(widget.front),
+          child: buildSide(widget.front, isBack: true),
         ),
         AnimatedBuilder(
           animation: _controller,
@@ -273,7 +278,7 @@ class _FlipContainerState extends State<FlipContainer>
               child: _controller.value < 0.5 ? Container() : child,
             );
           },
-          child: buildSide(widget.back),
+          child: buildSide(widget.back, isBack: false),
         ),
         if (widget.front.isNotEmpty && widget.back.isNotEmpty)
           Positioned(
@@ -295,36 +300,75 @@ class _FlipContainerState extends State<FlipContainer>
     );
   }
 
-  Widget buildSide(String text) {
+  Widget buildSide(String text, {bool isBack = false}) {
     return Container(
       height: MediaQuery.of(context).size.height / 2,
       color: Colors.blue,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(children: [
-              if (text.isNotEmpty) // Conditionally include currentIndex
-                TextSpan(
-                  text: "${widget.index}) ",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                  ),
-                ),
-              TextSpan(
-                text: text,
-                style: const TextStyle(
-                  color:
-                      Colors.yellow, // Change the color to your desired color
-                  fontSize: 36,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  children: [
+                    if (text.isNotEmpty)
+                      TextSpan(
+                        text: "${widget.index}) ",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 36,
+                        ),
+                      ),
+                    TextSpan(
+                      text: text,
+                      style: TextStyle(
+                        color: Colors.yellow,
+                        fontSize: 36,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ]),
+              if (isBack &&
+                  widget.imageUrl?.isNotEmpty ==
+                      true) // Only add this button on the back side
+                ElevatedButton(
+                  onPressed: () {
+                    // Logic to show recall image
+                    // Assuming you have a method to show the image
+                    _showRecallImageDialog(widget.imageUrl ?? "");
+                  },
+                  child: Text('Recall'),
+                ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showRecallImageDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Recall Image"),
+          content: imageUrl.isNotEmpty
+              ? Image.network(imageUrl) // Display the image from the URL
+              : Text("No recall image available"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

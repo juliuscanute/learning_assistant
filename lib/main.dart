@@ -57,7 +57,11 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  Map<int, GlobalKey> navigatorKeys = {0: GlobalKey(), 1: GlobalKey(), 2: GlobalKey()};
+  Map<int, GlobalKey> navigatorKeys = {
+    0: GlobalKey(),
+    1: GlobalKey(),
+    2: GlobalKey()
+  };
 
   @override
   Widget build(BuildContext context) {

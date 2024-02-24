@@ -32,6 +32,7 @@ class FirebaseService {
         .map((index, doc) => MapEntry(index, {
               'front': doc.data()['front'] ?? '',
               'back': doc.data()['back'] ?? '',
+              'imageUrl': doc.data()['imageUrl'] ?? '',
               'position':
                   doc.data()['position'] ?? index, // Use map index as fallback
             }))

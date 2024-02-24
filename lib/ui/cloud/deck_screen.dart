@@ -26,7 +26,8 @@ class _DecksScreenState extends State<DecksScreen> {
         return CardEmbedded()
           ..index = index // Use the current position in the list as index
           ..front = card['front']
-          ..back = card['back'];
+          ..back = card['back']
+          ..imageUrl = card['imageUrl'];
       },
     );
     return FlashCardGroup(deckData['title'], cards);
