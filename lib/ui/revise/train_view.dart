@@ -50,6 +50,7 @@ class TrainViewWidgetState extends State<TrainView> {
           }
           if (currentIndex < widget.group.cards.length) {
             currentText = cardValues[currentIndex];
+            // Navigator.of(context, rootNavigator: true).pop('dialog');
             currentIndex++;
           } else {
             textChangeTimer?.cancel();
@@ -66,6 +67,7 @@ class TrainViewWidgetState extends State<TrainView> {
       }
       if (currentIndex < widget.group.cards.length) {
         currentText = cardValues[currentIndex];
+        // Navigator.of(context, rootNavigator: true).pop('dialog');
         currentIndex++;
       } else {
         isStartEnabled = false;
@@ -250,6 +252,12 @@ class _FlipContainerState extends State<FlipContainer>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
@@ -265,7 +273,7 @@ class _FlipContainerState extends State<FlipContainer>
               child: _controller.value >= 0.5 ? Container() : child,
             );
           },
-          child: buildSide(widget.front, isBack: true),
+          child: buildSide(widget.front),
         ),
         AnimatedBuilder(
           animation: _controller,
@@ -278,29 +286,46 @@ class _FlipContainerState extends State<FlipContainer>
               child: _controller.value < 0.5 ? Container() : child,
             );
           },
-          child: buildSide(widget.back, isBack: false),
+          child: buildSide(widget.back),
         ),
-        if (widget.front.isNotEmpty && widget.back.isNotEmpty)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              icon: Icon(Icons.flip, color: Colors.white),
-              onPressed: () {
-                if (isFront) {
-                  _controller.forward();
-                } else {
-                  _controller.reverse();
-                }
-                isFront = !isFront;
-              },
+        Positioned(
+          top: 10,
+          right: 10,
+          child: Container(
+            child: Row(
+              mainAxisSize: MainAxisSize
+                  .min, // Use min to prevent the Row from occupying more space than its children need.
+              children: [
+                // Recall Icon Button
+                if (widget.imageUrl?.isNotEmpty == true)
+                  IconButton(
+                    icon: Icon(Icons.visibility, color: Colors.white),
+                    onPressed: () {
+                      _showRecallImageDialog(widget.imageUrl ?? "");
+                    },
+                  ),
+                // Flip Icon Button
+                if (widget.front.isNotEmpty && widget.back.isNotEmpty)
+                  IconButton(
+                    icon: Icon(Icons.flip, color: Colors.white),
+                    onPressed: () {
+                      if (isFront) {
+                        _controller.forward();
+                      } else {
+                        _controller.reverse();
+                      }
+                      isFront = !isFront;
+                    },
+                  ),
+              ],
             ),
           ),
+        ),
       ],
     );
   }
 
-  Widget buildSide(String text, {bool isBack = false}) {
+  Widget buildSide(String text) {
     return Container(
       height: MediaQuery.of(context).size.height / 2,
       color: Colors.blue,
@@ -332,17 +357,6 @@ class _FlipContainerState extends State<FlipContainer>
                   ],
                 ),
               ),
-              if (isBack &&
-                  widget.imageUrl?.isNotEmpty ==
-                      true) // Only add this button on the back side
-                ElevatedButton(
-                  onPressed: () {
-                    // Logic to show recall image
-                    // Assuming you have a method to show the image
-                    _showRecallImageDialog(widget.imageUrl ?? "");
-                  },
-                  child: Text('Recall'),
-                ),
             ],
           ),
         ),
@@ -351,30 +365,51 @@ class _FlipContainerState extends State<FlipContainer>
   }
 
   void _showRecallImageDialog(String imageUrl) {
+    // isDialogShown = true;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Recall Image"),
+          title: const Text("Recall Image"),
           content: imageUrl.isNotEmpty
-              ? Image.network(imageUrl) // Display the image from the URL
-              : Text("No recall image available"),
+              ? Image.network(
+                  imageUrl,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                        child: Icon(
+                      Icons.error,
+                      color: Colors.red,
+                      size: 48,
+                    ));
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return Center(
+                        child: Container(
+                          height: 48,
+                          width: 48,
+                          child: const CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                  },
+                ) // Display the image from the URL
+              : const Text("No recall image available"),
           actions: <Widget>[
             TextButton(
               child: Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
+                // isDialogShown = false;
               },
             ),
           ],
-        );
+        ); //.then((value) {
+        //isDialogShown = false;
+        //})
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }
