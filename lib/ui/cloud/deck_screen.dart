@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class DecksScreen extends StatefulWidget {
   final firebaseService = ServiceLocator.instance.get<FirebaseService>();
+
   DecksScreen({Key? key}) : super(key: key);
 
   @override
@@ -13,35 +14,30 @@ class DecksScreen extends StatefulWidget {
 }
 
 class _DecksScreenState extends State<DecksScreen> {
-  // Add this method to FirebaseService
+  // Method to fetch complete deck
   Future<FlashCardGroup> fetchCompleteDeck(String deckId) async {
-    // Fetch deck data
     var deckData = await widget.firebaseService.getDeckData(deckId);
-
-    // Create FlashCardGroup
-    List<CardEmbedded> cards = List<CardEmbedded>.generate(
-      deckData['cards'].length,
-      (index) {
-        var card = deckData['cards'][index];
-        return CardEmbedded()
-          ..index = index // Use the current position in the list as index
-          ..front = card['front']
-          ..back = card['back']
-          ..imageUrl = card['imageUrl'];
-      },
-    );
+    List<CardEmbedded> cards =
+        List<CardEmbedded>.generate(deckData['cards'].length, (index) {
+      var card = deckData['cards'][index];
+      return CardEmbedded()
+        ..index = index
+        ..front = card['front']
+        ..back = card['back']
+        ..imageUrl = card['imageUrl'];
+    });
     return FlashCardGroup(deckData['title'], cards);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Decks')),
+      appBar: AppBar(title: const Text('Decks')),
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: widget.firebaseService.getDecksStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
@@ -51,36 +47,52 @@ class _DecksScreenState extends State<DecksScreen> {
               itemBuilder: (context, index) {
                 var deck = decks[index];
                 return Card(
-                  margin: EdgeInsets.all(8.0),
-                  child: ListTile(
-                    title:
-                        Text(deck['title'], style: TextStyle(fontSize: 18.0)),
-                    trailing: deck['videoUrl'] != null &&
-                            deck['videoUrl'].isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.play_circle_filled),
-                            onPressed: () async {
-                              var url = Uri.parse(deck['videoUrl']);
-                              if (!await launchUrl(url)) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('Could not launch $url')),
-                                );
-                              }
+                  margin: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // Use minimum space
+                    children: [
+                      ListTile(
+                        title: Text(deck['title'],
+                            style: const TextStyle(fontSize: 18.0)),
+                        onTap: () async {
+                          var group = await fetchCompleteDeck(deck['id']);
+                          Navigator.pushNamed(context, '/train',
+                              arguments: group);
+                        },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (deck['videoUrl'] != null &&
+                              deck['videoUrl'].isNotEmpty)
+                            IconButton(
+                              icon: const Icon(Icons.play_circle_filled),
+                              onPressed: () async {
+                                var url = Uri.parse(deck['videoUrl']);
+                                if (!await launchUrl(url)) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Could not launch $url')),
+                                  );
+                                }
+                              },
+                            ),
+                          IconButton(
+                            icon: const Icon(Icons.visibility),
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/results',
+                                  arguments: deck['title']);
                             },
-                          )
-                        : null, // Do not show the icon if there is no valid URL
-                    onTap: () async {
-                      // Your existing onTap functionality
-                      var group = await fetchCompleteDeck(deck['id']);
-                      Navigator.pushNamed(context, '/train', arguments: group);
-                    },
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 );
               },
             );
           } else {
-            return Center(child: Text('No decks found'));
+            return const Center(child: Text('No decks found'));
           }
         },
       ),
