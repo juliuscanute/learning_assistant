@@ -1,13 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Deck {
-  final String id;
-  final String title;
-  final List<Map<String, dynamic>> cards;
-
-  Deck({required this.id, required this.title, required this.cards});
-}
-
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
