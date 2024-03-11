@@ -15,6 +15,7 @@ class FirebaseService {
     deckData['title'] = deckSnapshot.data()?['title'] ?? '';
     deckData['videoUrl'] =
         deckSnapshot.data()?['videoUrl'] ?? ''; // Fetching videoUrl
+    deckData['tags'] = deckSnapshot.data()?['tags'] ?? []; // Adding tags
 
     // Fetch the cards ordered by 'position'
     var cardsSnapshot =
