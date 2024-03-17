@@ -20,29 +20,53 @@ class _CategoryScreenState extends State<CategoryScreen> {
         title: Text(widget.categoryList.last),
       ),
       body: Container(
-        child: ListView.builder(
-          itemCount: widget.decks.length,
-          itemBuilder: (context, index) {
-            final deck = widget.decks[index];
-            final updatedTags = List<String>.from(deck['tags']);
-            for (var category in widget.categoryList) {
-              updatedTags.remove(category);
+        child: () {
+          // Filter decks that belong to the current category/subcategories
+          final relevantDecks = widget.decks.where((deck) {
+            final tags = List<String>.from(deck['tags']);
+            // Check if the deck's categories match up to the current category list
+            return tags.take(widget.categoryList.length).toList().join(',') ==
+                widget.categoryList.join(',');
+          }).toList();
+
+          // Group remaining decks by their next subcategory
+          final Map<String, List<Map<String, dynamic>>> subcategoryGroups = {};
+          for (var deck in relevantDecks) {
+            final tags = List<String>.from(deck['tags']);
+            // Remove the current category path to find potential subcategories
+            final remainingTags =
+                tags.skip(widget.categoryList.length).toList();
+            if (remainingTags.isNotEmpty) {
+              final subcategory = remainingTags.first;
+              subcategoryGroups.putIfAbsent(subcategory, () => []).add(deck);
             }
-            if (updatedTags.isEmpty) {
-              return DeckCard(deck: deck);
-            } else {
-              // final matchingDecks = widget.decks.where((deck) {
-              //   return deck['tags'].isNotEmpty &&
-              //       deck['tags'][0].startsWith(category);
-              // }).toList();
-              return CategoryCard(
-                categoryList: widget.categoryList,
-                category: updatedTags[0],
-                deck: widget.decks,
-              );
-            }
-          },
-        ),
+          }
+
+          List<Widget> children = [];
+
+          // Create a CategoryCard for each subcategory group
+          subcategoryGroups.forEach((subcategory, decks) {
+            final updatedCategoryList = List<String>.from(widget.categoryList);
+            children.add(CategoryCard(
+              categoryList: updatedCategoryList,
+              category: subcategory,
+              deck: decks,
+            ));
+          });
+
+          // Add DeckCards for decks without further subcategories
+          final noSubcategoryDecks = relevantDecks.where((deck) {
+            final remainingTags = List<String>.from(deck['tags'])
+                .skip(widget.categoryList.length)
+                .toList();
+            return remainingTags.isEmpty;
+          }).toList();
+          noSubcategoryDecks.forEach((deck) {
+            children.add(DeckCard(deck: deck));
+          });
+
+          return ListView(children: children);
+        }(),
       ),
     );
   }
