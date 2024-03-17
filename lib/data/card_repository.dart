@@ -11,7 +11,7 @@ class CardsRepository {
 
   void addDeck(String title, List<CardEmbedded> cards) async {
     await isar.writeTxn(() async {
-      final group = FlashCardGroup(title, cards);
+      final group = FlashCardGroup(title, [], cards);
       await isar.flashCardGroups.put(group);
       await getFlashGroup();
     });

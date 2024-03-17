@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/cards.dart';
+import 'package:learning_assistant/ui/cloud/category_screen.dart';
 import 'package:learning_assistant/ui/cloud/deck_screen.dart';
 import 'package:learning_assistant/ui/revise/exam_view.dart';
 import 'package:learning_assistant/ui/revise/score_card.dart';
 import 'package:learning_assistant/ui/revise/train_view.dart';
-
-
 
 class CloudViewNavigator extends StatefulWidget {
   const CloudViewNavigator({required this.navigatorKey, super.key});
@@ -41,6 +40,14 @@ class CloudViewNavigatorState extends State<CloudViewNavigator> {
                   final title = settings.arguments as String;
                   return ScoreCardListScreen(
                     title: title,
+                  );
+                case '/category-screen':
+                  final args = settings.arguments as Map<String, dynamic>;
+                  final decks = args['decks'] as List<Map<String, dynamic>>;
+                  final categoryList = args['categoryList'] as List<String>;
+                  return CategoryScreen(
+                    decks: decks,
+                    categoryList: categoryList,
                   );
                 default:
                   return Container();

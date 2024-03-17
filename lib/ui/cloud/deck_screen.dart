@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/di/service_locator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:learning_assistant/ui/cloud/category_card.dart';
+import 'package:learning_assistant/ui/cloud/deck_card.dart';
 
 class DecksScreen extends StatefulWidget {
   final firebaseService = ServiceLocator.instance.get<FirebaseService>();
-
   DecksScreen({Key? key}) : super(key: key);
 
   @override
@@ -14,21 +13,6 @@ class DecksScreen extends StatefulWidget {
 }
 
 class _DecksScreenState extends State<DecksScreen> {
-  // Method to fetch complete deck
-  Future<FlashCardGroup> fetchCompleteDeck(String deckId) async {
-    var deckData = await widget.firebaseService.getDeckData(deckId);
-    List<CardEmbedded> cards =
-        List<CardEmbedded>.generate(deckData['cards'].length, (index) {
-      var card = deckData['cards'][index];
-      return CardEmbedded()
-        ..index = index
-        ..front = card['front']
-        ..back = card['back']
-        ..imageUrl = card['imageUrl'];
-    });
-    return FlashCardGroup(deckData['title'], cards);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,54 +25,25 @@ class _DecksScreenState extends State<DecksScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            var decks = snapshot.data!;
+            List<Map<String, dynamic>> decks = snapshot.data!;
+            decks.sort((a, b) => a['tags'].isEmpty ? 1 : -1);
             return ListView.builder(
               itemCount: decks.length,
               itemBuilder: (context, index) {
                 var deck = decks[index];
-                return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min, // Use minimum space
-                    children: [
-                      ListTile(
-                        title: Text(deck['title'],
-                            style: const TextStyle(fontSize: 18.0)),
-                        onTap: () async {
-                          var group = await fetchCompleteDeck(deck['id']);
-                          Navigator.pushNamed(context, '/train',
-                              arguments: group);
-                        },
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (deck['videoUrl'] != null &&
-                              deck['videoUrl'].isNotEmpty)
-                            IconButton(
-                              icon: const Icon(Icons.play_circle_filled),
-                              onPressed: () async {
-                                var url = Uri.parse(deck['videoUrl']);
-                                if (!await launchUrl(url)) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text('Could not launch $url')),
-                                  );
-                                }
-                              },
-                            ),
-                          IconButton(
-                            icon: const Icon(Icons.visibility),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/results',
-                                  arguments: deck['title']);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
+                if (deck['tags'].isNotEmpty) {
+                  final category = deck['tags'][0];
+                  final matchingDecks = decks.where((deck) {
+                    return deck['tags'].isNotEmpty &&
+                        deck['tags'][0].startsWith(category);
+                  }).toList();
+                  return CategoryCard(
+                      categoryList: [],
+                      category: category,
+                      deck: matchingDecks);
+                } else {
+                  return DeckCard(deck: deck);
+                }
               },
             );
           } else {

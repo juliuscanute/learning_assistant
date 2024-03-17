@@ -8,8 +8,9 @@ part 'cards.g.dart';
 class FlashCardGroup {
   Id id = Isar.autoIncrement;
   String title;
+  List<String> tags;
   List<CardEmbedded> cards;
-  FlashCardGroup(this.title, this.cards);
+  FlashCardGroup(this.title, this.tags, this.cards);
 }
 
 @embedded

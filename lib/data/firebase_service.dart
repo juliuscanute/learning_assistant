@@ -43,7 +43,8 @@ class FirebaseService {
                 'id': doc.id,
                 'title': doc.data()['title'],
                 'videoUrl': doc.data()['videoUrl'] ??
-                    '' // Include videoUrl in the stream
+                    '', // Include videoUrl in the stream
+                'tags': doc.data()['tags'] ?? [],
               })
           .toList();
     });
