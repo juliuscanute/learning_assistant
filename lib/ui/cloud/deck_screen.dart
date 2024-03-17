@@ -26,26 +26,33 @@ class _DecksScreenState extends State<DecksScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             List<Map<String, dynamic>> decks = snapshot.data!;
-            decks.sort((a, b) => a['tags'].isEmpty ? 1 : -1);
-            return ListView.builder(
-              itemCount: decks.length,
-              itemBuilder: (context, index) {
-                var deck = decks[index];
-                if (deck['tags'].isNotEmpty) {
-                  final category = deck['tags'][0];
-                  final matchingDecks = decks.where((deck) {
-                    return deck['tags'].isNotEmpty &&
-                        deck['tags'][0].startsWith(category);
-                  }).toList();
-                  return CategoryCard(
-                      categoryList: [],
-                      category: category,
-                      deck: matchingDecks);
-                } else {
-                  return DeckCard(deck: deck);
-                }
-              },
-            );
+            // Sort decks if necessary or perform other preprocessing
+
+            // Group decks by their first tag
+            var categories = <String, List<Map<String, dynamic>>>{};
+            for (var deck in decks) {
+              if (deck['tags'].isNotEmpty) {
+                String category = deck['tags'][0];
+                categories.putIfAbsent(category, () => []).add(deck);
+              }
+            }
+
+            List<Widget> children = [];
+
+            // For categories with decks, create a CategoryCard
+            categories.forEach((category, decksInCategory) {
+              children.add(CategoryCard(
+                  categoryList: [], // Assuming you have logic to populate this
+                  category: category,
+                  deck: decksInCategory));
+            });
+
+            // Add DeckCards for decks without a category directly to the list
+            decks.where((deck) => deck['tags'].isEmpty).forEach((deck) {
+              children.add(DeckCard(deck: deck));
+            });
+
+            return ListView(children: children);
           } else {
             return const Center(child: Text('No decks found'));
           }
