@@ -16,6 +16,8 @@ class FirebaseService {
     deckData['videoUrl'] =
         deckSnapshot.data()?['videoUrl'] ?? ''; // Fetching videoUrl
     deckData['tags'] = deckSnapshot.data()?['tags'] ?? []; // Adding tags
+    deckData['mapUrl'] =
+        deckSnapshot.data()?['mapUrl'] ?? ''; // Fetching mapUrl
 
     // Fetch the cards ordered by 'position'
     var cardsSnapshot =
@@ -44,6 +46,7 @@ class FirebaseService {
                 'title': doc.data()['title'],
                 'videoUrl': doc.data()['videoUrl'] ??
                     '', // Include videoUrl in the stream
+                'mapUrl': doc.data()['mapUrl'] ?? '',
                 'tags': doc.data()['tags'] ?? [],
               })
           .toList();

@@ -39,6 +39,13 @@ class DeckCard extends StatelessWidget {
                     }
                   },
                 ),
+              if (deck['mapUrl'] != null && deck['mapUrl'].isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.map),
+                  onPressed: () async {
+                    _showDialog(context, deck['mapUrl']);
+                  },
+                ),
               IconButton(
                 icon: const Icon(Icons.visibility),
                 onPressed: () {
@@ -50,6 +57,31 @@ class DeckCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: InteractiveViewer(
+            panEnabled: true,
+            boundaryMargin: const EdgeInsets.all(20.0),
+            minScale: 0.5,
+            maxScale: 4,
+            child: Image.network(imageUrl),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
