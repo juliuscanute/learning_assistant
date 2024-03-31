@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/ui/cloud/category_card.dart';
 import 'package:learning_assistant/ui/cloud/deck_card.dart';
@@ -30,7 +32,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
           }).toList();
 
           // Group remaining decks by their next subcategory
-          final Map<String, List<Map<String, dynamic>>> subcategoryGroups = {};
+          final subcategoryGroups =
+              SplayTreeMap<String, List<Map<String, dynamic>>>();
           for (var deck in relevantDecks) {
             final tags = List<String>.from(deck['tags']);
             // Remove the current category path to find potential subcategories

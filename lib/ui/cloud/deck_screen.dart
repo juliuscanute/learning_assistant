@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/di/service_locator.dart';
@@ -27,9 +29,10 @@ class _DecksScreenState extends State<DecksScreen> {
           } else if (snapshot.hasData) {
             List<Map<String, dynamic>> decks = snapshot.data!;
             // Sort decks if necessary or perform other preprocessing
+            decks.sort((a, b) => a['title'].compareTo(b['title']));
 
             // Group decks by their first tag
-            var categories = <String, List<Map<String, dynamic>>>{};
+            var categories = SplayTreeMap<String, List<Map<String, dynamic>>>();
             for (var deck in decks) {
               if (deck['tags'].isNotEmpty) {
                 String category = deck['tags'][0];
