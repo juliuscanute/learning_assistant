@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/ext/string_ext.dart';
 
 class ExamView extends StatefulWidget {
   final resultRepository = ServiceLocator.instance.get<ResultRepository>();
@@ -69,66 +70,7 @@ class ExamViewWidgetState extends State<ExamView> {
                         const SizedBox(
                           width: 8.0,
                         ),
-                        (!validate)
-                            ? Expanded(
-                                child: TextField(
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (value) {
-                                    formattedEntries[entry.key] = value;
-                                  },
-                                ),
-                              )
-                            : Expanded(
-                                child: (formattedEntries[entry.key].trim() ==
-                                        widget.actualAnswers[entry.key].front
-                                            .trim())
-                                    ? Container(
-                                        color: Colors.green,
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          formattedEntries[entry.key],
-                                          style: const TextStyle(fontSize: 20),
-                                          softWrap: true,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      )
-                                    : Row(
-                                        children: [
-                                          Expanded(
-                                            child: Container(
-                                              color: Colors.red,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                formattedEntries[entry.key]
-                                                        .isNotEmpty
-                                                    ? formattedEntries[
-                                                        entry.key]
-                                                    : "Missed",
-                                                style: const TextStyle(
-                                                    fontSize: 20),
-                                                softWrap: true,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Container(
-                                              color: Colors.yellow,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                widget.actualAnswers[entry.key]
-                                                    .front,
-                                                style: const TextStyle(
-                                                    fontSize: 20),
-                                                softWrap: true,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                              ),
+                        _buildAnswerWidget(entry.key),
                       ],
                     ),
                   ))
@@ -155,6 +97,90 @@ class ExamViewWidgetState extends State<ExamView> {
                   !validate ? const Text("Submit") : const Text("View Results"),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnswerWidget(int key) {
+    if (!validate) {
+      return _buildTextField(key);
+    } else {
+      return _buildAnswerValidation(key);
+    }
+  }
+
+  Widget _buildTextField(int key) {
+    return Expanded(
+      child: TextField(
+        keyboardType: TextInputType.text,
+        onChanged: (value) {
+          formattedEntries[key] = value;
+        },
+      ),
+    );
+  }
+
+  Widget _buildAnswerValidation(int key) {
+    if (formattedEntries[key]
+        .trim()
+        .isSimilar(widget.actualAnswers[key].front.trim())) {
+      return _buildCorrectAnswer(key);
+    } else {
+      return _buildIncorrectAnswer(key);
+    }
+  }
+
+  Widget _buildCorrectAnswer(int key) {
+    return Expanded(
+      child: Container(
+        color: Colors.green,
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          formattedEntries[key],
+          style: const TextStyle(fontSize: 20),
+          softWrap: true,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIncorrectAnswer(int key) {
+    return Expanded(
+      child: Row(
+        children: [
+          Expanded(child: _buildUserAnswer(key)),
+          const SizedBox(width: 8),
+          Expanded(child: _buildActualAnswer(key)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserAnswer(int key) {
+    return Expanded(
+      child: Container(
+        color: Colors.red,
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          formattedEntries[key].isNotEmpty ? formattedEntries[key] : "Missed",
+          style: const TextStyle(fontSize: 20),
+          softWrap: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActualAnswer(int key) {
+    return Expanded(
+      child: Container(
+        color: Colors.yellow,
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          widget.actualAnswers[key].front,
+          style: const TextStyle(fontSize: 20),
+          softWrap: true,
         ),
       ),
     );

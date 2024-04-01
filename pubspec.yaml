@@ -49,6 +49,7 @@ dependencies:
   firebase_database: ^10.3.4
   cloud_firestore: ^4.14.0
   url_launcher: ^6.2.4
+  string_similarity: ^2.0.0
 
 dev_dependencies:
   flutter_test:
