@@ -47,6 +47,7 @@ class ExamViewWidgetState extends State<ExamView> {
     }
     widget.resultRepository
         .addResult(widget.title, correct, wrong, missed, DateTime.now());
+    validate = true;
   }
 
   @override
@@ -96,7 +97,6 @@ class ExamViewWidgetState extends State<ExamView> {
                     Navigator.popAndPushNamed(context, '/results',
                         arguments: widget.title);
                   }
-                  validate = true;
                 });
               },
               child:
@@ -156,38 +156,36 @@ class ExamViewWidgetState extends State<ExamView> {
     return Expanded(
       child: Row(
         children: [
-          Expanded(child: _buildUserAnswer(key)),
+          _buildUserAnswer(key), // Remove the Expanded wrapper here
           const SizedBox(width: 8),
-          Expanded(child: _buildActualAnswer(key)),
+          _buildActualAnswer(key), // And here
         ],
       ),
     );
   }
 
   Widget _buildUserAnswer(int key) {
-    return Expanded(
-      child: Container(
-        color: Colors.red,
-        padding: const EdgeInsets.all(8),
-        child: Text(
-          formattedEntries[key].isNotEmpty ? formattedEntries[key] : "Missed",
-          style: const TextStyle(fontSize: 20),
-          softWrap: true,
-        ),
+    // Removed the outer Expanded widget
+    return Container(
+      color: Colors.red,
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        formattedEntries[key].isNotEmpty ? formattedEntries[key] : "Missed",
+        style: const TextStyle(fontSize: 20),
+        softWrap: true,
       ),
     );
   }
 
   Widget _buildActualAnswer(int key) {
-    return Expanded(
-      child: Container(
-        color: Colors.yellow,
-        padding: const EdgeInsets.all(8),
-        child: Text(
-          widget.actualAnswers[key].front,
-          style: const TextStyle(fontSize: 20),
-          softWrap: true,
-        ),
+    // Removed the outer Expanded widget
+    return Container(
+      color: Colors.yellow,
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        widget.actualAnswers[key].front,
+        style: const TextStyle(fontSize: 20),
+        softWrap: true,
       ),
     );
   }

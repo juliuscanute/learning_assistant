@@ -6,7 +6,10 @@ extension StringExtension on String {
     return replaceAll(RegExp('[^A-Za-z0-9 ]'), '');
   }
 
-  bool isSimilar(String other) {
+  bool isSimilar(String other, bool exacctMatch) {
+    if (exacctMatch) {
+      return this == other;
+    }
     final thisString = removeSpecialSymbols().toLowerCase();
     final otherString = other.removeSpecialSymbols().toLowerCase();
     double similarityScore =

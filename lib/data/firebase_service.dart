@@ -18,6 +18,8 @@ class FirebaseService {
     deckData['tags'] = deckSnapshot.data()?['tags'] ?? []; // Adding tags
     deckData['mapUrl'] =
         deckSnapshot.data()?['mapUrl'] ?? ''; // Fetching mapUrl
+    deckData['exactMatch'] =
+        deckSnapshot.data()?['exactMatch'] ?? false; // Adding exactMatch
 
     // Fetch the cards ordered by 'position'
     var cardsSnapshot =
