@@ -3,6 +3,7 @@ import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/event_repository.dart';
 import 'package:intl/intl.dart';
 import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/utils/notification.dart';
 
 class AddEventView extends StatefulWidget {
   final eventRepository = ServiceLocator.instance.get<EventRepository>();
@@ -164,26 +165,31 @@ class AddEventViewState extends State<AddEventView> {
       List<Event> events = [];
       if (isFirstDayChecked) {
         final firstDayEvent = createEvent(const Duration(days: 1));
+        scheduleNotification(firstDayEvent.date, _description);
         events.add(firstDayEvent);
       }
 
       if (isThirdDayChecked) {
         final thirdDayEvent = createEvent(const Duration(days: 3));
+        scheduleNotification(thirdDayEvent.date, _description);
         events.add(thirdDayEvent);
       }
 
       if (isSeventhDayChecked) {
         final seventhDayEvent = createEvent(const Duration(days: 7));
+        scheduleNotification(seventhDayEvent.date, _description);
         events.add(seventhDayEvent);
       }
 
       if (isFifteenthDayChecked) {
         final fifteenthDayEvent = createEvent(const Duration(days: 15));
+        scheduleNotification(fifteenthDayEvent.date, _description);
         events.add(fifteenthDayEvent);
       }
 
       if (isThirtythDayChecked) {
         final thirtythDayEvent = createEvent(const Duration(days: 30));
+        scheduleNotification(thirtythDayEvent.date, _description);
         events.add(thirtythDayEvent);
       }
 
