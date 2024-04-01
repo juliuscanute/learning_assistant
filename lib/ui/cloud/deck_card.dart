@@ -97,6 +97,7 @@ class DeckCard extends StatelessWidget {
         ..back = card['back']
         ..imageUrl = card['imageUrl'];
     });
-    return FlashCardGroup(deckData['title'], [], cards);
+    return FlashCardGroup(deckData['title'], [], cards)
+      ..exactMatch = deckData['exactMatch'] ?? true;
   }
 }

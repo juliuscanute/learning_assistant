@@ -43,6 +43,7 @@ class ReviseNavigatorState extends State<ReviseNavigator> {
                   return ExamView(
                     actualAnswers: textList.cards,
                     title: textList.title,
+                    exactMatch: textList.exactMatch,
                   );
                 case '/results':
                   final title = settings.arguments as String;

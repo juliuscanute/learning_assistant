@@ -8,8 +8,12 @@ class ExamView extends StatefulWidget {
   final resultRepository = ServiceLocator.instance.get<ResultRepository>();
   final List<CardEmbedded> actualAnswers;
   final String title;
+  final bool exactMatch;
 
-  ExamView({required this.actualAnswers, required this.title});
+  ExamView(
+      {required this.actualAnswers,
+      required this.title,
+      required this.exactMatch});
 
   @override
   ExamViewWidgetState createState() => ExamViewWidgetState();
@@ -31,7 +35,9 @@ class ExamViewWidgetState extends State<ExamView> {
     int wrong = 0;
     int missed = 0;
     for (int i = 0; i < widget.actualAnswers.length; i++) {
-      if (formattedEntries[i].trim() == widget.actualAnswers[i].front.trim()) {
+      if (formattedEntries[i]
+          .trim()
+          .isSimilar(widget.actualAnswers[i].front.trim(), widget.exactMatch)) {
         correct++;
       } else if (formattedEntries[i].isNotEmpty) {
         wrong++;
@@ -124,7 +130,7 @@ class ExamViewWidgetState extends State<ExamView> {
   Widget _buildAnswerValidation(int key) {
     if (formattedEntries[key]
         .trim()
-        .isSimilar(widget.actualAnswers[key].front.trim())) {
+        .isSimilar(widget.actualAnswers[key].front.trim(), widget.exactMatch)) {
       return _buildCorrectAnswer(key);
     } else {
       return _buildIncorrectAnswer(key);

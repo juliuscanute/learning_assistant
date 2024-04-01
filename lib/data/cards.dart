@@ -10,6 +10,7 @@ class FlashCardGroup {
   String title;
   List<String> tags;
   List<CardEmbedded> cards;
+  bool exactMatch = true;
   FlashCardGroup(this.title, this.tags, this.cards);
 }
 
