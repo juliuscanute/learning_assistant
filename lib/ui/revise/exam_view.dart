@@ -3,6 +3,7 @@ import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/ext/string_ext.dart';
+import 'package:stopwordies/stopwordies.dart';
 
 class ExamView extends StatefulWidget {
   final resultRepository = ServiceLocator.instance.get<ResultRepository>();
@@ -89,7 +90,7 @@ class ExamViewWidgetState extends State<ExamView> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   if (!validate) {
                     updateScore();
@@ -154,11 +155,23 @@ class ExamViewWidgetState extends State<ExamView> {
 
   Widget _buildIncorrectAnswer(int key) {
     return Expanded(
+      // Wrap the entire Row with Expanded if it's not the only child of its parent
       child: Row(
+        mainAxisSize: MainAxisSize.max,
         children: [
-          _buildUserAnswer(key), // Remove the Expanded wrapper here
+          Expanded(
+            // Reintroduce Expanded around _buildUserAnswer for flexibility
+            flex: 2,
+            // Reintroduce Expanded around _buildUserAnswer for flexibility
+            child: _buildUserAnswer(key), // Adjust flex factor as needed
+          ),
           const SizedBox(width: 8),
-          _buildActualAnswer(key), // And here
+          Expanded(
+            // Use Expanded around _buildActualAnswer to prevent overflow
+            flex: 3,
+            // Use Expanded around _buildActualAnswer to prevent overflow
+            child: _buildActualAnswer(key), // Adjust flex factor as needed
+          ),
         ],
       ),
     );
@@ -182,11 +195,8 @@ class ExamViewWidgetState extends State<ExamView> {
     return Container(
       color: Colors.yellow,
       padding: const EdgeInsets.all(8),
-      child: Text(
-        widget.actualAnswers[key].front,
-        style: const TextStyle(fontSize: 20),
-        softWrap: true,
-      ),
+      child: Text(widget.actualAnswers[key].front,
+          style: const TextStyle(fontSize: 20), softWrap: true),
     );
   }
 }

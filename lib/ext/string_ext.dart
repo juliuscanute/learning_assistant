@@ -1,19 +1,207 @@
-import 'package:string_similarity/string_similarity.dart';
+import 'package:stemmer/stemmer.dart';
+
+List<String> stopWords = [
+  'a',
+  'about',
+  'above',
+  'after',
+  'again',
+  'against',
+  'all',
+  'am',
+  'an',
+  'and',
+  'any',
+  'are',
+  "aren't",
+  'as',
+  'at',
+  'be',
+  'because',
+  'been',
+  'before',
+  'being',
+  'below',
+  'between',
+  'both',
+  'but',
+  'by',
+  'can',
+  "can't",
+  'cannot',
+  'could',
+  "couldn't",
+  'did',
+  "didn't",
+  'do',
+  'does',
+  "doesn't",
+  'doing',
+  "don't",
+  'down',
+  'during',
+  'each',
+  'few',
+  'for',
+  'from',
+  'further',
+  'had',
+  "hadn't",
+  'has',
+  "hasn't",
+  'have',
+  "haven't",
+  'having',
+  'he',
+  "he'd",
+  "he'll",
+  "he's",
+  'her',
+  'here',
+  "here's",
+  'hers',
+  'herself',
+  'him',
+  'himself',
+  'his',
+  'how',
+  "how's",
+  'i',
+  "i'd",
+  "i'll",
+  "i'm",
+  "i've",
+  'if',
+  'in',
+  'into',
+  'is',
+  "isn't",
+  'it',
+  "it's",
+  'its',
+  'itself',
+  'let\'s',
+  'me',
+  'most',
+  "mustn't",
+  'my',
+  'myself',
+  'no',
+  'nor',
+  'not',
+  'of',
+  'off',
+  'on',
+  'once',
+  'only',
+  'or',
+  'other',
+  'ought',
+  'our',
+  'ours',
+  'ourselves',
+  'out',
+  'over',
+  'own',
+  'same',
+  "shan't",
+  'she',
+  "she'd",
+  "she'll",
+  "she's",
+  'should',
+  "shouldn't",
+  'so',
+  'some',
+  'such',
+  'than',
+  'that',
+  "that's",
+  'the',
+  'their',
+  'theirs',
+  'them',
+  'themselves',
+  'then',
+  'there',
+  "there's",
+  'these',
+  'they',
+  "they'd",
+  "they'll",
+  "they're",
+  "they've",
+  'this',
+  'those',
+  'through',
+  'to',
+  'too',
+  'under',
+  'until',
+  'up',
+  'very',
+  'was',
+  "wasn't",
+  'we',
+  "we'd",
+  "we'll",
+  "we're",
+  "we've",
+  'were',
+  "weren't",
+  'what',
+  "what's",
+  'when',
+  "when's",
+  'where',
+  "where's",
+  'which',
+  'while',
+  'who',
+  "who's",
+  'whom',
+  'why',
+  "why's",
+  'with',
+  "won't",
+  'would',
+  "wouldn't",
+  'you',
+  "you'd",
+  "you'll",
+  "you're",
+  "you've",
+  'your',
+  'yours',
+  'yourself',
+  'yourselves'
+];
 
 extension StringExtension on String {
-  String removeSpecialSymbols() {
-    // This regular expression removes anything that's not a letter, number, or space
-    return replaceAll(RegExp('[^A-Za-z0-9 ]'), '');
-  }
-
-  bool isSimilar(String other, bool exacctMatch) {
-    if (exacctMatch) {
-      return this == other;
+  bool isSimilar(String string1, bool isExactMatch) {
+    if (isExactMatch) {
+      return this == string1;
     }
-    final thisString = removeSpecialSymbols().toLowerCase();
-    final otherString = other.removeSpecialSymbols().toLowerCase();
-    double similarityScore =
-        StringSimilarity.compareTwoStrings(thisString, otherString);
-    return similarityScore > 0.75;
+    string1 = string1.toLowerCase();
+    var string2 = toLowerCase();
+
+    string1 = RegExp(r"[^a-zA-Z0-9_]").allMatches(string1).fold(
+        string1, (result, match) => result.replaceAll(match.group(0)!, ""));
+    string2 = RegExp(r"[^a-zA-Z0-9_]").allMatches(string2).fold(
+        string2, (result, match) => result.replaceAll(match.group(0)!, ""));
+
+    List<String> words1 =
+        string1.split(' ').map((word) => word.trim()).toList();
+    List<String> words2 =
+        string2.split(' ').map((word) => word.trim()).toList();
+
+    words1 = words1.where((word) => !stopWords.contains(word)).toList();
+    words2 = words2.where((word) => !stopWords.contains(word)).toList();
+
+    PorterStemmer stemmer = PorterStemmer();
+    words1 = words1.map((word) => stemmer.stem(word)).toList();
+    words2 = words2.map((word) => stemmer.stem(word)).toList();
+
+    return words1.join() == words2.join();
   }
 }
