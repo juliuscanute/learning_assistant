@@ -41,7 +41,11 @@ class FirebaseService {
   }
 
   Stream<List<Map<String, dynamic>>> getDecksStream() {
-    return _firestore.collection('decks').snapshots().map((snapshot) {
+    return _firestore
+        .collection('decks')
+        .where('isPublic', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
       return snapshot.docs
           .map((doc) => {
                 'id': doc.id,

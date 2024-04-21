@@ -3,7 +3,6 @@ import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/ext/string_ext.dart';
-import 'package:stopwordies/stopwordies.dart';
 
 class ExamView extends StatefulWidget {
   final resultRepository = ServiceLocator.instance.get<ResultRepository>();
