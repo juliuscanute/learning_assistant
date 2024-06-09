@@ -41,9 +41,7 @@ class ReviseNavigatorState extends State<ReviseNavigator> {
                 case '/exam':
                   final textList = settings.arguments as FlashCardGroup;
                   return ExamView(
-                    actualAnswers: textList.cards,
-                    title: textList.title,
-                    exactMatch: textList.exactMatch,
+                    flashCardGroup: textList,
                   );
                 case '/results':
                   final title = settings.arguments as String;

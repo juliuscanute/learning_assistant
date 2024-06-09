@@ -6,14 +6,9 @@ import 'package:learning_assistant/ext/string_ext.dart';
 
 class ExamView extends StatefulWidget {
   final resultRepository = ServiceLocator.instance.get<ResultRepository>();
-  final List<CardEmbedded> actualAnswers;
-  final String title;
-  final bool exactMatch;
+  final FlashCardGroup flashCardGroup;
 
-  ExamView(
-      {required this.actualAnswers,
-      required this.title,
-      required this.exactMatch});
+  ExamView({required this.flashCardGroup});
 
   @override
   ExamViewWidgetState createState() => ExamViewWidgetState();
@@ -27,17 +22,17 @@ class ExamViewWidgetState extends State<ExamView> {
   void initState() {
     super.initState();
     formattedEntries =
-        List.generate(widget.actualAnswers.length, (index) => "");
+        List.generate(widget.flashCardGroup.cards.length, (index) => "");
   }
 
   void updateScore() {
     int correct = 0;
     int wrong = 0;
     int missed = 0;
-    for (int i = 0; i < widget.actualAnswers.length; i++) {
-      if (formattedEntries[i]
-          .trim()
-          .isSimilar(widget.actualAnswers[i].front.trim(), widget.exactMatch)) {
+    for (int i = 0; i < widget.flashCardGroup.cards.length; i++) {
+      if (formattedEntries[i].trim().isSimilar(
+          widget.flashCardGroup.cards[i].front.trim(),
+          widget.flashCardGroup.exactMatch)) {
         correct++;
       } else if (formattedEntries[i].isNotEmpty) {
         wrong++;
@@ -45,8 +40,8 @@ class ExamViewWidgetState extends State<ExamView> {
         missed++;
       }
     }
-    widget.resultRepository
-        .addResult(widget.title, correct, wrong, missed, DateTime.now());
+    widget.resultRepository.addResult(
+        widget.flashCardGroup.title, correct, wrong, missed, DateTime.now());
     validate = true;
   }
 
@@ -54,28 +49,27 @@ class ExamViewWidgetState extends State<ExamView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Results"), // Change app bar title to "Train"
+        title: const Text("Train"),
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: widget.actualAnswers
+          children: widget.flashCardGroup.cards
               .asMap()
               .entries
               .map((entry) => Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "${entry.key + 1})",
+                          "${entry.key + 1}) ${entry.value.back}",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 24.0,
+                            fontSize: 18.0,
                           ),
                         ),
                         const SizedBox(
-                          width: 8.0,
+                          height: 8.0,
                         ),
                         _buildAnswerWidget(entry.key),
                       ],
@@ -95,7 +89,7 @@ class ExamViewWidgetState extends State<ExamView> {
                     updateScore();
                   } else {
                     Navigator.popAndPushNamed(context, '/results',
-                        arguments: widget.title);
+                        arguments: widget.flashCardGroup.title);
                   }
                 });
               },
@@ -117,20 +111,23 @@ class ExamViewWidgetState extends State<ExamView> {
   }
 
   Widget _buildTextField(int key) {
-    return Expanded(
-      child: TextField(
-        keyboardType: TextInputType.text,
-        onChanged: (value) {
-          formattedEntries[key] = value;
-        },
+    return TextField(
+      maxLines: null,
+      keyboardType: TextInputType.multiline,
+      onChanged: (value) {
+        formattedEntries[key] = value;
+      },
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Type your answer here...',
       ),
     );
   }
 
   Widget _buildAnswerValidation(int key) {
-    if (formattedEntries[key]
-        .trim()
-        .isSimilar(widget.actualAnswers[key].front.trim(), widget.exactMatch)) {
+    if (formattedEntries[key].trim().isSimilar(
+        widget.flashCardGroup.cards[key].front.trim(),
+        widget.flashCardGroup.exactMatch)) {
       return _buildCorrectAnswer(key);
     } else {
       return _buildIncorrectAnswer(key);
@@ -138,64 +135,49 @@ class ExamViewWidgetState extends State<ExamView> {
   }
 
   Widget _buildCorrectAnswer(int key) {
-    return Expanded(
-      child: Container(
-        color: Colors.green,
-        padding: const EdgeInsets.all(8),
-        child: Text(
-          formattedEntries[key],
-          style: const TextStyle(fontSize: 20),
-          softWrap: true,
-          overflow: TextOverflow.ellipsis,
-        ),
+    return Container(
+      color: Colors.green,
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        formattedEntries[key],
+        style: const TextStyle(fontSize: 20),
+        softWrap: true,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
 
   Widget _buildIncorrectAnswer(int key) {
-    return Expanded(
-      // Wrap the entire Row with Expanded if it's not the only child of its parent
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            // Reintroduce Expanded around _buildUserAnswer for flexibility
-            flex: 2,
-            // Reintroduce Expanded around _buildUserAnswer for flexibility
-            child: _buildUserAnswer(key), // Adjust flex factor as needed
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: Container(
+            color: Colors.red,
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              formattedEntries[key].isNotEmpty
+                  ? formattedEntries[key]
+                  : "Missed",
+              style: const TextStyle(fontSize: 20),
+              softWrap: true,
+            ),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            // Use Expanded around _buildActualAnswer to prevent overflow
-            flex: 3,
-            // Use Expanded around _buildActualAnswer to prevent overflow
-            child: _buildActualAnswer(key), // Adjust flex factor as needed
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          flex: 3,
+          child: Container(
+            color: Colors.yellow,
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              widget.flashCardGroup.cards[key].front,
+              style: const TextStyle(fontSize: 20),
+              softWrap: true,
+            ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserAnswer(int key) {
-    // Removed the outer Expanded widget
-    return Container(
-      color: Colors.red,
-      padding: const EdgeInsets.all(8),
-      child: Text(
-        formattedEntries[key].isNotEmpty ? formattedEntries[key] : "Missed",
-        style: const TextStyle(fontSize: 20),
-        softWrap: true,
-      ),
-    );
-  }
-
-  Widget _buildActualAnswer(int key) {
-    // Removed the outer Expanded widget
-    return Container(
-      color: Colors.yellow,
-      padding: const EdgeInsets.all(8),
-      child: Text(widget.actualAnswers[key].front,
-          style: const TextStyle(fontSize: 20), softWrap: true),
+        ),
+      ],
     );
   }
 }
