@@ -63,12 +63,10 @@ class ExamViewWidgetState extends State<ExamView> {
       List<String> unmatchedActuals = List<String>.from(actualAnswers);
       for (var userAnswer in userAnswers) {
         int index = indexOfQuestionForMatchingUserEntry(question, userAnswer);
-        print("JULIUS: User: $userAnswer, Actual: $unmatchedActuals");
         for (var actualAnswer in actualAnswers) {
           if (userAnswer
               .trim()
               .isSimilar(actualAnswer, widget.flashCardGroup.exactMatch)) {
-            print("JULIUS: Matched: $userAnswer, $actualAnswer");
             correct++;
             unmatchedActuals.removeWhere((item) => item
                 .trim()
