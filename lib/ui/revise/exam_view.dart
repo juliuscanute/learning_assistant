@@ -16,33 +16,114 @@ class ExamView extends StatefulWidget {
 
 class ExamViewWidgetState extends State<ExamView> {
   List<String> formattedEntries = [];
+  List<EvaluationEntry> processedActualEntries = [];
+  Map<String, bool> processedEntries = {};
+  Map<String, List<String>> actualCards = {};
+  Map<String, List<String>> userCards = {};
   bool validate = false;
+
+  void groupCardsByQuestionAndActualAnswers() {
+    for (var card in widget.flashCardGroup.cards) {
+      if (actualCards.containsKey(card.back)) {
+        actualCards[card.back]!.add(card.front);
+      } else {
+        actualCards[card.back] = [card.front];
+      }
+    }
+  }
+
+  void groupCardsByQuestionAndUserAnswers() {
+    for (var i = 0; i < widget.flashCardGroup.cards.length; i++) {
+      if (userCards.containsKey(widget.flashCardGroup.cards[i].back)) {
+        userCards[widget.flashCardGroup.cards[i].back]!
+            .add(formattedEntries[i]);
+      } else {
+        userCards[widget.flashCardGroup.cards[i].back] = [formattedEntries[i]];
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     formattedEntries =
         List.generate(widget.flashCardGroup.cards.length, (index) => "");
+    processedActualEntries = List.generate(widget.flashCardGroup.cards.length,
+        (index) => EvaluationEntry("", EvaluationState.undefined));
+    groupCardsByQuestionAndActualAnswers();
   }
 
   void updateScore() {
     int correct = 0;
     int wrong = 0;
     int missed = 0;
-    for (int i = 0; i < widget.flashCardGroup.cards.length; i++) {
-      if (formattedEntries[i].trim().isSimilar(
-          widget.flashCardGroup.cards[i].front.trim(),
-          widget.flashCardGroup.exactMatch)) {
-        correct++;
-      } else if (formattedEntries[i].isNotEmpty) {
-        wrong++;
-      } else {
-        missed++;
+    groupCardsByQuestionAndUserAnswers();
+    actualCards.forEach((question, actualAnswers) {
+      List<String> userAnswers = userCards[question] ?? [];
+      List<String> unmatchedActuals = List<String>.from(actualAnswers);
+      for (var userAnswer in userAnswers) {
+        int index = indexOfQuestionForMatchingUserEntry(question, userAnswer);
+        print("JULIUS: User: $userAnswer, Actual: $unmatchedActuals");
+        for (var actualAnswer in actualAnswers) {
+          if (userAnswer
+              .trim()
+              .isSimilar(actualAnswer, widget.flashCardGroup.exactMatch)) {
+            print("JULIUS: Matched: $userAnswer, $actualAnswer");
+            correct++;
+            unmatchedActuals.removeWhere((item) => item
+                .trim()
+                .isSimilar(actualAnswer, widget.flashCardGroup.exactMatch));
+            processedActualEntries[index] =
+                EvaluationEntry(actualAnswer, EvaluationState.correct);
+            break; // Stop checking after the first match
+          }
+        }
       }
-    }
+      for (var missedAnswer in unmatchedActuals) {
+        int index =
+            indexOfQuestionForMatchingActualEntry(question, missedAnswer);
+        if (formattedEntries[index].trim().isEmpty) {
+          processedActualEntries[index] =
+              EvaluationEntry(missedAnswer, EvaluationState.missed);
+          missed++;
+        } else {
+          processedActualEntries[index] =
+              EvaluationEntry(missedAnswer, EvaluationState.wrong);
+          wrong++;
+        }
+      }
+    });
+
     widget.resultRepository.addResult(
         widget.flashCardGroup.title, correct, wrong, missed, DateTime.now());
     validate = true;
+  }
+
+  int indexOfQuestionForMatchingUserEntry(String question, String userAnswer) {
+    for (var i = 0; i < widget.flashCardGroup.cards.length; i++) {
+      // Check if the entry has already been processed
+      if (processedEntries.containsKey(userAnswer) &&
+          processedEntries[userAnswer] == true) {
+        continue; // Skip this entry
+      }
+      if (formattedEntries[i] == userAnswer &&
+          question == widget.flashCardGroup.cards[i].back) {
+        processedEntries[userAnswer] = true; // Mark as processed
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  int indexOfQuestionForMatchingActualEntry(
+      String question, String actualAnswer) {
+    for (var i = 0; i < widget.flashCardGroup.cards.length; i++) {
+      if (question == widget.flashCardGroup.cards[i].back &&
+          processedActualEntries[i].state == EvaluationState.undefined) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   @override
@@ -125,9 +206,7 @@ class ExamViewWidgetState extends State<ExamView> {
   }
 
   Widget _buildAnswerValidation(int key) {
-    if (formattedEntries[key].trim().isSimilar(
-        widget.flashCardGroup.cards[key].front.trim(),
-        widget.flashCardGroup.exactMatch)) {
+    if (processedActualEntries[key].state == EvaluationState.correct) {
       return _buildCorrectAnswer(key);
     } else {
       return _buildIncorrectAnswer(key);
@@ -139,7 +218,7 @@ class ExamViewWidgetState extends State<ExamView> {
       color: Colors.green,
       padding: const EdgeInsets.all(8),
       child: Text(
-        formattedEntries[key],
+        processedActualEntries[key].text,
         style: const TextStyle(fontSize: 20),
         softWrap: true,
         overflow: TextOverflow.ellipsis,
@@ -171,7 +250,7 @@ class ExamViewWidgetState extends State<ExamView> {
             color: Colors.yellow,
             padding: const EdgeInsets.all(8),
             child: Text(
-              widget.flashCardGroup.cards[key].front,
+              processedActualEntries[key].text,
               style: const TextStyle(fontSize: 20),
               softWrap: true,
             ),
@@ -180,4 +259,13 @@ class ExamViewWidgetState extends State<ExamView> {
       ],
     );
   }
+}
+
+enum EvaluationState { undefined, correct, wrong, missed }
+
+class EvaluationEntry {
+  String text;
+  EvaluationState state;
+
+  EvaluationEntry(this.text, this.state);
 }
