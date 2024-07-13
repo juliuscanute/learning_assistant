@@ -338,10 +338,12 @@ class _FlipContainerState extends State<FlipContainer>
   }
 
   Widget buildSide(String text) {
-    final cardText = r'''$$\textcolor{red}{''' +
-        widget.index.toString() +
-        r'''}$$''' +
-        ensureLatexSyntax(text);
+    final cardText = (widget.index == 0)
+        ? ''
+        : r'''$$\textcolor{red}{''' +
+            widget.index.toString() +
+            r'''}$$''' +
+            ensureLatexSyntax(text);
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       color: isFront ? Colors.blue : Colors.yellow,
