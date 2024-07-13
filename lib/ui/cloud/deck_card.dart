@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learning_assistant/data/cards.dart';
+import 'package:learning_assistant/data/fash_card.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -86,18 +86,33 @@ class DeckCard extends StatelessWidget {
   }
 
   // Method to fetch complete deck
-  Future<FlashCardGroup> fetchCompleteDeck(String deckId) async {
+  Future<FlashCardDeck> fetchCompleteDeck(String deckId) async {
     var deckData = await firebaseService.getDeckData(deckId);
-    List<CardEmbedded> cards =
-        List<CardEmbedded>.generate(deckData['cards'].length, (index) {
+    List<FlashCard> cards =
+        List<FlashCard>.generate(deckData['cards'].length, (index) {
       var card = deckData['cards'][index];
-      return CardEmbedded()
-        ..index = index
-        ..front = card['front']
-        ..back = card['back']
-        ..imageUrl = card['imageUrl'];
+      return FlashCard(
+          index: index,
+          front: card['front'],
+          frontTex: card['front_tex'],
+          back: card['back'],
+          backTex: card['back_tex'],
+          imageUrl: card['imageUrl'],
+          mcqOptions: card['mcq']['options']
+                  ?.map<String>((e) => e.toString())
+                  .toList() ??
+              [],
+          mcqOptionsTex: card['mcq']['options_tex']
+                  ?.map<String>((e) => e.toString())
+                  .toList() ??
+              [],
+          correctOptionIndex: card['mcq']['answer_index']);
     });
-    return FlashCardGroup(deckData['title'], [], cards)
-      ..exactMatch = deckData['exactMatch'] ?? true;
+    return FlashCardDeck(
+      title: deckData['title'],
+      tags: [],
+      cards: cards,
+      exactMatch: deckData['exactMatch'] ?? true,
+    );
   }
 }

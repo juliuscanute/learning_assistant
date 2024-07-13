@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/ui/revise/exam_view.dart';
+import 'package:learning_assistant/ui/cloud/exam_view_mcq.dart';
 import 'package:learning_assistant/ui/revise/revise_add_cards_new.dart';
 import 'package:learning_assistant/ui/revise/revise_edit_card_new.dart';
 import 'package:learning_assistant/ui/revise/revise_view.dart';
 import 'package:learning_assistant/ui/revise/score_card.dart';
 import 'package:learning_assistant/ui/revise/train_view.dart';
+import 'package:learning_assistant/ui/cloud/validation_view.dart';
 
 class ReviseNavigator extends StatefulWidget {
   const ReviseNavigator({required this.navigatorKey, super.key});

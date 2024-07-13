@@ -6,20 +6,19 @@ class FirebaseService {
   Future<Map<String, dynamic>> getDeckData(String deckId) async {
     var deckData = <String, dynamic>{};
 
-    // Fetch the deck document
     var deckRef = _firestore.collection('decks').doc(deckId);
     var deckSnapshot = await deckRef.get();
     if (!deckSnapshot.exists) {
       throw Exception("Deck not found");
     }
     deckData['title'] = deckSnapshot.data()?['title'] ?? '';
-    deckData['videoUrl'] =
-        deckSnapshot.data()?['videoUrl'] ?? ''; // Fetching videoUrl
-    deckData['tags'] = deckSnapshot.data()?['tags'] ?? []; // Adding tags
-    deckData['mapUrl'] =
-        deckSnapshot.data()?['mapUrl'] ?? ''; // Fetching mapUrl
-    deckData['exactMatch'] =
-        deckSnapshot.data()?['exactMatch'] ?? false; // Adding exactMatch
+    deckData['videoUrl'] = deckSnapshot.data()?['videoUrl'] ?? '';
+    deckData['tags'] =
+        List.from(deckSnapshot.data()?['tags'] ?? []); // Add tags here
+    deckData['mapUrl'] = deckSnapshot.data()?['mapUrl'] ?? '';
+    deckData['exactMatch'] = deckSnapshot.data()?['exactMatch'] ?? true;
+    deckData['isPublic'] =
+        deckSnapshot.data()?['isPublic'] ?? false; // Add isPublic here
 
     // Fetch the cards ordered by 'position'
     var cardsSnapshot =
@@ -27,16 +26,19 @@ class FirebaseService {
     var cards = cardsSnapshot.docs
         .asMap() // Convert to map to access index
         .map((index, doc) => MapEntry(index, {
+              'id': doc.id,
               'front': doc.data()['front'] ?? '',
+              'front_tex': doc.data()['front_tex'] ?? '',
               'back': doc.data()['back'] ?? '',
+              'back_tex': doc.data()['back_tex'] ?? '',
               'imageUrl': doc.data()['imageUrl'] ?? '',
               'position':
                   doc.data()['position'] ?? index, // Use map index as fallback
+              'mcq': doc.data()['mcq'] ?? {},
             }))
         .values // Convert back to iterable
         .toList();
     deckData['cards'] = cards;
-
     return deckData;
   }
 
