@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/fash_card.dart';
+import 'package:learning_assistant/data/result_repository.dart';
+import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/ext/string_ext.dart';
 
 class ValidationParameters {
@@ -16,8 +17,9 @@ class ValidationParameters {
 class ValidationView extends StatelessWidget {
   final FlashCardDeck flashCardGroup;
   final List<String> userAnswers;
+  final resultRepository = ServiceLocator.instance.get<ResultRepository>();
 
-  const ValidationView({
+  ValidationView({
     Key? key,
     required this.flashCardGroup,
     required this.userAnswers,
@@ -70,9 +72,7 @@ class ValidationView extends StatelessWidget {
                         fontSize: 16,
                         color: entry.state == EvaluationState.correct
                             ? Colors.green
-                            : entry.state == EvaluationState.wrong
-                                ? Colors.red
-                                : Colors.yellow,
+                            : Colors.red,
                       ),
                     ),
                   ),
@@ -84,7 +84,7 @@ class ValidationView extends StatelessWidget {
                         "Actual Answer: ${entry.actualAnswer}",
                         style: const TextStyle(
                           fontSize: 16,
-                          color: Colors.yellow,
+                          color: Colors.blue,
                         ),
                       ),
                     ),
@@ -115,7 +115,9 @@ class ValidationView extends StatelessWidget {
 
   List<EvaluationEntry> _processAnswers() {
     List<EvaluationEntry> processedEntries = [];
-
+    var correctCount = 0;
+    var missedCount = 0;
+    var wrongCount = 0;
     Map<String, List<String>> actualCards = {};
     for (var card in flashCardGroup.cards) {
       if (actualCards.containsKey(card.back)) {
@@ -147,6 +149,7 @@ class ValidationView extends StatelessWidget {
               actualAnswer: actualAnswer,
               state: EvaluationState.correct,
             ));
+            correctCount++;
             break; // Stop checking after the first match
           }
         }
@@ -164,6 +167,7 @@ class ValidationView extends StatelessWidget {
             actualAnswer: missedAnswer,
             state: EvaluationState.missed,
           ));
+          missedCount++;
         } else {
           processedEntries.add(EvaluationEntry(
             question: question,
@@ -173,10 +177,12 @@ class ValidationView extends StatelessWidget {
             actualAnswer: missedAnswer,
             state: EvaluationState.wrong,
           ));
+          wrongCount++;
         }
       }
     });
-
+    resultRepository.addResult(flashCardGroup.title, correctCount, wrongCount,
+        missedCount, DateTime.now());
     return processedEntries;
   }
 }
