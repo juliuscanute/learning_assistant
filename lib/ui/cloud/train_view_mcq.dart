@@ -5,6 +5,7 @@ import 'package:flutter_tex/flutter_tex.dart';
 import 'dart:async';
 
 import 'package:learning_assistant/data/fash_card.dart';
+import 'package:tex_text/tex_text.dart';
 
 class TrainViewMcq extends StatefulWidget {
   final FlashCardDeck group;
@@ -91,7 +92,7 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
         // Make the body scrollable
         child: Column(
           children: [
-            GestureDetector(
+            InkWell(
               onTap: () {
                 _nextCard();
               },
@@ -344,27 +345,27 @@ class _FlipContainerState extends State<FlipContainer>
             widget.index.toString() +
             r'''}$$''' +
             ensureLatexSyntax(text);
+    final style = TeXViewStyle(
+      contentColor: isFront ? Colors.yellow : Colors.blue,
+      textAlign: TeXViewTextAlign.center,
+      fontStyle: TeXViewFontStyle(fontSize: 44),
+      width: MediaQuery.of(context).size.width.toInt(),
+    );
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       color: isFront ? Colors.blue : Colors.yellow,
-      child: InteractiveViewer(
-        panEnabled: true, // Set it to false to disable panning.
-        boundaryMargin: EdgeInsets.all(80),
-        minScale: 0.5,
-        maxScale: 4,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: TeXView(
           renderingEngine: const TeXViewRenderingEngine.mathjax(),
+          loadingWidgetBuilder: (context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
           child: TeXViewColumn(
-              style: TeXViewStyle(
-                contentColor: isFront ? Colors.yellow : Colors.blue,
-                textAlign: TeXViewTextAlign.center,
-                fontStyle: TeXViewFontStyle(fontSize: 36),
-              ),
-              children: [
-                TeXViewDocument(cardText,
-                    style:
-                        const TeXViewStyle(margin: TeXViewMargin.only(top: 10)))
-              ]),
+              style: style,
+              children: [TeXViewDocument(cardText, style: style)]),
         ),
       ),
     );
