@@ -5,7 +5,6 @@ import 'package:flutter_tex/flutter_tex.dart';
 import 'dart:async';
 
 import 'package:learning_assistant/data/fash_card.dart';
-import 'package:tex_text/tex_text.dart';
 
 class TrainViewMcq extends StatefulWidget {
   final FlashCardDeck group;
