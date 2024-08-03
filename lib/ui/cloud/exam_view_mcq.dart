@@ -167,7 +167,15 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
         }).toList(),
       );
     } else {
+      final TextEditingController _controller = TextEditingController();
+
+      // Check if there's an existing answer for the current question
+      if (formattedEntries[currentQuestionIndex].isNotEmpty) {
+        _controller.text = formattedEntries[currentQuestionIndex];
+      }
+
       return TextField(
+        controller: _controller,
         maxLines: null,
         keyboardType: TextInputType.multiline,
         onChanged: (value) {
