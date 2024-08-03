@@ -53,6 +53,13 @@ class DeckCard extends StatelessWidget {
                       .pushNamed('/results', arguments: deck['title']);
                 },
               ),
+              IconButton(
+                  icon: const Icon(Icons.timer),
+                  onPressed: () async {
+                    var group = await fetchCompleteDeck(deck['id']);
+                    Navigator.of(context)
+                        .popAndPushNamed('/exam', arguments: group);
+                  }),
             ],
           ),
         ],

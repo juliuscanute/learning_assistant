@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 import 'package:learning_assistant/data/fash_card.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
@@ -55,38 +56,32 @@ class ValidationView extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "Question: ${entry.question}",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: formattedRenderer(
+                        context,
+                        'Question: ${entry.card.backTex?.trim().isNotEmpty == true ? entry.card.backTex : entry.card.back}',
+                        entry.card.backTex?.trim().isNotEmpty == true,
+                        Theme.of(context).textTheme.bodyMedium!.color!),
                   ),
                   const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "Your Answer: ${entry.userAnswer}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: entry.state == EvaluationState.correct
+                    child: formattedRenderer(
+                        context,
+                        'Your Answer: ${entry.userAnswer}',
+                        false,
+                        entry.state == EvaluationState.correct
                             ? Colors.green
-                            : Colors.red,
-                      ),
-                    ),
+                            : Colors.red),
                   ),
                   if (entry.state != EvaluationState.correct) ...[
                     const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "Actual Answer: ${entry.actualAnswer}",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.blue,
-                        ),
-                      ),
+                      child: formattedRenderer(
+                          context,
+                          'Correct Answer: ${entry.card.frontTex?.trim().isNotEmpty == true ? entry.card.frontTex : entry.card.front}',
+                          entry.card.frontTex?.trim().isNotEmpty == true,
+                          Colors.blue),
                     ),
                   ],
                   const Divider(),
@@ -136,7 +131,7 @@ class ValidationView extends StatelessWidget {
           .toList();
 
       for (var userAnswer in userAnswersForQuestion) {
-        userAnswers.indexOf(userAnswer);
+        final index = userAnswers.indexOf(userAnswer);
         for (var actualAnswer in actualAnswers) {
           if (userAnswer
               .trim()
@@ -148,6 +143,7 @@ class ValidationView extends StatelessWidget {
               userAnswer: userAnswer,
               actualAnswer: actualAnswer,
               state: EvaluationState.correct,
+              card: flashCardGroup.cards[index],
             ));
             correctCount++;
             break; // Stop checking after the first match
@@ -156,26 +152,25 @@ class ValidationView extends StatelessWidget {
       }
 
       for (var missedAnswer in unmatchedActuals) {
-        if (userAnswers[flashCardGroup.cards.indexOf(flashCardGroup.cards
-                .singleWhere((card) =>
-                    card.back == question && card.front == missedAnswer))]
-            .trim()
-            .isEmpty) {
+        final userIndex = flashCardGroup.cards.indexOf(flashCardGroup.cards
+            .singleWhere(
+                (card) => card.back == question && card.front == missedAnswer));
+        if (userAnswers[userIndex].trim().isEmpty) {
           processedEntries.add(EvaluationEntry(
             question: question,
             userAnswer: "",
             actualAnswer: missedAnswer,
             state: EvaluationState.missed,
+            card: flashCardGroup.cards[userIndex],
           ));
           missedCount++;
         } else {
           processedEntries.add(EvaluationEntry(
             question: question,
-            userAnswer: userAnswers[flashCardGroup.cards.indexOf(
-                flashCardGroup.cards.singleWhere((card) =>
-                    card.back == question && card.front == missedAnswer))],
+            userAnswer: userAnswers[userIndex],
             actualAnswer: missedAnswer,
             state: EvaluationState.wrong,
+            card: flashCardGroup.cards[userIndex],
           ));
           wrongCount++;
         }
@@ -184,6 +179,41 @@ class ValidationView extends StatelessWidget {
     resultRepository.addResult(flashCardGroup.title, correctCount, wrongCount,
         missedCount, DateTime.now());
     return processedEntries;
+  }
+
+  Widget formattedRenderer(
+      BuildContext context, text, bool isTex, Color color) {
+    if (isTex) {
+      return _renderTexWidget(color, ensureLatexSyntax(text));
+    } else {
+      return Text(
+        text,
+        style: TextStyle(
+          fontSize: 16,
+          color: color,
+        ),
+      );
+    }
+  }
+
+  String ensureLatexSyntax(String text) {
+    return '<p>$text</p>';
+  }
+
+  Widget _renderTexWidget(Color color, String tex) {
+    return Container(
+      child: TeXView(
+        renderingEngine: const TeXViewRenderingEngine.mathjax(),
+        loadingWidgetBuilder: (context) {
+          return const Center(
+            child: Text("Please wait..."),
+          );
+        },
+        child: TeXViewColumn(children: [
+          TeXViewDocument(tex, style: TeXViewStyle(contentColor: color))
+        ]),
+      ),
+    );
   }
 }
 
@@ -194,11 +224,13 @@ class EvaluationEntry {
   String userAnswer;
   String actualAnswer;
   EvaluationState state;
+  FlashCard card;
 
   EvaluationEntry({
     required this.question,
     required this.userAnswer,
     required this.actualAnswer,
     required this.state,
+    required this.card,
   });
 }
