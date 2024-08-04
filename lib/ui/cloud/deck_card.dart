@@ -8,7 +8,7 @@ class DeckCard extends StatelessWidget {
   final firebaseService = ServiceLocator.instance.get<FirebaseService>();
   final Map<String, dynamic> deck;
 
-  DeckCard({required this.deck});
+  DeckCard({super.key, required this.deck});
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
@@ -9,7 +8,7 @@ import 'package:learning_assistant/data/fash_card.dart';
 class TrainViewMcq extends StatefulWidget {
   final FlashCardDeck group;
 
-  const TrainViewMcq({required this.group});
+  const TrainViewMcq({super.key, required this.group});
 
   @override
   TrainViewWidgetState createState() => TrainViewWidgetState();
@@ -170,7 +169,7 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
+            SizedBox(
               width: 150,
               child: OutlinedButton(
                 onPressed: isStartEnabled
@@ -187,7 +186,7 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                 child: const Text("Start"),
               ),
             ),
-            Container(
+            SizedBox(
               width: 150,
               child: ElevatedButton(
                 onPressed: isFinishEnabled
@@ -222,7 +221,7 @@ class FlipContainer extends StatefulWidget {
   final String? imageUrl;
 
   const FlipContainer(
-      {required this.index,
+      {super.key, required this.index,
       required this.front,
       required this.back,
       this.imageUrl = "",
@@ -396,11 +395,11 @@ class _FlipContainerState extends State<FlipContainer>
                     if (loadingProgress == null) {
                       return child;
                     } else {
-                      return Center(
-                        child: Container(
+                      return const Center(
+                        child: SizedBox(
                           height: 48,
                           width: 48,
-                          child: const CircularProgressIndicator(),
+                          child: CircularProgressIndicator(),
                         ),
                       );
                     }

@@ -8,7 +8,7 @@ class CategoryScreen extends StatefulWidget {
   final List<Map<String, dynamic>> decks;
   final List<String> categoryList;
 
-  CategoryScreen({required this.decks, required this.categoryList});
+  const CategoryScreen({super.key, required this.decks, required this.categoryList});
 
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
@@ -64,9 +64,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 .toList();
             return remainingTags.isEmpty;
           }).toList();
-          noSubcategoryDecks.forEach((deck) {
+          for (var deck in noSubcategoryDecks) {
             children.add(DeckCard(deck: deck));
-          });
+          }
 
           return ListView(children: children);
         }(),

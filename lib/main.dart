@@ -15,8 +15,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -63,7 +61,7 @@ class MyApp extends StatelessWidget {
             title: 'Learning Assistant',
             debugShowCheckedModeBanner: false,
             theme: themeNotifier.getTheme(),
-            home: MyHomePage(),
+            home: const MyHomePage(),
           );
         },
       ),
@@ -72,6 +70,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   MyHomePageState createState() => MyHomePageState();
 }

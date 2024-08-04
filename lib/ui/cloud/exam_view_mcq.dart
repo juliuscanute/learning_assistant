@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:learning_assistant/data/fash_card.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
@@ -7,7 +6,7 @@ import 'package:learning_assistant/ui/cloud/validation_view.dart';
 class ExamViewMcq extends StatefulWidget {
   final FlashCardDeck flashCardGroup;
 
-  ExamViewMcq({required this.flashCardGroup});
+  const ExamViewMcq({super.key, required this.flashCardGroup});
 
   @override
   _ExamViewMcqState createState() => _ExamViewMcqState();
@@ -167,15 +166,15 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
         }).toList(),
       );
     } else {
-      final TextEditingController _controller = TextEditingController();
+      final TextEditingController controller = TextEditingController();
 
       // Check if there's an existing answer for the current question
       if (formattedEntries[currentQuestionIndex].isNotEmpty) {
-        _controller.text = formattedEntries[currentQuestionIndex];
+        controller.text = formattedEntries[currentQuestionIndex];
       }
 
       return TextField(
-        controller: _controller,
+        controller: controller,
         maxLines: null,
         keyboardType: TextInputType.multiline,
         onChanged: (value) {

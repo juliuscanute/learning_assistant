@@ -132,7 +132,7 @@ class ScoreCardWidget extends StatelessWidget {
   final int wrong;
   final int missed;
 
-  const ScoreCardWidget({
+  const ScoreCardWidget({super.key, 
     required this.date,
     required this.correct,
     required this.wrong,

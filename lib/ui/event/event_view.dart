@@ -83,7 +83,7 @@ class EventViewState extends State<EventView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(
+                SizedBox(
                   width: 150,
                   child: OutlinedButton(
                     onPressed: () {
@@ -92,7 +92,7 @@ class EventViewState extends State<EventView> {
                     child: const Text('View Calendar'),
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 150,
                   child: ElevatedButton(
                     onPressed: () {

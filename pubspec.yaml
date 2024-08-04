@@ -53,6 +53,7 @@ dependencies:
   stemmer: ^2.2.0
   flutter_tex: ^4.0.6
 
+  timezone: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

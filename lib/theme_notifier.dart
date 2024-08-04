@@ -5,16 +5,16 @@ class ThemeNotifier extends ChangeNotifier with WidgetsBindingObserver {
 
   ThemeNotifier() {
     _themeData =
-        WidgetsBinding.instance!.window.platformBrightness == Brightness.dark
+        WidgetsBinding.instance.window.platformBrightness == Brightness.dark
             ? darkTheme
             : lightTheme;
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didChangePlatformBrightness() {
     _themeData =
-        WidgetsBinding.instance!.window.platformBrightness == Brightness.dark
+        WidgetsBinding.instance.window.platformBrightness == Brightness.dark
             ? darkTheme
             : lightTheme;
     notifyListeners();
@@ -24,7 +24,7 @@ class ThemeNotifier extends ChangeNotifier with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 }

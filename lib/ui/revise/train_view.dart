@@ -6,7 +6,7 @@ import 'package:learning_assistant/data/cards.dart';
 class TrainView extends StatefulWidget {
   final FlashCardGroup group;
 
-  const TrainView({required this.group});
+  const TrainView({super.key, required this.group});
 
   @override
   TrainViewWidgetState createState() => TrainViewWidgetState();
@@ -138,12 +138,12 @@ class TrainViewWidgetState extends State<TrainView> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.0), // Add space between rows
+                  const SizedBox(height: 16.0), // Add space between rows
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Time Gap"),
-                      SizedBox(width: 8.0),
+                      const Text("Time Gap"),
+                      const SizedBox(width: 8.0),
                       SizedBox(
                         width: 50.0,
                         child: TextField(
@@ -168,7 +168,7 @@ class TrainViewWidgetState extends State<TrainView> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
+            SizedBox(
               width: 150,
               child: OutlinedButton(
                 onPressed: isStartEnabled
@@ -185,7 +185,7 @@ class TrainViewWidgetState extends State<TrainView> {
                 child: const Text("Start"),
               ),
             ),
-            Container(
+            SizedBox(
               width: 150,
               child: ElevatedButton(
                 onPressed: isFinishEnabled
@@ -218,7 +218,7 @@ class FlipContainer extends StatefulWidget {
   final String? imageUrl;
 
   const FlipContainer(
-      {required this.index,
+      {super.key, required this.index,
       required this.front,
       required this.back,
       this.imageUrl = ""});
@@ -299,7 +299,7 @@ class _FlipContainerState extends State<FlipContainer>
                 // Recall Icon Button
                 if (widget.imageUrl?.isNotEmpty == true)
                   IconButton(
-                    icon: Icon(Icons.visibility, color: Colors.white),
+                    icon: const Icon(Icons.visibility, color: Colors.white),
                     onPressed: () {
                       _showRecallImageDialog(widget.imageUrl ?? "");
                     },
@@ -307,7 +307,7 @@ class _FlipContainerState extends State<FlipContainer>
                 // Flip Icon Button
                 if (widget.front.isNotEmpty && widget.back.isNotEmpty)
                   IconButton(
-                    icon: Icon(Icons.flip, color: Colors.white),
+                    icon: const Icon(Icons.flip, color: Colors.white),
                     onPressed: () {
                       if (isFront) {
                         _controller.forward();
@@ -342,14 +342,14 @@ class _FlipContainerState extends State<FlipContainer>
                     if (text.isNotEmpty)
                       TextSpan(
                         text: "${widget.index}) ",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 36,
                         ),
                       ),
                     TextSpan(
                       text: text,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.yellow,
                         fontSize: 36,
                       ),
@@ -386,11 +386,11 @@ class _FlipContainerState extends State<FlipContainer>
                     if (loadingProgress == null) {
                       return child;
                     } else {
-                      return Center(
-                        child: Container(
+                      return const Center(
+                        child: SizedBox(
                           height: 48,
                           width: 48,
-                          child: const CircularProgressIndicator(),
+                          child: CircularProgressIndicator(),
                         ),
                       );
                     }
@@ -399,7 +399,7 @@ class _FlipContainerState extends State<FlipContainer>
               : const Text("No recall image available"),
           actions: <Widget>[
             TextButton(
-              child: Text("Close"),
+              child: const Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
                 // isDialogShown = false;

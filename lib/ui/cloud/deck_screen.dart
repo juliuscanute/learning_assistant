@@ -45,7 +45,7 @@ class _DecksScreenState extends State<DecksScreen> {
             // For categories with decks, create a CategoryCard
             categories.forEach((category, decksInCategory) {
               children.add(CategoryCard(
-                  categoryList: [], // Assuming you have logic to populate this
+                  categoryList: const [], // Assuming you have logic to populate this
                   category: category,
                   deck: decksInCategory));
             });

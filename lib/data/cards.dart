@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:isar/isar.dart';
 

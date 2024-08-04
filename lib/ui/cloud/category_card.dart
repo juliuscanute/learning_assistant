@@ -5,8 +5,8 @@ class CategoryCard extends StatelessWidget {
   final String category;
   final List<Map<String, dynamic>> deck;
 
-  CategoryCard(
-      {required this.categoryList, required this.category, required this.deck});
+  const CategoryCard(
+      {super.key, required this.categoryList, required this.category, required this.deck});
 
   @override
   Widget build(BuildContext context) {

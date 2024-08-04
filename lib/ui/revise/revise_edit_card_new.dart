@@ -17,7 +17,7 @@ class ReviseEditCardsFB extends StatefulWidget {
 class ReviseEditCardsStateFB extends State<ReviseEditCardsFB> {
   String title = "";
   List<CardItem> cards = [];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   void addCard() {
     setState(() {
@@ -68,7 +68,7 @@ class ReviseEditCardsStateFB extends State<ReviseEditCardsFB> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: titleController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Title',
                 contentPadding: EdgeInsets.all(16.0), // Increased padding
               ),
@@ -92,7 +92,7 @@ class ReviseEditCardsStateFB extends State<ReviseEditCardsFB> {
                       children: [
                         TextField(
                           controller: TextEditingController(text: card.front),
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Front',
                             contentPadding:
                                 EdgeInsets.all(16.0), // Increased padding
@@ -103,7 +103,7 @@ class ReviseEditCardsStateFB extends State<ReviseEditCardsFB> {
                         ),
                         TextField(
                           controller: TextEditingController(text: card.back),
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Back',
                             contentPadding:
                                 EdgeInsets.all(16.0), // Increased padding
@@ -134,15 +134,15 @@ class ReviseEditCardsStateFB extends State<ReviseEditCardsFB> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
+            SizedBox(
               width: 150, // Set width
               child: OutlinedButton(
                 // Changed to OutlinedButton
                 onPressed: addCard,
-                child: Text('Add Card'),
+                child: const Text('Add Card'),
               ),
             ),
-            Container(
+            SizedBox(
               width: 150, // Set width
               child: ElevatedButton(
                 onPressed: () {
@@ -159,7 +159,7 @@ class ReviseEditCardsStateFB extends State<ReviseEditCardsFB> {
                           .toList());
                   Navigator.pop(context);
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             )
           ],

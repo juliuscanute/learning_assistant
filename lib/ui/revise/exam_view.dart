@@ -8,7 +8,7 @@ class ExamView extends StatefulWidget {
   final resultRepository = ServiceLocator.instance.get<ResultRepository>();
   final FlashCardGroup flashCardGroup;
 
-  ExamView({required this.flashCardGroup});
+  ExamView({super.key, required this.flashCardGroup});
 
   @override
   ExamViewWidgetState createState() => ExamViewWidgetState();
