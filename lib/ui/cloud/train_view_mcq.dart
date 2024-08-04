@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
+import 'package:latext/latext.dart';
 import 'dart:async';
 
 import 'package:learning_assistant/data/fash_card.dart';
@@ -221,7 +221,8 @@ class FlipContainer extends StatefulWidget {
   final String? imageUrl;
 
   const FlipContainer(
-      {super.key, required this.index,
+      {super.key,
+      required this.index,
       required this.front,
       required this.back,
       this.imageUrl = "",
@@ -343,34 +344,23 @@ class _FlipContainerState extends State<FlipContainer>
             widget.index.toString() +
             r'''}$$''' +
             ensureLatexSyntax(text);
-    final style = TeXViewStyle(
-      contentColor: isFront ? Colors.yellow : Colors.blue,
-      textAlign: TeXViewTextAlign.center,
-      fontStyle: TeXViewFontStyle(fontSize: 44),
-      width: MediaQuery.of(context).size.width.toInt(),
-    );
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       color: isFront ? Colors.blue : Colors.yellow,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: TeXView(
-          renderingEngine: const TeXViewRenderingEngine.mathjax(),
-          loadingWidgetBuilder: (context) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-          child: TeXViewColumn(
-              style: style,
-              children: [TeXViewDocument(cardText, style: style)]),
-        ),
-      ),
+      child: LaTexT(
+          laTeXCode: Text(
+        cardText,
+        style: Theme.of(context)
+            .textTheme
+            .displayMedium!
+            .copyWith(color: !isFront ? Colors.blue : Colors.yellow),
+        textAlign: TextAlign.center,
+      )),
     );
   }
 
   String ensureLatexSyntax(String text) {
-    return '<p>$text</p>';
+    return '$text';
   }
 
   void _showRecallImageDialog(String imageUrl) {

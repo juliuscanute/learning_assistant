@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
+import 'package:latext/latext.dart';
 import 'package:learning_assistant/data/fash_card.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
 
@@ -197,21 +198,16 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
   }
 
   String ensureLatexSyntax(String text) {
-    return '<p>$text</p>';
+    return '$text';
   }
 
   Widget _renderTexWidget(String tex) {
     return Container(
-      child: TeXView(
-        renderingEngine: const TeXViewRenderingEngine.mathjax(),
-        loadingWidgetBuilder: (context) {
-          return const Center(
-            child: Text("Please wait..."),
-          );
-        },
-        child:
-            TeXViewColumn(children: [TeXViewDocument(ensureLatexSyntax(tex))]),
+        child: LaTexT(
+      laTeXCode: Text(
+        ensureLatexSyntax(tex),
+        textAlign: TextAlign.start,
       ),
-    );
+    ));
   }
 }

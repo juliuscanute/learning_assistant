@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
+import 'package:latext/latext.dart';
 import 'package:learning_assistant/data/fash_card.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
@@ -68,7 +69,7 @@ class ValidationView extends StatelessWidget {
                     child: formattedRenderer(
                         context,
                         'Your Answer: ${entry.userAnswer}',
-                        false,
+                        true,
                         entry.state == EvaluationState.correct
                             ? Colors.green
                             : Colors.red),
@@ -184,7 +185,7 @@ class ValidationView extends StatelessWidget {
   Widget formattedRenderer(
       BuildContext context, text, bool isTex, Color color) {
     if (isTex) {
-      return _renderTexWidget(color, ensureLatexSyntax(text));
+      return _renderTexWidget(context, color, ensureLatexSyntax(text));
     } else {
       return Text(
         text,
@@ -197,23 +198,18 @@ class ValidationView extends StatelessWidget {
   }
 
   String ensureLatexSyntax(String text) {
-    return '<p>$text</p>';
+    return '$text';
   }
 
-  Widget _renderTexWidget(Color color, String tex) {
+  Widget _renderTexWidget(BuildContext context, Color color, String tex) {
     return Container(
-      child: TeXView(
-        renderingEngine: const TeXViewRenderingEngine.mathjax(),
-        loadingWidgetBuilder: (context) {
-          return const Center(
-            child: Text("Please wait..."),
-          );
-        },
-        child: TeXViewColumn(children: [
-          TeXViewDocument(tex, style: TeXViewStyle(contentColor: color))
-        ]),
+        child: LaTexT(
+      laTeXCode: Text(
+        ensureLatexSyntax(tex),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: color),
+        textAlign: TextAlign.start,
       ),
-    );
+    ));
   }
 }
 
