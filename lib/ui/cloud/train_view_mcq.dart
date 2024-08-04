@@ -347,15 +347,21 @@ class _FlipContainerState extends State<FlipContainer>
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       color: isFront ? Colors.blue : Colors.yellow,
-      child: LaTexT(
-          laTeXCode: Text(
-        cardText,
-        style: Theme.of(context)
-            .textTheme
-            .displayMedium!
-            .copyWith(color: !isFront ? Colors.blue : Colors.yellow),
-        textAlign: TextAlign.center,
-      )),
+      child: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(8.0),
+          child: LaTexT(
+              laTeXCode: Text(
+            cardText,
+            style: Theme.of(context)
+                .textTheme
+                .displayMedium!
+                .copyWith(color: !isFront ? Colors.blue : Colors.yellow),
+            textAlign: TextAlign.center,
+          )),
+        ),
+      ),
     );
   }
 
