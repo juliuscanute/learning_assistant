@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:latext/latext.dart';
@@ -16,12 +18,21 @@ class ExamViewMcq extends StatefulWidget {
 class _ExamViewMcqState extends State<ExamViewMcq> {
   List<String> formattedEntries = [];
   int currentQuestionIndex = 0;
+  List<MapEntry<int, String>> shuffledOptions = [];
 
   @override
   void initState() {
     super.initState();
     formattedEntries =
         List.generate(widget.flashCardGroup.cards.length, (index) => "");
+    shuffleOptions();
+  }
+
+  void shuffleOptions() {
+    final card = widget.flashCardGroup.cards[currentQuestionIndex];
+    final options = card.mcqOptions!.asMap().entries.toList();
+    options.shuffle(Random());
+    shuffledOptions = options;
   }
 
   void navigateToValidationView() {
@@ -142,12 +153,12 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
   Widget _buildAnswerWidget(FlashCard card) {
     if ((card.mcqOptions != null && card.mcqOptions!.isNotEmpty)) {
       return Column(
-        children: card.mcqOptions!.asMap().entries.map((entry) {
+        children: shuffledOptions.map((entry) {
           // Check if mcqOptionsTex is available and use it
           final optionText =
               (card.mcqOptionsTex != null && card.mcqOptionsTex!.isNotEmpty)
                   ? card.mcqOptionsTex![entry.key]
-                  : card.mcqOptions![entry.key];
+                  : entry.value;
 
           return RadioListTile<int>(
             title: _buildOptionWidget(optionText,
