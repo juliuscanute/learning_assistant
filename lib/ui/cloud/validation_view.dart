@@ -122,21 +122,26 @@ class ValidationView extends StatelessWidget {
         actualCards[card.back] = [card.front];
       }
     }
-
+    // question: actualAnswers
+    // Q1: A, B, C
+    // Q2: D
+    // Q3: E, F
     actualCards.forEach((question, actualAnswers) {
+      // Create a list of actual answers that are unmatched
       List<String> unmatchedActuals = List<String>.from(actualAnswers);
-      List<String> userAnswersForQuestion = userAnswers
-          .where((answer) =>
-              question ==
-              flashCardGroup.cards[userAnswers.indexOf(answer)].back)
-          .toList();
+      List<String> userAnswersForQuestion = [];
+      for (int i = 0; i < userAnswers.length; i++) {
+        if (question == flashCardGroup.cards[i].back) {
+          userAnswersForQuestion.add(userAnswers[i]);
+        }
+      }
 
       for (var userAnswer in userAnswersForQuestion) {
-        final index = userAnswers.indexOf(userAnswer);
         for (var actualAnswer in actualAnswers) {
-          if (userAnswer
+          final isMatch = userAnswer
               .trim()
-              .isSimilar(actualAnswer, flashCardGroup.exactMatch)) {
+              .isSimilar(actualAnswer, flashCardGroup.exactMatch);
+          if (isMatch) {
             unmatchedActuals.removeWhere((item) =>
                 item.trim().isSimilar(actualAnswer, flashCardGroup.exactMatch));
             processedEntries.add(EvaluationEntry(
@@ -144,7 +149,7 @@ class ValidationView extends StatelessWidget {
               userAnswer: userAnswer,
               actualAnswer: actualAnswer,
               state: EvaluationState.correct,
-              card: flashCardGroup.cards[index],
+              card: flashCardGroup.cards[userAnswers.indexOf(actualAnswer)],
             ));
             correctCount++;
             break; // Stop checking after the first match
