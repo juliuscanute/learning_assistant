@@ -54,7 +54,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.run_number }}
-        files: "LittleLight-windows.zip"
+        files: "LearningAssistant-windows.zip"
 
     # - name: Create MSIX package
     #   run: msstore package
