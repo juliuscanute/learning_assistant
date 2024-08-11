@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tex/flutter_tex.dart';
-import 'package:latext/latext.dart';
 import 'package:learning_assistant/data/fash_card.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/ext/latext.dart';
 import 'package:learning_assistant/ext/string_ext.dart';
 
 class ValidationParameters {
@@ -59,7 +58,8 @@ class ValidationView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: formattedRenderer(
                         context,
-                        'Question: ${entry.card.backTex?.trim().isNotEmpty == true ? entry.card.backTex : entry.card.back}',
+                        'Question: ',
+                        '${entry.card.backTex?.trim().isNotEmpty == true ? entry.card.backTex : entry.card.back}',
                         entry.card.backTex?.trim().isNotEmpty == true,
                         Theme.of(context).textTheme.bodyMedium!.color!),
                   ),
@@ -68,8 +68,11 @@ class ValidationView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: formattedRenderer(
                         context,
-                        'Your Answer: ${entry.userAnswer}',
-                        true,
+                        'Your Answer: ',
+                        entry.userAnswer,
+                        entry.card.mcqOptionsTex?.isNotEmpty == true
+                            ? true
+                            : false,
                         entry.state == EvaluationState.correct
                             ? Colors.green
                             : Colors.red),
@@ -80,7 +83,8 @@ class ValidationView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: formattedRenderer(
                           context,
-                          'Correct Answer: ${entry.card.frontTex?.trim().isNotEmpty == true ? entry.card.frontTex : entry.card.front}',
+                          'Correct Answer: ',
+                          '${entry.card.frontTex?.trim().isNotEmpty == true ? entry.card.frontTex : entry.card.front}',
                           entry.card.frontTex?.trim().isNotEmpty == true,
                           Colors.blue),
                     ),
@@ -187,13 +191,13 @@ class ValidationView extends StatelessWidget {
     return processedEntries;
   }
 
-  Widget formattedRenderer(
-      BuildContext context, text, bool isTex, Color color) {
+  Widget formattedRenderer(BuildContext context, String prefix, String text,
+      bool isTex, Color color) {
     if (isTex) {
-      return _renderTexWidget(context, color, ensureLatexSyntax(text));
+      return _renderTexWidget(context, color, prefix + ensureLatexSyntax(text));
     } else {
       return Text(
-        text,
+        prefix + text,
         style: TextStyle(
           fontSize: 16,
           color: color,
@@ -203,18 +207,22 @@ class ValidationView extends StatelessWidget {
   }
 
   String ensureLatexSyntax(String text) {
-    return '$text';
+    if (!text.contains('\$\$') && text.isNotEmpty) {
+      return '\$\$$text\$\$';
+    }
+    return text;
   }
 
   Widget _renderTexWidget(BuildContext context, Color color, String tex) {
-    return Container(
-        child: LaTexT(
+    return LaTexT(
       laTeXCode: Text(
-        ensureLatexSyntax(tex),
+        tex,
         style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: color),
         textAlign: TextAlign.start,
       ),
-    ));
+      equationStyle:
+          Theme.of(context).textTheme.bodyMedium!.copyWith(color: color),
+    );
   }
 }
 

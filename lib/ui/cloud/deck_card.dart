@@ -57,8 +57,7 @@ class DeckCard extends StatelessWidget {
                   icon: const Icon(Icons.timer),
                   onPressed: () async {
                     var group = await fetchCompleteDeck(deck['id']);
-                    Navigator.of(context)
-                        .popAndPushNamed('/exam', arguments: group);
+                    Navigator.of(context).pushNamed('/exam', arguments: group);
                   }),
             ],
           ),

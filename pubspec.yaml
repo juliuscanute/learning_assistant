@@ -51,10 +51,9 @@ dependencies:
   url_launcher: ^6.2.4
   flutter_local_notifications: ^17.0.0
   stemmer: ^2.2.0
-  flutter_tex: ^4.0.6
-  latext: ^0.4.1
-
   timezone: any
+  flutter_math_fork: ^0.7.2
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

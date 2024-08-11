@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tex/flutter_tex.dart';
-import 'package:latext/latext.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'dart:async';
 
 import 'package:learning_assistant/data/fash_card.dart';
+import 'package:learning_assistant/ext/latext.dart';
 
 class TrainViewMcq extends StatefulWidget {
   final FlashCardDeck group;
@@ -279,9 +279,11 @@ class _FlipContainerState extends State<FlipContainer>
               child: _controller.value >= 0.5 ? Container() : child,
             );
           },
-          child: buildSide(widget.frontTex?.isNotEmpty == true
-              ? widget.frontTex!
-              : widget.front),
+          child: buildSide(
+              widget.frontTex?.isNotEmpty == true
+                  ? widget.frontTex!
+                  : widget.front,
+              widget.frontTex?.isNotEmpty == true),
         ),
         AnimatedBuilder(
           animation: _controller,
@@ -294,9 +296,11 @@ class _FlipContainerState extends State<FlipContainer>
               child: _controller.value < 0.5 ? Container() : child,
             );
           },
-          child: buildSide(widget.backTex?.isNotEmpty == true
-              ? widget.backTex!
-              : widget.back),
+          child: buildSide(
+              widget.backTex?.isNotEmpty == true
+                  ? widget.backTex!
+                  : widget.back,
+              widget.backTex?.isNotEmpty == true),
         ),
         Positioned(
           top: 10,
@@ -337,20 +341,20 @@ class _FlipContainerState extends State<FlipContainer>
     );
   }
 
-  Widget buildSide(String text) {
+  Widget buildSide(String text, bool isTex) {
     final cardText = (widget.index == 0)
         ? ''
         : r'''$$\textcolor{red}{''' +
             widget.index.toString() +
             r'''}$$''' +
-            ensureLatexSyntax(text);
+            ensureLatexSyntax(text, isTex);
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       color: isFront ? Colors.blue : Colors.yellow,
-      child: SingleChildScrollView(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
           child: LaTexT(
               laTeXCode: Text(
             cardText,
@@ -365,8 +369,11 @@ class _FlipContainerState extends State<FlipContainer>
     );
   }
 
-  String ensureLatexSyntax(String text) {
-    return '$text';
+  String ensureLatexSyntax(String text, bool isTex) {
+    if (isTex && !text.contains('\$\$')) {
+      return '\$\$$text\$\$';
+    }
+    return text;
   }
 
   void _showRecallImageDialog(String imageUrl) {

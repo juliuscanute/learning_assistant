@@ -1,9 +1,8 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_tex/flutter_tex.dart';
-import 'package:latext/latext.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:learning_assistant/data/fash_card.dart';
+import 'package:learning_assistant/ext/latext.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
 
 class ExamViewMcq extends StatefulWidget {
@@ -18,21 +17,22 @@ class ExamViewMcq extends StatefulWidget {
 class _ExamViewMcqState extends State<ExamViewMcq> {
   List<String> formattedEntries = [];
   int currentQuestionIndex = 0;
-  List<MapEntry<int, String>> shuffledOptions = [];
+  List<List<MapEntry<int, String>>> mcqRandomOptions = [];
 
   @override
   void initState() {
     super.initState();
     formattedEntries =
         List.generate(widget.flashCardGroup.cards.length, (index) => "");
-    shuffleOptions();
+    _computeShuffledOptions();
   }
 
-  void shuffleOptions() {
-    final card = widget.flashCardGroup.cards[currentQuestionIndex];
-    final options = card.mcqOptions!.asMap().entries.toList();
-    options.shuffle(Random());
-    shuffledOptions = options;
+  void _computeShuffledOptions() {
+    mcqRandomOptions = widget.flashCardGroup.cards.map((card) {
+      final options = card.mcqOptions!.asMap().entries.toList();
+      options.shuffle(Random());
+      return options;
+    }).toList();
   }
 
   void navigateToValidationView() {
@@ -65,6 +65,8 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
   @override
   Widget build(BuildContext context) {
     final currentCard = widget.flashCardGroup.cards[currentQuestionIndex];
+    final currentShuffledOptions = mcqRandomOptions[currentQuestionIndex];
+
     return Scaffold(
         appBar: AppBar(
           title: const Text("Train"),
@@ -85,7 +87,7 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
                 const SizedBox(height: 8.0),
                 _buildQuestionWidget(currentCard),
                 const SizedBox(height: 16.0),
-                _buildAnswerWidget(currentCard),
+                _buildAnswerWidget(currentCard, currentShuffledOptions),
               ],
             ),
           ),
@@ -139,8 +141,9 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (card.backTex != null && card.backTex!.trim().isNotEmpty)
-          // Render TeX version of the back question
-          _renderTexWidget(card.backTex!)
+          LaTexT(
+            laTeXCode: Text(card.backTex!),
+          )
         else
           Text(
             card.back,
@@ -150,10 +153,11 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
     );
   }
 
-  Widget _buildAnswerWidget(FlashCard card) {
+  Widget _buildAnswerWidget(
+      FlashCard card, List<MapEntry<int, String>> options) {
     if ((card.mcqOptions != null && card.mcqOptions!.isNotEmpty)) {
       return Column(
-        children: shuffledOptions.map((entry) {
+        children: options.map((entry) {
           // Check if mcqOptionsTex is available and use it
           final optionText =
               (card.mcqOptionsTex != null && card.mcqOptionsTex!.isNotEmpty)
@@ -161,8 +165,27 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
                   : entry.value;
 
           return RadioListTile<int>(
-            title: _buildOptionWidget(optionText,
-                card.mcqOptionsTex != null && card.mcqOptionsTex!.isNotEmpty),
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: card.mcqOptionsTex != null &&
+                          card.mcqOptionsTex!.isNotEmpty
+                      ? LaTexT(
+                          laTeXCode: Text(
+                            optionText.startsWith('\$\$') &&
+                                    optionText.endsWith('\$\$')
+                                ? optionText
+                                : '\$\$$optionText\$\$',
+                          ),
+                        )
+                      : Text(
+                          optionText,
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                ),
+              ],
+            ),
             value: entry.key,
             groupValue: formattedEntries[currentQuestionIndex] ==
                     card.mcqOptions![entry.key]
@@ -174,6 +197,8 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
                     card.mcqOptions![entry.key];
               });
             },
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 0), // Adjust padding if necessary
           );
         }).toList(),
       );
@@ -198,27 +223,5 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
         ),
       );
     }
-  }
-
-  Widget _buildOptionWidget(String optionText, bool isTex) {
-    if (isTex) {
-      return _renderTexWidget(optionText);
-    } else {
-      return Text(optionText);
-    }
-  }
-
-  String ensureLatexSyntax(String text) {
-    return '$text';
-  }
-
-  Widget _renderTexWidget(String tex) {
-    return Container(
-        child: LaTexT(
-      laTeXCode: Text(
-        ensureLatexSyntax(tex),
-        textAlign: TextAlign.start,
-      ),
-    ));
   }
 }
