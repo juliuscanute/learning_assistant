@@ -21,14 +21,14 @@ jobs:
     - name: Install Flutter
       uses: subosito/flutter-action@v1
 
-    - name: Setup google-services.json
+    - name: Setup google-services.json for Windows
       run: |
-        echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+        [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($Env:GOOGLE_SERVICES_JSON)) | Out-File -FilePath windows/runner/google-services.json -Encoding utf8
 
-    - name: Setup firebase_options.dart
+    - name: Setup firebase_options.dart for Windows
       run: |
-        echo "${{ secrets.FIREBASE_OPTIONS_DART }}" | base64 -d > lib/firebase_options.dart
-        
+        [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($Env:FIREBASE_OPTIONS_DART)) | Out-File -FilePath lib/firebase_options.dart -Encoding utf8
+
     - name: Download pub dependencies
       run: flutter pub get
 
