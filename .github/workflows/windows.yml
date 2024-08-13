@@ -12,43 +12,43 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup MS Store Developer CLI
-      uses: microsoft/setup-msstore-cli@v1
+    # - name: Setup MS Store Developer CLI
+    #   uses: microsoft/setup-msstore-cli@v1
   
-    # - name: Configure MS Store credentials
-    #   run: msstore reconfigure --tenantId ${{ secrets.AZURE_AD_TENANT_ID }} --clientId ${{ secrets.AZURE_AD_CLIENT_ID }} --clientSecret ${{ secrets.AZURE_AD_CLIENT_SECRET }} --sellerId ${{ secrets.MS_STORE_SELLER_ID }}
+    # # - name: Configure MS Store credentials
+    # #   run: msstore reconfigure --tenantId ${{ secrets.AZURE_AD_TENANT_ID }} --clientId ${{ secrets.AZURE_AD_CLIENT_ID }} --clientSecret ${{ secrets.AZURE_AD_CLIENT_SECRET }} --sellerId ${{ secrets.MS_STORE_SELLER_ID }}
 
-    - name: Install Flutter
-      uses: subosito/flutter-action@v1
+    # - name: Install Flutter
+    #   uses: subosito/flutter-action@v1
 
-    - name: Setup google-services.json for Windows
-      run: |
-        $googleServicesJson = '${{ secrets.GOOGLE_SERVICES_JSON }}'
-        [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($googleServicesJson)) | Out-File -FilePath windows/runner/google-services.json -Encoding utf8
+    # - name: Setup google-services.json for Windows
+    #   run: |
+    #     $googleServicesJson = '${{ secrets.GOOGLE_SERVICES_JSON }}'
+    #     [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($googleServicesJson)) | Out-File -FilePath windows/runner/google-services.json -Encoding utf8
 
-    - name: Setup firebase_options.dart for Windows
-      run: |
-        $firebaseOptionsDart = '${{ secrets.FIREBASE_OPTIONS_DART }}'
-        [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($firebaseOptionsDart)) | Out-File -FilePath lib/firebase_options.dart -Encoding utf8
+    # - name: Setup firebase_options.dart for Windows
+    #   run: |
+    #     $firebaseOptionsDart = '${{ secrets.FIREBASE_OPTIONS_DART }}'
+    #     [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($firebaseOptionsDart)) | Out-File -FilePath lib/firebase_options.dart -Encoding utf8
 
-    - name: Download pub dependencies
-      run: flutter pub get
+    # - name: Download pub dependencies
+    #   run: flutter pub get
 
-    - name: Build via Flutter
-      run: flutter build windows --release
+    # - name: Build via Flutter
+    #   run: flutter build windows --release
 
-    - name: Upload build to workflow run
-      uses: actions/upload-artifact@v1
-      with:
-        name: LittleLight-windows
-        path: ${{ github.workspace }}/build/windows/x64/runner/Release
+    # - name: Upload build to workflow run
+    #   uses: actions/upload-artifact@v1
+    #   with:
+    #     name: LittleLight-windows
+    #     path: ${{ github.workspace }}/build/windows/x64/runner/Release
   
-    - name: Create release zip
-      uses: thedoctor0/zip-release@0.7.1
-      with:
-        type: "zip"
-        filename: "LearningAssistant-windows.zip"
-        path: ${{ github.workspace }}/build/windows/x64/runner/Release
+    # - name: Create release zip
+    #   uses: thedoctor0/zip-release@0.7.1
+    #   with:
+    #     type: "zip"
+    #     filename: "LearningAssistant-windows.zip"
+    #     path: ${{ github.workspace }}/build/windows/x64/runner/Release
 
     # - name: Create MSIX package
     #   run: msstore package
