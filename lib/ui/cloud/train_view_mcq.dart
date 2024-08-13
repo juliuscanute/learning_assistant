@@ -347,6 +347,7 @@ class _FlipContainerState extends State<FlipContainer>
         : r'''$$\textcolor{red}{''' +
             widget.index.toString() +
             r'''}$$''' +
+            '\\n' +
             ensureLatexSyntax(text, isTex);
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
