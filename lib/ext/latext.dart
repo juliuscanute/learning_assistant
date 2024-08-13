@@ -99,9 +99,9 @@ class LaTexTState extends State<LaTexT> {
         );
       } else {
         textBlocks.addAll([
-          const TextSpan(text: '\n'),
-          ..._extractWidgetSpans(laTeXMatch.group(6)?.trim() ?? '', true),
-          const TextSpan(text: '\n')
+          // const TextSpan(text: '\n'),
+          ..._extractWidgetSpans(laTeXMatch.group(6)?.trim() ?? '', false),
+          // const TextSpan(text: '\n')
         ]);
       }
       lastTextEnd = laTeXMatch.end;
@@ -212,11 +212,15 @@ class LaTexTState extends State<LaTexT> {
             child: tex,
           );
         }
-
         widgetSpans.add(
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: tex,
+          ),
+        );
+        widgetSpans.add(
+          const TextSpan(
+            text: ' ',
           ),
         );
       }

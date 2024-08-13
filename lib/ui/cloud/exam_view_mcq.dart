@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/fash_card.dart';
 import 'package:learning_assistant/ext/latext.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
@@ -173,15 +174,16 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
                           card.mcqOptionsTex!.isNotEmpty
                       ? LaTexT(
                           laTeXCode: Text(
-                            optionText.startsWith('\$\$') &&
-                                    optionText.endsWith('\$\$')
+                            optionText.contains('\$\$')
                                 ? optionText
                                 : '\$\$$optionText\$\$',
+                            textAlign: TextAlign.start,
+                            style: Theme.of(context).textTheme.bodyMedium!,
                           ),
                         )
                       : Text(
                           optionText,
-                          style: const TextStyle(fontSize: 16.0),
+                          style: Theme.of(context).textTheme.bodyMedium!,
                         ),
                 ),
               ],

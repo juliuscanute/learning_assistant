@@ -198,10 +198,7 @@ class ValidationView extends StatelessWidget {
     } else {
       return Text(
         prefix + text,
-        style: TextStyle(
-          fontSize: 16,
-          color: color,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: color),
       );
     }
   }
