@@ -67,7 +67,7 @@ dev_dependencies:
   build_runner: ^2.3.3
   isar_generator: ^3.1.0+1
   flutter_launcher_icons: ^0.13.1
-  msix: ^3.16.7
+  msix: ^3.16.8
 
 flutter_icons:
   image_path: "icons/book.png" 
@@ -113,10 +113,11 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 msix_config:
+  msstore_appId: 9P2N4NCTVVHF
   display_name: Learning Assistant - Memory Techniques
   publisher_display_name: John Louis
   identity_name: JohnLouis.LearningAssistant-MemoryTechniques
   publisher: CN=0AB1F8C5-E04C-4446-AE23-E82DB6DD06D5
-  msix_version: 1.0.0.0
-  logo_path: "icons/book.png"
+  msix_version: 0.0.1.0
+  logo_path: windows\runner\resources\app_icon.png
   store: true
