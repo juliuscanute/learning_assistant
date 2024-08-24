@@ -41,4 +41,4 @@ jobs:
       run: msstore package
 
     - name: Publish MSIX to the Microsoft Store
-      run: msstore publish -v -i ./build/windows/x64/runner/Release
+      run: msstore publish -v -nc -i ./build/windows/x64/runner/Release
