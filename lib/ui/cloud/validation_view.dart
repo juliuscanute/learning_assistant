@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learning_assistant/data/fash_card.dart';
+import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/ext/latext.dart';
@@ -87,6 +87,18 @@ class ValidationView extends StatelessWidget {
                           '${entry.card.frontTex?.trim().isNotEmpty == true ? entry.card.frontTex : entry.card.front}',
                           entry.card.frontTex?.trim().isNotEmpty == true,
                           Colors.blue),
+                    ),
+                  ],
+                  if (entry.card.explanation != null) ...[
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: formattedRenderer(
+                          context,
+                          'Explanation: ',
+                          entry.card.explanation!,
+                          entry.card.explanationTex?.trim().isNotEmpty == true,
+                          Theme.of(context).textTheme.bodyMedium!.color!),
                     ),
                   ],
                   const Divider(),

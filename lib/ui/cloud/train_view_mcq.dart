@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'dart:async';
 
-import 'package:learning_assistant/data/fash_card.dart';
+import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/ext/latext.dart';
 
 class TrainViewMcq extends StatefulWidget {
@@ -101,6 +101,8 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                 frontTex: currentText.frontTex ?? "",
                 back: currentText.back,
                 backTex: currentText.backTex ?? "",
+                explanation: currentText.explanation ?? "",
+                explanationTex: currentText.explanationTex ?? "",
               ),
             ),
             Padding(
@@ -219,6 +221,8 @@ class FlipContainer extends StatefulWidget {
   final String back;
   final String? backTex;
   final String? imageUrl;
+  final String? explanation;
+  final String? explanationTex;
 
   const FlipContainer(
       {super.key,
@@ -227,7 +231,9 @@ class FlipContainer extends StatefulWidget {
       required this.back,
       this.imageUrl = "",
       this.frontTex,
-      this.backTex});
+      this.backTex,
+      this.explanation,
+      this.explanationTex});
 
   @override
   _FlipContainerState createState() => _FlipContainerState();
@@ -333,11 +339,60 @@ class _FlipContainerState extends State<FlipContainer>
                       });
                     },
                   ),
+
+                // Explanation Icon Button
+                if (widget.explanation?.isNotEmpty == true ||
+                    widget.explanationTex?.isNotEmpty == true)
+                  IconButton(
+                    icon: const Icon(Icons.info, color: Colors.black),
+                    onPressed: () {
+                      // Add your logic to show the explanation here
+                      _showExplanationDialog(
+                          widget.explanation ?? widget.explanationTex ?? "",
+                          widget.explanationTex?.isNotEmpty == true);
+                    },
+                  ),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+
+  void _showExplanationDialog(String explanation, bool isTex) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Explanation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                isTex
+                    ? LaTexT(
+                        laTeXCode: Text(
+                          explanation,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      )
+                    : Text(
+                        explanation,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

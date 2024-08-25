@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learning_assistant/data/fash_card.dart';
+import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -112,7 +112,9 @@ class DeckCard extends StatelessWidget {
                   ?.map<String>((e) => e.toString())
                   .toList() ??
               [],
-          correctOptionIndex: card['mcq']['answer_index']);
+          correctOptionIndex: card['mcq']['answer_index'],
+          explanation: card['explanation'],
+          explanationTex: card['explanation_tex']);
     });
     return FlashCardDeck(
       title: deckData['title'],

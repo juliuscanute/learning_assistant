@@ -21,6 +21,8 @@ class FlashCard {
   final List<String>? mcqOptions;
   final List<String>? mcqOptionsTex;
   final int? correctOptionIndex;
+  final String? explanation;
+  final String? explanationTex;
 
   FlashCard(
       {required this.index,
@@ -31,7 +33,9 @@ class FlashCard {
       required this.imageUrl,
       required this.mcqOptions,
       required this.mcqOptionsTex,
-      required this.correctOptionIndex});
+      required this.correctOptionIndex,
+      required this.explanation,
+      required this.explanationTex});
 
   static FlashCard createEmptyFlashCard() {
     return FlashCard(
@@ -44,6 +48,8 @@ class FlashCard {
       mcqOptions: [],
       mcqOptionsTex: null,
       correctOptionIndex: null,
+      explanation: null,
+      explanationTex: null,
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learning_assistant/data/fash_card.dart';
+import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/ui/cloud/category_screen.dart';
 import 'package:learning_assistant/ui/cloud/deck_screen.dart';
 import 'package:learning_assistant/ui/cloud/exam_view_mcq.dart';

@@ -35,6 +35,8 @@ class FirebaseService {
               'position':
                   doc.data()['position'] ?? index, // Use map index as fallback
               'mcq': doc.data()['mcq'] ?? {},
+              'explanation': doc.data()['explanation'] ?? '',
+              'explanation_tex': doc.data()['explanation_tex'] ?? '',
             }))
         .values // Convert back to iterable
         .toList();
