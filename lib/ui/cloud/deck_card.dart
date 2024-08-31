@@ -18,6 +18,8 @@ class DeckCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min, // Use minimum space
         children: [
           ListTile(
+            leading: Icon(Icons.library_books,
+                color: Theme.of(context).iconTheme.color),
             title: Text(deck['title'], style: const TextStyle(fontSize: 18.0)),
             onTap: () async {
               var group = await fetchCompleteDeck(deck['id']);
@@ -28,8 +30,15 @@ class DeckCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (deck['videoUrl'] != null && deck['videoUrl'].isNotEmpty)
-                IconButton(
-                  icon: const Icon(Icons.play_circle_filled),
+                TextButton.icon(
+                  icon: Icon(
+                    Icons.play_circle_filled,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  label: Text(
+                    'Play Video',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   onPressed: () async {
                     var url = Uri.parse(deck['videoUrl']);
                     if (!await launchUrl(url)) {
@@ -40,25 +49,47 @@ class DeckCard extends StatelessWidget {
                   },
                 ),
               if (deck['mapUrl'] != null && deck['mapUrl'].isNotEmpty)
-                IconButton(
-                  icon: const Icon(Icons.map),
+                TextButton.icon(
+                  icon: Icon(
+                    Icons.map,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  label: Text(
+                    'View Map',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   onPressed: () async {
                     _showDialog(context, deck['mapUrl']);
                   },
                 ),
-              IconButton(
-                icon: const Icon(Icons.visibility),
+              TextButton.icon(
+                icon: Icon(
+                  Icons.visibility,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                label: Text(
+                  'Results',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
                 onPressed: () {
                   Navigator.of(context)
                       .pushNamed('/results', arguments: deck['title']);
                 },
               ),
-              IconButton(
-                  icon: const Icon(Icons.timer),
-                  onPressed: () async {
-                    var group = await fetchCompleteDeck(deck['id']);
-                    Navigator.of(context).pushNamed('/exam', arguments: group);
-                  }),
+              TextButton.icon(
+                icon: Icon(
+                  Icons.timer,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                label: Text(
+                  'Start Exam',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                onPressed: () async {
+                  var group = await fetchCompleteDeck(deck['id']);
+                  Navigator.of(context).pushNamed('/exam', arguments: group);
+                },
+              ),
             ],
           ),
         ],
