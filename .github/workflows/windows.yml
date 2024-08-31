@@ -38,7 +38,7 @@ jobs:
       run: flutter build windows --release --build-number ${{ github.run_number }}
 
     - name: Create MSIX package
-      run: msstore package
+      run: flutter pub run msix:create
 
     - name: Publish MSIX to the Microsoft Store
       run: msstore publish -v -nc -i ./build/windows/x64/runner/Release
