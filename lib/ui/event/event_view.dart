@@ -41,6 +41,7 @@ class EventViewState extends State<EventView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: const Text('Reminders'),
       ),
       body: Column(

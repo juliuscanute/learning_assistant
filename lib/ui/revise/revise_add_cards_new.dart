@@ -45,6 +45,7 @@ class ReviseAddCardsFBState extends State<ReviseAddCardsFB> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: const Text('Add Flash Cards'),
       ),
       body: Column(

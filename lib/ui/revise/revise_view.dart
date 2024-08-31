@@ -22,7 +22,10 @@ class ReviseScreenViewState extends State<ReviseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Flashcards")),
+      appBar: AppBar(
+        title: const Text("Flashcards"),
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
+      ),
       body: StreamBuilder<List<FlashCardGroup>>(
         stream: widget.cardRepository.events,
         builder: (context, snapshot) {

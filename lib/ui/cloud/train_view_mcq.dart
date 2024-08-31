@@ -83,6 +83,7 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: Text(
             "Train ${widget.group.title}"), // Change app bar title to "Train"
       ),

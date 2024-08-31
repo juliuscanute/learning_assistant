@@ -84,6 +84,8 @@ class TrainViewWidgetState extends State<TrainView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         title: Text(
             "Train ${widget.group.title}"), // Change app bar title to "Train"
       ),
@@ -218,7 +220,8 @@ class FlipContainer extends StatefulWidget {
   final String? imageUrl;
 
   const FlipContainer(
-      {super.key, required this.index,
+      {super.key,
+      required this.index,
       required this.front,
       required this.back,
       this.imageUrl = ""});

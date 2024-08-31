@@ -32,6 +32,7 @@ class ValidationView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: const Text("Results"),
       ),
       body: SingleChildScrollView(

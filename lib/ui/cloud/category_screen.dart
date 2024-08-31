@@ -8,7 +8,8 @@ class CategoryScreen extends StatefulWidget {
   final List<Map<String, dynamic>> decks;
   final List<String> categoryList;
 
-  const CategoryScreen({super.key, required this.decks, required this.categoryList});
+  const CategoryScreen(
+      {super.key, required this.decks, required this.categoryList});
 
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
@@ -20,6 +21,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryList.last),
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: Container(
         child: () {

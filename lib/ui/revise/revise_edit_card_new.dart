@@ -60,6 +60,7 @@ class ReviseEditCardsStateFB extends State<ReviseEditCardsFB> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: Text('Edit $title'),
       ),
       body: Column(

@@ -18,7 +18,12 @@ class _DecksScreenState extends State<DecksScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Decks')),
+      appBar: AppBar(
+        title: Text(
+          'Decks',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: widget.firebaseService.getDecksStream(),
         builder: (context, snapshot) {

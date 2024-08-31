@@ -91,6 +91,7 @@ class _ScoreCardListScreenState extends State<ScoreCardListScreen> {
           builder: (context, value, child) {
             return Scaffold(
               appBar: AppBar(
+                titleTextStyle: Theme.of(context).textTheme.headlineMedium,
                 title: Text(widget.title),
                 actions: <Widget>[
                   if (value.isNotEmpty)
@@ -132,7 +133,8 @@ class ScoreCardWidget extends StatelessWidget {
   final int wrong;
   final int missed;
 
-  const ScoreCardWidget({super.key, 
+  const ScoreCardWidget({
+    super.key,
     required this.date,
     required this.correct,
     required this.wrong,
