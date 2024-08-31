@@ -42,3 +42,9 @@ jobs:
 
     - name: Publish MSIX to the Microsoft Store
       run: msstore publish -v -nc -i ./build/windows/x64/runner/Release
+
+    - name: Upload MSIX package as GitHub Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: learning_assistant_msix
+        path: build/windows/x64/runner/Release/*.msix
