@@ -77,6 +77,9 @@ final darkTheme = ThemeData(
       ),
     ),
   ),
+  radioTheme: RadioThemeData(
+    fillColor: WidgetStateProperty.all<Color>(Colors.blueGrey),
+  ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: Color(0xFF1E1E1E),
     selectedItemColor: Colors.white,
@@ -130,6 +133,9 @@ final lightTheme = ThemeData(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
       ),
     ),
+  ),
+  radioTheme: RadioThemeData(
+    fillColor: WidgetStateProperty.all<Color>(Colors.purple),
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
