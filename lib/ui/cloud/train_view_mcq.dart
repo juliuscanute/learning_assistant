@@ -405,9 +405,12 @@ class _FlipContainerState extends State<FlipContainer>
             r'''}$$''' +
             '\\n' +
             ensureLatexSyntax(text, isTex);
+    ;
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
-      color: isFront ? Colors.blue : Colors.yellow,
+      color: isFront
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).colorScheme.secondary,
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(8.0),
@@ -415,10 +418,10 @@ class _FlipContainerState extends State<FlipContainer>
           child: LaTexT(
               laTeXCode: Text(
             cardText,
-            style: Theme.of(context)
-                .textTheme
-                .displayMedium!
-                .copyWith(color: !isFront ? Colors.blue : Colors.yellow),
+            style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                color: !isFront
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).colorScheme.onSecondary),
             textAlign: TextAlign.center,
           )),
         ),

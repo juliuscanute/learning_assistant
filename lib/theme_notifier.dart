@@ -74,6 +74,12 @@ final darkTheme = ThemeData(
     selectedItemColor: Colors.white,
     unselectedItemColor: Colors.white70,
   ),
+  colorScheme: ColorScheme.dark(
+    primary: Colors.grey[900]!,
+    onPrimary: Colors.white,
+    secondary: Colors.blueGrey,
+    onSecondary: Colors.white,
+  ),
 );
 
 final lightTheme = ThemeData(
@@ -121,5 +127,11 @@ final lightTheme = ThemeData(
     backgroundColor: Colors.purple[50],
     selectedItemColor: Colors.purple[400],
     unselectedItemColor: Colors.black54,
+  ),
+  colorScheme: ColorScheme.light(
+    primary: Colors.purple[400]!,
+    onPrimary: Colors.white,
+    secondary: Colors.amber,
+    onSecondary: Colors.black,
   ),
 );
