@@ -69,6 +69,14 @@ final darkTheme = ThemeData(
       ),
     ),
   ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStateProperty.all<Color>(Colors.blueGrey[700]!),
+      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+      ),
+    ),
+  ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: Color(0xFF1E1E1E),
     selectedItemColor: Colors.white,
@@ -118,6 +126,14 @@ final lightTheme = ThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStateProperty.all<Color>(Colors.purple[400]!),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+      ),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStateProperty.all<Color>(Colors.purple[400]!),
       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
       ),

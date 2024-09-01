@@ -174,7 +174,10 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
           children: [
             SizedBox(
               width: 150,
-              child: OutlinedButton(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[600],
+                ),
                 onPressed: isStartEnabled
                     ? () {
                         setState(() {
@@ -192,6 +195,9 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
             SizedBox(
               width: 150,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[600],
+                ),
                 onPressed: isFinishEnabled
                     ? () {
                         setState(() {
