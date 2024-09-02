@@ -326,7 +326,8 @@ class _FlipContainerState extends State<FlipContainer>
                 // Recall Icon Button
                 if (widget.imageUrl?.isNotEmpty == true)
                   IconButton(
-                    icon: const Icon(Icons.visibility, color: Colors.black),
+                    icon: Icon(Icons.visibility,
+                        color: Theme.of(context).colorScheme.onPrimary),
                     onPressed: () {
                       _showRecallImageDialog(widget.imageUrl ?? "");
                     },
@@ -334,7 +335,8 @@ class _FlipContainerState extends State<FlipContainer>
                 // Flip Icon Button
                 if (widget.front.isNotEmpty && widget.back.isNotEmpty)
                   IconButton(
-                    icon: const Icon(Icons.flip, color: Colors.black),
+                    icon: Icon(Icons.flip,
+                        color: Theme.of(context).colorScheme.onPrimary),
                     onPressed: () {
                       if (isFront) {
                         _controller.forward();
@@ -351,7 +353,8 @@ class _FlipContainerState extends State<FlipContainer>
                 if (widget.explanation?.isNotEmpty == true ||
                     widget.explanationTex?.isNotEmpty == true)
                   IconButton(
-                    icon: const Icon(Icons.info, color: Colors.black),
+                    icon: Icon(Icons.info,
+                        color: Theme.of(context).colorScheme.onPrimary),
                     onPressed: () {
                       // Add your logic to show the explanation here
                       _showExplanationDialog(

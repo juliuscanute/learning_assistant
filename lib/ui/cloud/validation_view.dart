@@ -97,7 +97,7 @@ class ValidationView extends StatelessWidget {
                       child: formattedRenderer(
                           context,
                           'Explanation: ',
-                          entry.card.explanation!,
+                          '${entry.card.explanationTex?.trim().isNotEmpty == true ? entry.card.explanationTex : entry.card.explanation}',
                           entry.card.explanationTex?.trim().isNotEmpty == true,
                           Theme.of(context).textTheme.bodyMedium!.color!),
                     ),
