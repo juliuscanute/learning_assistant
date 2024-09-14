@@ -45,6 +45,10 @@ void initializeNotification() async {
       iOS: initializationSettingsDarwin,
       macOS: initializationSettingsDarwin);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.requestNotificationsPermission();
 }
 
 class MyApp extends StatelessWidget {
