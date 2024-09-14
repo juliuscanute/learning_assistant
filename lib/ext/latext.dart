@@ -195,15 +195,15 @@ class LaTexTState extends State<LaTexT> {
               widget.onErrorFallback?.call(subTexts[j].trim()) ??
               Math.defaultOnErrorFallback(exception),
         );
+        final breaks = parsedTex.texBreak(enforceNoBreak: false);
         Widget tex = SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 4.0,
-            runSpacing: 16.0,
-            children: parsedTex.texBreak().parts,
-          ),
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 4.0,
+              runSpacing: 16.0,
+              children: breaks.parts),
         );
 
         if (align) {

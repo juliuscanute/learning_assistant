@@ -106,7 +106,6 @@ final lightTheme = ThemeData(
     headlineMedium:
         const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
     headlineSmall: TextStyle(color: Colors.purple[300]),
-    // Add other text styles as needed
   ),
   buttonTheme: const ButtonThemeData(
     buttonColor: Colors.purple,
@@ -119,7 +118,16 @@ final lightTheme = ThemeData(
     color: Colors.purple[700],
     elevation: 0,
     iconTheme: const IconThemeData(color: Colors.white),
-    titleTextStyle: const TextStyle(color: Colors.white),
+    toolbarTextStyle: const TextStyle(
+      color: Colors.white,
+      fontSize: 18.0,
+      fontWeight: FontWeight.w600,
+    ),
+    titleTextStyle: const TextStyle(
+      color: Colors.white,
+      fontSize: 20.0,
+      fontWeight: FontWeight.bold,
+    ), // Ensures app bar title text is white
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: Colors.purple,

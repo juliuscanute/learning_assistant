@@ -29,7 +29,6 @@ class AddEventViewState extends State<AddEventView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: const Text('Add Event'),
       ),
       body: SingleChildScrollView(

@@ -21,8 +21,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryList.last),
-        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: Container(
         child: () {

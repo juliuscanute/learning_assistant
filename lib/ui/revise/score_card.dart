@@ -91,7 +91,6 @@ class _ScoreCardListScreenState extends State<ScoreCardListScreen> {
           builder: (context, value, child) {
             return Scaffold(
               appBar: AppBar(
-                titleTextStyle: Theme.of(context).textTheme.headlineMedium,
                 title: Text(widget.title),
                 actions: <Widget>[
                   if (value.isNotEmpty)

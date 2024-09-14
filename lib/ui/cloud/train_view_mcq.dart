@@ -83,7 +83,6 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         title: Text(
             "Train ${widget.group.title}"), // Change app bar title to "Train"
       ),
@@ -111,11 +110,13 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(autoChange
-                          ? "Automatic"
-                          : "On Tap"), // Change text based on autoChange
+                      const Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text('On Tap'),
+                        ),
+                      ),
                       Switch(
                         value: autoChange,
                         onChanged: (value) {
@@ -124,14 +125,22 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                           });
                         },
                       ),
+                      const Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Automatic'),
+                        ),
+                      ),
                     ],
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(randomOrder
-                          ? "Random Order"
-                          : "Given Order"), // Change text based on randomOrder
+                      const Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text('Given Order'),
+                        ),
+                      ),
                       Switch(
                         value: randomOrder,
                         onChanged: (value) {
@@ -139,6 +148,12 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                             randomOrder = value;
                           });
                         },
+                      ),
+                      const Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Random Order'),
+                        ),
                       ),
                     ],
                   ),
@@ -148,17 +163,26 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                     children: [
                       const Text("Time Gap"),
                       const SizedBox(width: 8.0),
-                      SizedBox(
-                        width: 50.0,
-                        child: TextField(
-                          controller: _timeGapController,
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            setState(() {
-                              timeGap = int.tryParse(value) ?? 1;
-                            });
-                          },
-                        ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove),
+                            onPressed: () {
+                              setState(() {
+                                if (timeGap > 1) timeGap--;
+                              });
+                            },
+                          ),
+                          Text('$timeGap s'),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              setState(() {
+                                if (timeGap < 60) timeGap++;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),

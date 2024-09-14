@@ -71,7 +71,6 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Train"),
-          titleTextStyle: Theme.of(context).textTheme.headlineMedium,
         ),
         body: SingleChildScrollView(
           child: Padding(

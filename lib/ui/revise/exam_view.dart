@@ -129,7 +129,6 @@ class ExamViewWidgetState extends State<ExamView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Train"),
-        titleTextStyle: Theme.of(context).textTheme.headlineMedium,
       ),
       body: SingleChildScrollView(
         child: Column(

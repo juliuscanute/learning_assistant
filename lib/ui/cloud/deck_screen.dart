@@ -21,7 +21,6 @@ class _DecksScreenState extends State<DecksScreen> {
       appBar: AppBar(
         title: Text(
           'Decks',
-          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
