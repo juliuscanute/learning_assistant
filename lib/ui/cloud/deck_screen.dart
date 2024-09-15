@@ -3,8 +3,10 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/theme_notifier.dart';
 import 'package:learning_assistant/ui/cloud/category_card.dart';
 import 'package:learning_assistant/ui/cloud/deck_card.dart';
+import 'package:provider/provider.dart';
 
 class DecksScreen extends StatefulWidget {
   final firebaseService = ServiceLocator.instance.get<FirebaseService>();
@@ -17,6 +19,8 @@ class DecksScreen extends StatefulWidget {
 class _DecksScreenState extends State<DecksScreen> {
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -45,6 +49,16 @@ class _DecksScreenState extends State<DecksScreen> {
             }
 
             List<Widget> children = [];
+
+            // Add the image at the top of the list
+            children.add(
+              Image.asset(
+                brightness == Brightness.light
+                    ? 'assets/images/light/illustration_study.webp'
+                    : 'assets/images/dark/illustration_study.webp',
+                fit: BoxFit.cover, // Adjust as needed
+              ),
+            );
 
             // For categories with decks, create a CategoryCard
             categories.forEach((category, decksInCategory) {

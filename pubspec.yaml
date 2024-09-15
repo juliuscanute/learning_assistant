@@ -80,6 +80,11 @@ flutter_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/images/dark/illustration_study.webp
+    - assets/images/dark/illustration_reminder.webp
+    - assets/images/light/illustration_study.webp
+    - assets/images/light/illustration_reminder.webp
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

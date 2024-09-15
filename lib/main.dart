@@ -95,16 +95,16 @@ class MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: "Study",
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.alarm),
               label: "Reminder",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: "Local",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.cloud),
-              label: "Cloud",
+              icon: Icon(Icons.science),
+              label: "Explore",
             ),
           ],
           currentIndex: _selectedIndex,
@@ -123,9 +123,9 @@ class MyHomePageState extends State<MyHomePage> {
           child: IndexedStack(
             index: _selectedIndex,
             children: <Widget>[
+              CloudViewNavigator(navigatorKey: navigatorKeys[2]!),
               ReminderNavigator(navigatorKey: navigatorKeys[0]!),
               ReviseNavigator(navigatorKey: navigatorKeys[1]!),
-              CloudViewNavigator(navigatorKey: navigatorKeys[2]!),
             ],
           ),
         ),

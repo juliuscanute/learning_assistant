@@ -39,6 +39,7 @@ class EventViewState extends State<EventView> {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reminders'),
@@ -65,13 +66,28 @@ class EventViewState extends State<EventView> {
                 } else if (snapshot.data!.isEmpty) {
                   return const Center(child: Text('No events found.'));
                 } else {
+                  // Adjust the itemCount to account for the image
                   return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: snapshot.data!.length + 1, // +1 for the image
                     itemBuilder: (BuildContext context, int index) {
-                      final event = snapshot.data![index];
-                      return ListItemCard(
-                        event: event,
-                      );
+                      if (index == 0) {
+                        // Return the image widget at the first index
+                        return Container(
+                          margin: const EdgeInsets.all(10.0),
+                          child: Image.asset(
+                            brightness == Brightness.light
+                                ? 'assets/images/light/illustration_reminder.webp'
+                                : 'assets/images/dark/illustration_reminder.webp',
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      } else {
+                        // Adjust index by -1 to account for the image
+                        final event = snapshot.data![index - 1];
+                        return ListItemCard(
+                          event: event,
+                        );
+                      }
                     },
                   );
                 }
