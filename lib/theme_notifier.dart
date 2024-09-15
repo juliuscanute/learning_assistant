@@ -41,55 +41,69 @@ final darkTheme = ThemeData(
     bodySmall: TextStyle(color: Colors.white70),
     headlineMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
     headlineSmall: TextStyle(color: Colors.white70),
-    // Add other text styles as needed
   ),
   buttonTheme: const ButtonThemeData(
-    buttonColor: Colors.blueGrey,
-    textTheme: ButtonTextTheme.primary,
+    buttonColor: Colors.blueGrey, // Define a proper background color
+    textTheme: ButtonTextTheme.primary, // Ensures button text is visible
   ),
-  iconTheme: const IconThemeData(
-    color: Colors.white70,
-  ),
-  appBarTheme: const AppBarTheme(
-    color: Color(0xFF1E1E1E),
-    elevation: 0,
-    iconTheme: IconThemeData(color: Colors.white),
-    titleTextStyle: TextStyle(color: Colors.white),
-  ),
-  floatingActionButtonTheme: const FloatingActionButtonThemeData(
-    backgroundColor: Colors.blueGrey,
-    foregroundColor: Colors.white,
+  textButtonTheme: TextButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: MaterialStateProperty.all<Color>(
+          Colors.blueGrey[300]!), // Makes text readable in dark mode
+    ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all<Color>(Colors.blueGrey[700]!),
-      foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+      backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0),
+        ),
       ),
+      elevation:
+          MaterialStateProperty.all(5), // Adds shadow for better contrast
+      overlayColor: MaterialStateProperty.all<Color>(Colors.blueAccent[100]!),
     ),
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: WidgetStateProperty.all<Color>(Colors.blueGrey[700]!),
-      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+      foregroundColor: MaterialStateProperty.all<Color>(
+          Colors.blueAccent), // Bright text color for good contrast
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.circular(18.0), // Rounded corners for modern look
+        ),
       ),
+      side: MaterialStateProperty.all(
+          BorderSide(color: Colors.blueAccent)), // Border color
+      overlayColor: MaterialStateProperty.all<Color>(Colors.blueAccent
+          .withOpacity(0.1)), // Light overlay color when pressed/hovered
     ),
   ),
-  radioTheme: RadioThemeData(
-    fillColor: WidgetStateProperty.all<Color>(Colors.blueGrey),
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: Colors.blueGrey,
+    foregroundColor: Colors.white,
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: Color(0xFF1E1E1E),
     selectedItemColor: Colors.white,
     unselectedItemColor: Colors.white70,
   ),
+  dialogTheme: DialogTheme(
+    backgroundColor: const Color(0xFF1E1E1E), // Dark background for dialogs
+    titleTextStyle: TextStyle(
+        color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+    contentTextStyle: TextStyle(color: Colors.white70),
+  ),
   colorScheme: ColorScheme.dark(
-    primary: Colors.grey[900]!,
+    primary: Colors.blueAccent,
     onPrimary: Colors.white,
     secondary: Colors.blueGrey,
     onSecondary: Colors.white,
+    surface: const Color(0xFF1E1E1E),
+    onSurface: Colors.white,
   ),
 );
 
