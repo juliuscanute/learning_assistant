@@ -48,37 +48,36 @@ final darkTheme = ThemeData(
   ),
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: MaterialStateProperty.all<Color>(
+      foregroundColor: WidgetStateProperty.all<Color>(
           Colors.blueGrey[300]!), // Makes text readable in dark mode
     ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
-      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      backgroundColor: WidgetStateProperty.all<Color>(Colors.blueAccent),
+      foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18.0),
         ),
       ),
-      elevation:
-          MaterialStateProperty.all(5), // Adds shadow for better contrast
-      overlayColor: MaterialStateProperty.all<Color>(Colors.blueAccent[100]!),
+      elevation: WidgetStateProperty.all(5), // Adds shadow for better contrast
+      overlayColor: WidgetStateProperty.all<Color>(Colors.blueAccent[100]!),
     ),
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: MaterialStateProperty.all<Color>(
+      foregroundColor: WidgetStateProperty.all<Color>(
           Colors.blueAccent), // Bright text color for good contrast
-      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
           borderRadius:
               BorderRadius.circular(18.0), // Rounded corners for modern look
         ),
       ),
-      side: MaterialStateProperty.all(
-          BorderSide(color: Colors.blueAccent)), // Border color
-      overlayColor: MaterialStateProperty.all<Color>(Colors.blueAccent
+      side: WidgetStateProperty.all(
+          const BorderSide(color: Colors.blueAccent)), // Border color
+      overlayColor: WidgetStateProperty.all<Color>(Colors.blueAccent
           .withOpacity(0.1)), // Light overlay color when pressed/hovered
     ),
   ),
@@ -91,18 +90,18 @@ final darkTheme = ThemeData(
     selectedItemColor: Colors.white,
     unselectedItemColor: Colors.white70,
   ),
-  dialogTheme: DialogTheme(
-    backgroundColor: const Color(0xFF1E1E1E), // Dark background for dialogs
-    titleTextStyle: TextStyle(
+  dialogTheme: const DialogTheme(
+    backgroundColor: Color(0xFF1E1E1E), // Dark background for dialogs
+    titleTextStyle: const TextStyle(
         color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
     contentTextStyle: TextStyle(color: Colors.white70),
   ),
-  colorScheme: ColorScheme.dark(
+  colorScheme: const ColorScheme.dark(
     primary: Colors.blueAccent,
     onPrimary: Colors.white,
     secondary: Colors.blueGrey,
     onSecondary: Colors.white,
-    surface: const Color(0xFF1E1E1E),
+    surface: Color(0xFF1E1E1E),
     onSurface: Colors.white,
   ),
 );
