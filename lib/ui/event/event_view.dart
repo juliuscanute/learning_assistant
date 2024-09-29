@@ -37,6 +37,24 @@ class EventViewState extends State<EventView> {
     }
   }
 
+  Widget _buildImageWidget(Brightness brightness, BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(10.0),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height / 2,
+        ),
+        child: Image.asset(
+          brightness == Brightness.light
+              ? 'assets/images/light/illustration_reminder.webp'
+              : 'assets/images/dark/illustration_reminder.webp',
+          fit: BoxFit.cover,
+          width: double.infinity,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
@@ -63,24 +81,20 @@ class EventViewState extends State<EventView> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No events found.'));
                 } else {
-                  // Adjust the itemCount to account for the image
+                  // Always include the image in the itemCount
+                  int itemCount =
+                      (snapshot.data?.length ?? 0) + 1; // +1 for the image
+
                   return ListView.builder(
-                    itemCount: snapshot.data!.length + 1, // +1 for the image
+                    itemCount: itemCount,
                     itemBuilder: (BuildContext context, int index) {
                       if (index == 0) {
                         // Return the image widget at the first index
-                        return Container(
-                          margin: const EdgeInsets.all(10.0),
-                          child: Image.asset(
-                            brightness == Brightness.light
-                                ? 'assets/images/light/illustration_reminder.webp'
-                                : 'assets/images/dark/illustration_reminder.webp',
-                            fit: BoxFit.cover,
-                          ),
-                        );
+                        return _buildImageWidget(brightness, context);
+                      } else if (snapshot.data!.isEmpty) {
+                        // Handle the case when there are no events
+                        return const Center(child: Text('No events found.'));
                       } else {
                         // Adjust index by -1 to account for the image
                         final event = snapshot.data![index - 1];

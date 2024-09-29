@@ -52,11 +52,19 @@ class _DecksScreenState extends State<DecksScreen> {
 
             // Add the image at the top of the list
             children.add(
-              Image.asset(
-                brightness == Brightness.light
-                    ? 'assets/images/light/illustration_study.webp'
-                    : 'assets/images/dark/illustration_study.webp',
-                fit: BoxFit.cover, // Adjust as needed
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height /
+                      2, // Set your desired maximum height here
+                ),
+                child: Image.asset(
+                  brightness == Brightness.light
+                      ? 'assets/images/light/illustration_study.webp'
+                      : 'assets/images/dark/illustration_study.webp',
+                  fit: BoxFit.cover, // Adjust the fit as needed
+                  width: double
+                      .infinity, // Ensure the image fills the available width
+                ),
               ),
             );
 
