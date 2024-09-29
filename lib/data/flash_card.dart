@@ -23,6 +23,7 @@ class FlashCard {
   final int? correctOptionIndex;
   final String? explanation;
   final String? explanationTex;
+  final String? mnemonic;
 
   FlashCard(
       {required this.index,
@@ -35,21 +36,22 @@ class FlashCard {
       required this.mcqOptionsTex,
       required this.correctOptionIndex,
       required this.explanation,
-      required this.explanationTex});
+      required this.explanationTex,
+      required this.mnemonic});
 
   static FlashCard createEmptyFlashCard() {
     return FlashCard(
-      index: -1,
-      front: '',
-      frontTex: null,
-      back: '',
-      backTex: null,
-      imageUrl: null,
-      mcqOptions: [],
-      mcqOptionsTex: null,
-      correctOptionIndex: null,
-      explanation: null,
-      explanationTex: null,
-    );
+        index: -1,
+        front: '',
+        frontTex: null,
+        back: '',
+        backTex: null,
+        imageUrl: null,
+        mcqOptions: [],
+        mcqOptionsTex: null,
+        correctOptionIndex: null,
+        explanation: null,
+        explanationTex: null,
+        mnemonic: null);
   }
 }

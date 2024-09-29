@@ -37,6 +37,7 @@ class FirebaseService {
               'mcq': doc.data()['mcq'] ?? {},
               'explanation': doc.data()['explanation'] ?? '',
               'explanation_tex': doc.data()['explanation_tex'] ?? '',
+              'mnemonic': doc.data()['mnemonic'] ?? '',
             }))
         .values // Convert back to iterable
         .toList();

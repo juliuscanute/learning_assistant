@@ -103,6 +103,7 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                 backTex: currentText.backTex ?? "",
                 explanation: currentText.explanation ?? "",
                 explanationTex: currentText.explanationTex ?? "",
+                mnemonic: currentText.mnemonic ?? "",
               ),
             ),
             Padding(
@@ -254,6 +255,7 @@ class FlipContainer extends StatefulWidget {
   final String? imageUrl;
   final String? explanation;
   final String? explanationTex;
+  final String mnemonic;
 
   const FlipContainer(
       {super.key,
@@ -264,7 +266,8 @@ class FlipContainer extends StatefulWidget {
       this.frontTex,
       this.backTex,
       this.explanation,
-      this.explanationTex});
+      this.explanationTex,
+      this.mnemonic = ""});
 
   @override
   _FlipContainerState createState() => _FlipContainerState();
@@ -384,6 +387,16 @@ class _FlipContainerState extends State<FlipContainer>
                       _showExplanationDialog(
                           widget.explanation ?? widget.explanationTex ?? "",
                           widget.explanationTex?.isNotEmpty == true);
+                    },
+                  ),
+
+                if (widget.mnemonic.isNotEmpty == true)
+                  IconButton(
+                    icon: Icon(Icons.replay,
+                        color: Theme.of(context).colorScheme.onPrimary),
+                    onPressed: () {
+                      // Add your logic to show the explanation here
+                      _showExplanationDialog(widget.mnemonic, false);
                     },
                   ),
               ],

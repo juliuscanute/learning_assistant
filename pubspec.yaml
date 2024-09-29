@@ -123,6 +123,6 @@ msix_config:
   publisher_display_name: John Louis
   identity_name: JohnLouis.LearningAssistant-MemoryTechniques
   publisher: CN=0AB1F8C5-E04C-4446-AE23-E82DB6DD06D5
-  msix_version: 1.0.2.0
+  msix_version: 1.0.3.0
   logo_path: windows\runner\resources\app_icon.png
   store: true

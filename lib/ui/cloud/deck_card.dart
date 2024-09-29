@@ -145,7 +145,8 @@ class DeckCard extends StatelessWidget {
               [],
           correctOptionIndex: card['mcq']['answer_index'],
           explanation: card['explanation'],
-          explanationTex: card['explanation_tex']);
+          explanationTex: card['explanation_tex'],
+          mnemonic: card['mnemonic']);
     });
     return FlashCardDeck(
       title: deckData['title'],
