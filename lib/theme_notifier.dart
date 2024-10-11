@@ -54,7 +54,13 @@ final darkTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all<Color>(Colors.blueAccent),
+      backgroundColor:
+          WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
+          return Colors.blueGrey[700]; // Disabled button color
+        }
+        return Colors.blueAccent; // Enabled button color
+      }),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
@@ -121,9 +127,7 @@ final lightTheme = ThemeData(
     headlineSmall: TextStyle(color: Colors.purple[300]),
   ),
   buttonTheme: const ButtonThemeData(
-    buttonColor: Colors.purple,
-    textTheme: ButtonTextTheme.primary,
-  ),
+      buttonColor: Colors.purple, textTheme: ButtonTextTheme.primary),
   iconTheme: const IconThemeData(
     color: Colors.black54,
   ),
@@ -148,7 +152,13 @@ final lightTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all<Color>(Colors.purple[400]!),
+      backgroundColor:
+          WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
+          return Colors.blueGrey[700];
+        }
+        return Colors.purple[400];
+      }),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),

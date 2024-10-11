@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
 import 'dart:async';
 
 import 'package:learning_assistant/data/flash_card.dart';
@@ -30,7 +29,7 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
   void initState() {
     super.initState();
     currentText = FlashCard.createEmptyFlashCard();
-    autoChange = true;
+    autoChange = false;
     randomOrder = false;
     timeGap = 1;
     isStartEnabled = true;
@@ -51,6 +50,8 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
             currentText = cardValues[currentIndex];
             // Navigator.of(context, rootNavigator: true).pop('dialog');
             currentIndex++;
+            isStartEnabled = false;
+            isFinishEnabled = true;
           } else {
             textChangeTimer?.cancel();
           }
@@ -66,9 +67,7 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
       }
       if (currentIndex < widget.group.cards.length) {
         currentText = cardValues[currentIndex];
-        // Navigator.of(context, rootNavigator: true).pop('dialog');
         currentIndex++;
-      } else {
         isStartEnabled = false;
         isFinishEnabled = true;
       }
@@ -211,6 +210,8 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                         });
                         if (autoChange) {
                           _startAutoChange();
+                        } else {
+                          _nextCard();
                         }
                       }
                     : null,
@@ -386,6 +387,7 @@ class _FlipContainerState extends State<FlipContainer>
                       // Add your logic to show the explanation here
                       _showExplanationDialog(
                           widget.explanation ?? widget.explanationTex ?? "",
+                          "Explanation",
                           widget.explanationTex?.isNotEmpty == true);
                     },
                   ),
@@ -396,7 +398,8 @@ class _FlipContainerState extends State<FlipContainer>
                         color: Theme.of(context).colorScheme.onPrimary),
                     onPressed: () {
                       // Add your logic to show the explanation here
-                      _showExplanationDialog(widget.mnemonic, false);
+                      _showExplanationDialog(
+                          widget.mnemonic, "Mnemonic", false);
                     },
                   ),
               ],
@@ -407,12 +410,12 @@ class _FlipContainerState extends State<FlipContainer>
     );
   }
 
-  void _showExplanationDialog(String explanation, bool isTex) {
+  void _showExplanationDialog(String explanation, String title, bool isTex) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Explanation'),
+          title: Text(title),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
