@@ -34,6 +34,13 @@ jobs:
     - name: Download pub dependencies
       run: flutter pub get
 
+    - name: Update msix_version in pubspec.yaml
+      run: |
+        $pubspec = Get-Content pubspec.yaml
+        $pubspec = $pubspec -join "`n"
+        $pubspec = $pubspec -replace 'msix_version: (\d+\.\d+)\.\d+(\+\d+)?', "msix_version: `$1.${{ github.run_number }}$2"
+        Set-Content pubspec.yaml $pubspec
+
     - name: Build via Flutter
       run: flutter build windows --release --build-number ${{ github.run_number }}
 
