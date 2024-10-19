@@ -8,6 +8,7 @@ import 'package:learning_assistant/data/result.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/firebase_options.dart';
 import 'package:learning_assistant/theme_notifier.dart';
+import 'package:learning_assistant/ui/blog/blog_view_navigator.dart';
 import 'package:learning_assistant/ui/cloud/cloud_view_navigator.dart';
 import 'package:learning_assistant/ui/event/reminder_navigator.dart';
 import 'package:learning_assistant/ui/revise/revise_navigator.dart';
@@ -86,7 +87,8 @@ class MyHomePageState extends State<MyHomePage> {
   Map<int, GlobalKey> navigatorKeys = {
     0: GlobalKey(),
     1: GlobalKey(),
-    2: GlobalKey()
+    2: GlobalKey(),
+    3: GlobalKey(),
   };
 
   @override
@@ -98,6 +100,7 @@ class MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.school),
               label: "Study",
             ),
+            BottomNavigationBarItem(icon: Icon(Icons.article), label: "Blogs"),
             BottomNavigationBarItem(
               icon: Icon(Icons.alarm),
               label: "Reminder",
@@ -124,6 +127,7 @@ class MyHomePageState extends State<MyHomePage> {
             index: _selectedIndex,
             children: <Widget>[
               CloudViewNavigator(navigatorKey: navigatorKeys[2]!),
+              BlogViewNavigator(navigatorKey: navigatorKeys[3]!),
               ReminderNavigator(navigatorKey: navigatorKeys[0]!),
               ReviseNavigator(navigatorKey: navigatorKeys[1]!),
             ],
