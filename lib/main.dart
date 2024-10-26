@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/event.dart';
@@ -93,8 +94,28 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, bool? result) async {
+        if (!didPop) {
+          final NavigatorState? navigator =
+              navigatorKeys[_selectedIndex]?.currentState as NavigatorState?;
+          if (navigator == null) {
+            // If no navigator is available, allow system to handle back
+            return SystemNavigator.pop();
+          }
+
+          // Check if current navigator can pop
+          if (navigator.canPop()) {
+            navigator.pop();
+          } else {
+            // If we can't pop and we're at root, exit app
+            return SystemNavigator.pop();
+          }
+        }
+      },
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.school),
@@ -115,21 +136,17 @@ class MyHomePageState extends State<MyHomePage> {
             setState(() {
               _selectedIndex = index;
             });
-          }),
-      body: SafeArea(
-        top: false,
-        child: WillPopScope(
-          onWillPop: () async {
-            return !await Navigator.maybePop(
-                navigatorKeys[_selectedIndex]!.currentState!.context);
           },
+        ),
+        body: SafeArea(
+          top: false,
           child: IndexedStack(
             index: _selectedIndex,
             children: <Widget>[
-              CloudViewNavigator(navigatorKey: navigatorKeys[2]!),
-              BlogViewNavigator(navigatorKey: navigatorKeys[3]!),
-              ReminderNavigator(navigatorKey: navigatorKeys[0]!),
-              ReviseNavigator(navigatorKey: navigatorKeys[1]!),
+              CloudViewNavigator(navigatorKey: navigatorKeys[0]!),
+              BlogViewNavigator(navigatorKey: navigatorKeys[1]!),
+              ReminderNavigator(navigatorKey: navigatorKeys[2]!),
+              ReviseNavigator(navigatorKey: navigatorKeys[3]!),
             ],
           ),
         ),
