@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-
-import 'add_event_view.dart';
-import 'event_view.dart';
+import 'package:learning_assistant/di/injection_container.dart';
+import 'package:learning_assistant/presentation/bloc/event_bloc.dart';
+import 'package:learning_assistant/presentation/bloc/event_details.bloc.dart';
+import 'package:learning_assistant/presentation/pages/add_event_page.dart';
+import 'package:learning_assistant/presentation/pages/event_page.dart';
 
 class ReminderNavigator extends StatefulWidget {
   const ReminderNavigator({required this.navigatorKey, super.key});
@@ -23,9 +25,12 @@ class ReminderNavigatorState extends State<ReminderNavigator> {
             builder: (BuildContext context) {
               switch (settings.name) {
                 case '/':
-                  return EventView();
+                  return EventPage(
+                    eventBloc: sl<EventBloc>(),
+                    eventDetailsBloc: sl<EventDetailsBloc>(),
+                  );
                 case '/create-entry':
-                  return AddEventView();
+                  return AddEventPage(eventBloc: sl<EventBloc>());
                 default:
                   return Container();
               }

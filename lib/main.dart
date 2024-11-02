@@ -6,6 +6,7 @@ import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/initial_deck.dart';
 import 'package:learning_assistant/data/result.dart';
+import 'package:learning_assistant/di/injection_container.dart';
 import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/firebase_options.dart';
 import 'package:learning_assistant/theme_notifier.dart';
@@ -24,7 +25,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final isar = await openIsar();
-  ServiceLocator.setup(isar);
+  await init(isar);
   final isFirst = await isFirstLaunch();
   if (isFirst) LoadDeck().initialise();
   await Firebase.initializeApp(
