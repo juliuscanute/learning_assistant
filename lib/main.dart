@@ -6,13 +6,13 @@ import 'package:learning_assistant/data/cards.dart';
 import 'package:learning_assistant/data/event.dart';
 import 'package:learning_assistant/data/initial_deck.dart';
 import 'package:learning_assistant/data/result.dart';
+import 'package:learning_assistant/data/spaced_revision_event.dart';
 import 'package:learning_assistant/di/injection_container.dart';
-import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/firebase_options.dart';
+import 'package:learning_assistant/presentation/reminder_navigator.dart';
 import 'package:learning_assistant/theme_notifier.dart';
 import 'package:learning_assistant/ui/blog/blog_view_navigator.dart';
 import 'package:learning_assistant/ui/cloud/cloud_view_navigator.dart';
-import 'package:learning_assistant/ui/event/reminder_navigator.dart';
 import 'package:learning_assistant/ui/revise/revise_navigator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -166,7 +166,12 @@ Future<bool> isFirstLaunch() async {
 Future<Isar> openIsar() async {
   final dir = await getApplicationDocumentsDirectory();
   return await Isar.open(
-    [EventGroupSchema, FlashCardGroupSchema, ResultGroupSchema],
+    [
+      EventGroupSchema,
+      FlashCardGroupSchema,
+      ResultGroupSchema,
+      SpacedRevisionEventGroupSchema
+    ],
     directory: dir.path,
   );
 }

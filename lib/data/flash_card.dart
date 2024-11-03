@@ -1,11 +1,13 @@
 class FlashCardDeck {
+  final String id;
   final String title;
   final List<String> tags;
   final List<FlashCard> cards;
   final bool exactMatch;
 
   FlashCardDeck(
-      {required this.title,
+      {required this.id,
+      required this.title,
       required this.tags,
       required this.cards,
       this.exactMatch = true});

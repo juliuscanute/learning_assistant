@@ -149,6 +149,7 @@ class DeckCard extends StatelessWidget {
           mnemonic: card['mnemonic']);
     });
     return FlashCardDeck(
+      id: deckId,
       title: deckData['title'],
       tags: [],
       cards: cards,

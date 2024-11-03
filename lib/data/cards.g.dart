@@ -23,13 +23,18 @@ const FlashCardGroupSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'CardEmbedded',
     ),
-    r'tags': PropertySchema(
+    r'exactMatch': PropertySchema(
       id: 1,
+      name: r'exactMatch',
+      type: IsarType.bool,
+    ),
+    r'tags': PropertySchema(
+      id: 2,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'title': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'title',
       type: IsarType.string,
     )
@@ -85,8 +90,9 @@ void _flashCardGroupSerialize(
     CardEmbeddedSchema.serialize,
     object.cards,
   );
-  writer.writeStringList(offsets[1], object.tags);
-  writer.writeString(offsets[2], object.title);
+  writer.writeBool(offsets[1], object.exactMatch);
+  writer.writeStringList(offsets[2], object.tags);
+  writer.writeString(offsets[3], object.title);
 }
 
 FlashCardGroup _flashCardGroupDeserialize(
@@ -96,8 +102,8 @@ FlashCardGroup _flashCardGroupDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = FlashCardGroup(
-    reader.readString(offsets[2]),
-    reader.readStringList(offsets[1]) ?? [],
+    reader.readString(offsets[3]),
+    reader.readStringList(offsets[2]) ?? [],
     reader.readObjectList<CardEmbedded>(
           offsets[0],
           CardEmbeddedSchema.deserialize,
@@ -106,6 +112,7 @@ FlashCardGroup _flashCardGroupDeserialize(
         ) ??
         [],
   );
+  object.exactMatch = reader.readBool(offsets[1]);
   object.id = id;
   return object;
 }
@@ -126,8 +133,10 @@ P _flashCardGroupDeserializeProp<P>(
           ) ??
           []) as P;
     case 1:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readBool(offset)) as P;
     case 2:
+      return (reader.readStringList(offset) ?? []) as P;
+    case 3:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -316,6 +325,16 @@ extension FlashCardGroupQueryFilter
         upper,
         includeUpper,
       );
+    });
+  }
+
+  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterFilterCondition>
+      exactMatchEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'exactMatch',
+        value: value,
+      ));
     });
   }
 
@@ -751,6 +770,20 @@ extension FlashCardGroupQueryLinks
 
 extension FlashCardGroupQuerySortBy
     on QueryBuilder<FlashCardGroup, FlashCardGroup, QSortBy> {
+  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterSortBy>
+      sortByExactMatch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'exactMatch', Sort.asc);
+    });
+  }
+
+  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterSortBy>
+      sortByExactMatchDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'exactMatch', Sort.desc);
+    });
+  }
+
   QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterSortBy> sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -766,6 +799,20 @@ extension FlashCardGroupQuerySortBy
 
 extension FlashCardGroupQuerySortThenBy
     on QueryBuilder<FlashCardGroup, FlashCardGroup, QSortThenBy> {
+  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterSortBy>
+      thenByExactMatch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'exactMatch', Sort.asc);
+    });
+  }
+
+  QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterSortBy>
+      thenByExactMatchDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'exactMatch', Sort.desc);
+    });
+  }
+
   QueryBuilder<FlashCardGroup, FlashCardGroup, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -793,6 +840,13 @@ extension FlashCardGroupQuerySortThenBy
 
 extension FlashCardGroupQueryWhereDistinct
     on QueryBuilder<FlashCardGroup, FlashCardGroup, QDistinct> {
+  QueryBuilder<FlashCardGroup, FlashCardGroup, QDistinct>
+      distinctByExactMatch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'exactMatch');
+    });
+  }
+
   QueryBuilder<FlashCardGroup, FlashCardGroup, QDistinct> distinctByTags() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'tags');
@@ -819,6 +873,12 @@ extension FlashCardGroupQueryProperty
       cardsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'cards');
+    });
+  }
+
+  QueryBuilder<FlashCardGroup, bool, QQueryOperations> exactMatchProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'exactMatch');
     });
   }
 

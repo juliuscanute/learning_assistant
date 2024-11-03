@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/data/result_repository.dart';
-import 'package:learning_assistant/di/service_locator.dart';
+import 'package:learning_assistant/di/injection_container.dart';
+import 'package:learning_assistant/domain/usecases/set_spaced_revision.dart';
+import 'package:learning_assistant/domain/usecases/update_spaced_revision.dart';
+import 'package:learning_assistant/presentation/bloc/spaced_revision_check_bloc.dart';
 import 'package:learning_assistant/ext/latext.dart';
 import 'package:learning_assistant/ext/string_ext.dart';
 
@@ -15,16 +19,44 @@ class ValidationParameters {
   });
 }
 
-class ValidationView extends StatelessWidget {
+class ValidationView extends StatefulWidget {
   final FlashCardDeck flashCardGroup;
   final List<String> userAnswers;
-  final resultRepository = ServiceLocator.instance.get<ResultRepository>();
 
   ValidationView({
     Key? key,
     required this.flashCardGroup,
     required this.userAnswers,
   }) : super(key: key);
+
+  @override
+  _ValidationViewState createState() => _ValidationViewState();
+}
+
+class _ValidationViewState extends State<ValidationView> {
+  final resultRepository = sl<ResultRepository>();
+  final spacedRevision = sl<SetSpacedRevision>();
+  final spacedRevisionCheckBloc = sl<SpacedRevisionCheckBloc>();
+  final updateSpacedRevision = sl<UpdateSpacedRevision>();
+  var correctCount = 0;
+  var missedCount = 0;
+  var wrongCount = 0;
+  bool isButtonVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    spacedRevisionCheckBloc.add(CheckSpacedRevision(widget.flashCardGroup.id));
+    spacedRevisionCheckBloc.stream.listen((state) {
+      if (state is SpacedRevisionCheckLoaded && state.hasSpacedRevision) {
+        updateSpacedRevision.call(
+          widget.flashCardGroup.id,
+          DateTime.now(),
+          correctCount,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,13 +144,56 @@ class ValidationView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.popAndPushNamed(context, '/results',
-                    arguments: flashCardGroup.title);
+            BlocBuilder<SpacedRevisionCheckBloc, SpacedRevisionCheckState>(
+              bloc: spacedRevisionCheckBloc,
+              builder: (context, state) {
+                if (state is SpacedRevisionCheckLoaded &&
+                    !state.hasSpacedRevision &&
+                    isButtonVisible) {
+                  return Expanded(
+                    child: Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .secondary, // Use secondary color
+                        ),
+                        onPressed: () async {
+                          setState(() {
+                            isButtonVisible = false;
+                          });
+                          spacedRevision(
+                            widget.flashCardGroup.id,
+                            widget.flashCardGroup.title,
+                            correctCount,
+                            widget.flashCardGroup.cards.length,
+                          );
+                        },
+                        child: const Text("Set Spaced Revision"),
+                      ),
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
               },
-              child: const Text("View Results"),
-            )
+            ),
+            BlocBuilder<SpacedRevisionCheckBloc, SpacedRevisionCheckState>(
+              bloc: spacedRevisionCheckBloc,
+              builder: (context, state) {
+                return Expanded(
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.popAndPushNamed(context, '/results',
+                            arguments: widget.flashCardGroup.title);
+                      },
+                      child: const Text("View Results"),
+                    ),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -127,11 +202,9 @@ class ValidationView extends StatelessWidget {
 
   List<EvaluationEntry> _processAnswers() {
     List<EvaluationEntry> processedEntries = [];
-    var correctCount = 0;
-    var missedCount = 0;
-    var wrongCount = 0;
+
     Map<String, List<String>> actualCards = {};
-    for (var card in flashCardGroup.cards) {
+    for (var card in widget.flashCardGroup.cards) {
       if (actualCards.containsKey(card.back)) {
         actualCards[card.back]!.add(card.front);
       } else {
@@ -146,9 +219,9 @@ class ValidationView extends StatelessWidget {
       // Create a list of actual answers that are unmatched
       List<String> unmatchedActuals = List<String>.from(actualAnswers);
       List<String> userAnswersForQuestion = [];
-      for (int i = 0; i < userAnswers.length; i++) {
-        if (question == flashCardGroup.cards[i].back) {
-          userAnswersForQuestion.add(userAnswers[i]);
+      for (int i = 0; i < widget.userAnswers.length; i++) {
+        if (question == widget.flashCardGroup.cards[i].back) {
+          userAnswersForQuestion.add(widget.userAnswers[i]);
         }
       }
 
@@ -156,16 +229,18 @@ class ValidationView extends StatelessWidget {
         for (var actualAnswer in actualAnswers) {
           final isMatch = userAnswer
               .trim()
-              .isSimilar(actualAnswer, flashCardGroup.exactMatch);
+              .isSimilar(actualAnswer, widget.flashCardGroup.exactMatch);
           if (isMatch) {
-            unmatchedActuals.removeWhere((item) =>
-                item.trim().isSimilar(actualAnswer, flashCardGroup.exactMatch));
+            unmatchedActuals.removeWhere((item) => item
+                .trim()
+                .isSimilar(actualAnswer, widget.flashCardGroup.exactMatch));
             processedEntries.add(EvaluationEntry(
               question: question,
               userAnswer: userAnswer,
               actualAnswer: actualAnswer,
               state: EvaluationState.correct,
-              card: flashCardGroup.cards[userAnswers.indexOf(actualAnswer)],
+              card: widget.flashCardGroup
+                  .cards[widget.userAnswers.indexOf(actualAnswer)],
             ));
             correctCount++;
             break; // Stop checking after the first match
@@ -174,32 +249,33 @@ class ValidationView extends StatelessWidget {
       }
 
       for (var missedAnswer in unmatchedActuals) {
-        final userIndex = flashCardGroup.cards.indexOf(flashCardGroup.cards
-            .singleWhere(
+        final userIndex = widget.flashCardGroup.cards.indexOf(
+            widget.flashCardGroup.cards.singleWhere(
                 (card) => card.back == question && card.front == missedAnswer));
-        if (userAnswers[userIndex].trim().isEmpty) {
+        if (widget.userAnswers[userIndex].trim().isEmpty) {
           processedEntries.add(EvaluationEntry(
             question: question,
             userAnswer: "",
             actualAnswer: missedAnswer,
             state: EvaluationState.missed,
-            card: flashCardGroup.cards[userIndex],
+            card: widget.flashCardGroup.cards[userIndex],
           ));
           missedCount++;
         } else {
           processedEntries.add(EvaluationEntry(
             question: question,
-            userAnswer: userAnswers[userIndex],
+            userAnswer: widget.userAnswers[userIndex],
             actualAnswer: missedAnswer,
             state: EvaluationState.wrong,
-            card: flashCardGroup.cards[userIndex],
+            card: widget.flashCardGroup.cards[userIndex],
           ));
           wrongCount++;
         }
       }
     });
-    resultRepository.addResult(flashCardGroup.title, correctCount, wrongCount,
-        missedCount, DateTime.now());
+    resultRepository.addResult(widget.flashCardGroup.title, correctCount,
+        wrongCount, missedCount, DateTime.now());
+
     return processedEntries;
   }
 

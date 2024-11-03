@@ -6,7 +6,6 @@ import 'package:learning_assistant/di/service_locator.dart';
 import 'package:learning_assistant/theme_notifier.dart';
 import 'package:learning_assistant/ui/cloud/category_card.dart';
 import 'package:learning_assistant/ui/cloud/deck_card.dart';
-import 'package:provider/provider.dart';
 
 class DecksScreen extends StatefulWidget {
   final firebaseService = ServiceLocator.instance.get<FirebaseService>();
@@ -28,7 +27,7 @@ class _DecksScreenState extends State<DecksScreen> {
         ),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: widget.firebaseService.getDecksStream(),
+        stream: widget.firebaseService.getDecksList(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

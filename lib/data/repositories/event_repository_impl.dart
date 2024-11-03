@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:isar/isar.dart';
 import 'package:learning_assistant/core/error/failures.dart';
 import 'package:learning_assistant/data/event.dart';
+import 'package:learning_assistant/data/spaced_revision_event.dart';
 import 'package:learning_assistant/domain/entities/event_entity.dart';
+import 'package:learning_assistant/domain/entities/spaced_entity.dart';
 import 'package:learning_assistant/domain/repositories/event_repository.dart';
 
 class EventRepositoryImpl implements IEventRepository {
@@ -125,6 +127,106 @@ class EventRepositoryImpl implements IEventRepository {
           desc.isReviewed = !desc.isReviewed;
           await isar.eventGroups.put(group);
           _eventController.add(await getEventsOnDate(timeOfEvent));
+        }
+      });
+    } catch (e) {
+      throw DatabaseFailure(e.toString());
+    }
+  }
+
+  Future<void> insertSpacedRevisionEventGroup(
+      SpacedRevisionEventGroupEntity group) async {
+    try {
+      await isar.writeTxn(() async {
+        final spacedRevisionEventGroup = SpacedRevisionEventGroup(
+          group.deckId,
+          group.deckTitle,
+          group.revisions
+              .map((e) => SpacedRevisionEvent()
+                ..revisionDate = e.revisionDate
+                ..dateRevised = e.dateRevised
+                ..scoreAcquired = e.scoreAcquired
+                ..totalScore = e.totalScore)
+              .toList(),
+        );
+        await isar.spacedRevisionEventGroups.put(spacedRevisionEventGroup);
+      });
+    } catch (e) {
+      throw DatabaseFailure(e.toString());
+    }
+  }
+
+  @override
+  Stream<List<SpacedRevisionEventGroupEntity>> getSpacedRevisionEventGroups() {
+    try {
+      return isar.spacedRevisionEventGroups.watchLazy().asyncMap((_) async {
+        final groups = await isar.spacedRevisionEventGroups.where().findAll();
+        return groups.map((group) {
+          return SpacedRevisionEventGroupEntity(
+            id: group.id,
+            deckId: group.deckId,
+            deckTitle: group.deckTitle,
+            revisions: group.revisions.map((revision) {
+              return SpacedRevisionEventEntity(
+                revisionDate: revision.revisionDate,
+                dateRevised: revision.dateRevised,
+                scoreAcquired: revision.scoreAcquired,
+                totalScore: revision.totalScore,
+              );
+            }).toList(),
+          );
+        }).toList();
+      });
+    } catch (e) {
+      throw DatabaseFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> isSpacedEventGroupPresent(String deckId) async {
+    try {
+      final group = await isar.spacedRevisionEventGroups
+          .filter()
+          .deckIdEqualTo(deckId)
+          .findFirst();
+      return group != null;
+    } catch (e) {
+      throw DatabaseFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<void> updateSpacedRevisionScoreWhenDateMatches(
+      DateTime date, int score) async {
+    try {
+      await isar.writeTxn(() async {
+        final group = await isar.spacedRevisionEventGroups
+            .filter()
+            .revisionsElement((revision) => revision.revisionDateEqualTo(date))
+            .findFirst();
+
+        if (group != null) {
+          final revision = group.revisions.firstWhere(
+              (element) => element.revisionDate.isAtSameMomentAs(date));
+          revision.scoreAcquired = score;
+          await isar.spacedRevisionEventGroups.put(group);
+        }
+      });
+    } catch (e) {
+      throw DatabaseFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<void> deleteSpacedRevisionEventGroup(String deckId) async {
+    try {
+      await isar.writeTxn(() async {
+        final groups = await isar.spacedRevisionEventGroups
+            .filter()
+            .deckIdEqualTo(deckId)
+            .findAll();
+        for (var group in groups) {
+          await isar.spacedRevisionEventGroups.delete(group.id);
         }
       });
     } catch (e) {

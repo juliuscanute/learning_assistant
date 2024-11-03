@@ -1,66 +1,124 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:learning_assistant/data/cache_service.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CacheService _cacheService = CacheService();
 
-  Future<Map<String, dynamic>> getDeckData(String deckId) async {
-    var deckData = <String, dynamic>{};
+  static const String deckCachePrefix = 'deck_cache_';
+  static const String decksListCacheKey = 'decks_list_cache';
+  static const Duration cacheDuration = Duration(hours: 24);
+  StreamSubscription<QuerySnapshot>? _changeListener;
 
-    var deckRef = _firestore.collection('decks').doc(deckId);
-    var deckSnapshot = await deckRef.get();
-    if (!deckSnapshot.exists) {
-      throw Exception("Deck not found");
-    }
-    deckData['title'] = deckSnapshot.data()?['title'] ?? '';
-    deckData['videoUrl'] = deckSnapshot.data()?['videoUrl'] ?? '';
-    deckData['tags'] =
-        List.from(deckSnapshot.data()?['tags'] ?? []); // Add tags here
-    deckData['mapUrl'] = deckSnapshot.data()?['mapUrl'] ?? '';
-    deckData['exactMatch'] = deckSnapshot.data()?['exactMatch'] ?? true;
-    deckData['isPublic'] =
-        deckSnapshot.data()?['isPublic'] ?? false; // Add isPublic here
-
-    // Fetch the cards ordered by 'position'
-    var cardsSnapshot =
-        await deckRef.collection('cards').orderBy('position').get();
-    var cards = cardsSnapshot.docs
-        .asMap() // Convert to map to access index
-        .map((index, doc) => MapEntry(index, {
-              'id': doc.id,
-              'front': doc.data()['front'] ?? '',
-              'front_tex': doc.data()['front_tex'] ?? '',
-              'back': doc.data()['back'] ?? '',
-              'back_tex': doc.data()['back_tex'] ?? '',
-              'imageUrl': doc.data()['imageUrl'] ?? '',
-              'position':
-                  doc.data()['position'] ?? index, // Use map index as fallback
-              'mcq': doc.data()['mcq'] ?? {},
-              'explanation': doc.data()['explanation'] ?? '',
-              'explanation_tex': doc.data()['explanation_tex'] ?? '',
-              'mnemonic': doc.data()['mnemonic'] ?? '',
-            }))
-        .values // Convert back to iterable
-        .toList();
-    deckData['cards'] = cards;
-    return deckData;
+  FirebaseService() {
+    _firestore.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+    _setupChangeListener();
   }
 
-  Stream<List<Map<String, dynamic>>> getDecksStream() {
-    return _firestore
+  // Listen for changes to invalidate caches
+  void _setupChangeListener() {
+    _changeListener = _firestore
         .collection('decks')
         .where('isPublic', isEqualTo: true)
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => {
-                'id': doc.id,
-                'title': doc.data()['title'],
-                'videoUrl': doc.data()['videoUrl'] ??
-                    '', // Include videoUrl in the stream
-                'mapUrl': doc.data()['mapUrl'] ?? '',
-                'tags': doc.data()['tags'] ?? [],
-              })
-          .toList();
+        .snapshots(includeMetadataChanges: true)
+        .listen((snapshot) async {
+      if (!snapshot.metadata.isFromCache &&
+          !snapshot.metadata.hasPendingWrites) {
+        await _cacheService.invalidateAllCaches();
+      }
     });
+  }
+
+  // Fetch deck data with caching
+  Future<Map<String, dynamic>> getDeckData(String deckId) async {
+    final cacheKey = '$deckCachePrefix$deckId';
+
+    // Check if cached data is valid
+    if (await _cacheService.isCacheValid(cacheKey, cacheDuration)) {
+      final cachedData = await _cacheService.getFromCache(cacheKey);
+      if (cachedData != null) {
+        return cachedData;
+      }
+    }
+
+    // Fetch from Firestore
+    try {
+      var deckRef = _firestore.collection('decks').doc(deckId);
+      var deckSnapshot = await deckRef.get();
+
+      if (!deckSnapshot.exists) {
+        throw Exception("Deck not found");
+      }
+
+      var deckData = deckSnapshot.data()!;
+      deckData['id'] = deckSnapshot.id;
+
+      // Fetch cards
+      var cardsSnapshot =
+          await deckRef.collection('cards').orderBy('position').get();
+      var cards = cardsSnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+
+      deckData['cards'] = cards;
+
+      // Save to cache
+      await _cacheService.saveToCache(cacheKey, deckData);
+
+      return deckData;
+    } catch (e) {
+      // On error, return cached data if available
+      final cachedData = await _cacheService.getFromCache(cacheKey);
+      if (cachedData != null) {
+        return cachedData;
+      }
+      rethrow;
+    }
+  }
+
+  // Fetch list of decks with caching
+  Stream<List<Map<String, dynamic>>> getDecksList() async* {
+    // Check if cached data is valid
+    if (await _cacheService.isCacheValid(decksListCacheKey, cacheDuration)) {
+      final cachedData = await _cacheService.getFromCache(decksListCacheKey);
+      if (cachedData != null) {
+        yield List<Map<String, dynamic>>.from(cachedData);
+      }
+    }
+
+    // Fetch from Firestore
+    try {
+      var querySnapshotStream = _firestore
+          .collection('decks')
+          .where('isPublic', isEqualTo: true)
+          .snapshots();
+
+      await for (var querySnapshot in querySnapshotStream) {
+        var decks = querySnapshot.docs.map((doc) {
+          var data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList();
+
+        // Save to cache
+        await _cacheService.saveToCache(decksListCacheKey, decks);
+
+        yield decks;
+      }
+    } catch (e) {
+      // On error, return cached data if available
+      final cachedData = await _cacheService.getFromCache(decksListCacheKey);
+      if (cachedData != null) {
+        yield List<Map<String, dynamic>>.from(cachedData);
+      } else {
+        rethrow;
+      }
+    }
   }
 }

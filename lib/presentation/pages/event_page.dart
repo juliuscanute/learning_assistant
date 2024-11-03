@@ -1,7 +1,6 @@
 // event_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:learning_assistant/di/injection_container.dart';
 import 'package:learning_assistant/presentation/bloc/event_bloc.dart';
 import 'package:learning_assistant/presentation/bloc/event_details.bloc.dart';
 import 'package:learning_assistant/presentation/widgets/list_item_card.dart';

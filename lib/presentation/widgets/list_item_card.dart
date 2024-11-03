@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:learning_assistant/di/injection_container.dart';
 import 'package:learning_assistant/domain/entities/event_entity.dart';
 import 'package:learning_assistant/presentation/bloc/event_details.bloc.dart';
 
