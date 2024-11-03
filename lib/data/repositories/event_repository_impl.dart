@@ -157,26 +157,25 @@ class EventRepositoryImpl implements IEventRepository {
   }
 
   @override
-  Stream<List<SpacedRevisionEventGroupEntity>> getSpacedRevisionEventGroups() {
+  Future<List<SpacedRevisionEventGroupEntity>>
+      getSpacedRevisionEventGroups() async {
     try {
-      return isar.spacedRevisionEventGroups.watchLazy().asyncMap((_) async {
-        final groups = await isar.spacedRevisionEventGroups.where().findAll();
-        return groups.map((group) {
-          return SpacedRevisionEventGroupEntity(
-            id: group.id,
-            deckId: group.deckId,
-            deckTitle: group.deckTitle,
-            revisions: group.revisions.map((revision) {
-              return SpacedRevisionEventEntity(
-                revisionDate: revision.revisionDate,
-                dateRevised: revision.dateRevised,
-                scoreAcquired: revision.scoreAcquired,
-                totalScore: revision.totalScore,
-              );
-            }).toList(),
-          );
-        }).toList();
-      });
+      final groups = await isar.spacedRevisionEventGroups.where().findAll();
+      return groups.map((group) {
+        return SpacedRevisionEventGroupEntity(
+          id: group.id,
+          deckId: group.deckId,
+          deckTitle: group.deckTitle,
+          revisions: group.revisions.map((revision) {
+            return SpacedRevisionEventEntity(
+              revisionDate: revision.revisionDate,
+              dateRevised: revision.dateRevised,
+              scoreAcquired: revision.scoreAcquired,
+              totalScore: revision.totalScore,
+            );
+          }).toList(),
+        );
+      }).toList();
     } catch (e) {
       throw DatabaseFailure(e.toString());
     }
@@ -200,14 +199,21 @@ class EventRepositoryImpl implements IEventRepository {
       DateTime date, int score) async {
     try {
       await isar.writeTxn(() async {
+        final startOfDay = DateTime(date.year, date.month, date.day);
+        final endOfDay = startOfDay
+            .add(const Duration(days: 1))
+            .subtract(const Duration(seconds: 1));
+
         final group = await isar.spacedRevisionEventGroups
             .filter()
-            .revisionsElement((revision) => revision.revisionDateEqualTo(date))
+            .revisionsElement((revision) =>
+                revision.revisionDateBetween(startOfDay, endOfDay))
             .findFirst();
 
         if (group != null) {
-          final revision = group.revisions.firstWhere(
-              (element) => element.revisionDate.isAtSameMomentAs(date));
+          final revision = group.revisions.firstWhere((element) =>
+              element.revisionDate.isAfter(startOfDay) &&
+              element.revisionDate.isBefore(endOfDay));
           revision.scoreAcquired = score;
           await isar.spacedRevisionEventGroups.put(group);
         }
@@ -229,6 +235,14 @@ class EventRepositoryImpl implements IEventRepository {
           await isar.spacedRevisionEventGroups.delete(group.id);
         }
       });
+    } catch (e) {
+      throw DatabaseFailure(e.toString());
+    }
+  }
+
+  Stream<bool> watchSpacedRevisionEventGroups() {
+    try {
+      return isar.spacedRevisionEventGroups.watchLazy().map((_) => true);
     } catch (e) {
       throw DatabaseFailure(e.toString());
     }

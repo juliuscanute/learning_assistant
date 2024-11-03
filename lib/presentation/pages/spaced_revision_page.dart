@@ -16,8 +16,10 @@ class _SpacedRevisionPageState extends State<SpacedRevisionPage> {
   @override
   void initState() {
     super.initState();
-    // Call LoadSpacedRevisions event when the page is loaded
     widget.spacedRevisionBloc.add(LoadSpacedRevisions());
+    widget.spacedRevisionBloc.updates.listen((event) {
+      widget.spacedRevisionBloc.add(LoadSpacedRevisions());
+    });
   }
 
   @override
@@ -203,11 +205,14 @@ class ScoreCardWidget extends StatelessWidget {
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    card.title,
-                    style: theme.textTheme.headlineMedium,
+                  Expanded(
+                    child: Text(
+                      card.title,
+                      style: theme.textTheme.headlineMedium,
+                      maxLines: null, // Allow multiline
+                    ),
                   ),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
@@ -306,6 +311,20 @@ class ScoreCardWidget extends StatelessWidget {
                   ),
                 );
               },
+            ),
+            // Take Test Button
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final deck =
+                        await spacedRevisionBloc.getCompleteDeck(card.id);
+                    Navigator.pushNamed(context, '/train', arguments: deck);
+                  },
+                  child: const Text('Review'),
+                ),
+              ),
             ),
           ],
         ),

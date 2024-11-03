@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_assistant/domain/entities/spaced_entity.dart';
 import 'package:learning_assistant/domain/usecases/delete_spaced_revision.dart';
+import 'package:learning_assistant/domain/usecases/get_complete_deck..dart';
 import 'package:learning_assistant/domain/usecases/get_spaced_revision.dart';
+import 'package:learning_assistant/domain/usecases/get_spaced_revisoin_updates.dart';
 
 abstract class SpacedRevisionEvent {}
 
@@ -14,7 +16,7 @@ class SpacedRevisionInitial extends SpacedRevisionState {}
 class SpacedRevisionLoading extends SpacedRevisionState {}
 
 class SpacedRevisionLoaded extends SpacedRevisionState {
-  final Stream<List<SpacedRevisionEventGroupEntity>> spacedRevisions;
+  final List<SpacedRevisionEventGroupEntity> spacedRevisions;
 
   SpacedRevisionLoaded(this.spacedRevisions);
 }
@@ -35,8 +37,13 @@ class SpacedRevisionBloc
     extends Bloc<SpacedRevisionEvent, SpacedRevisionState> {
   final GetSpacedRevision getSpacedRevision;
   final DeleteSpacedRevision deleteSpacedRevision;
+  final GetSpacedRevisoinUpdates getSpacedRevisoinUpdates;
+  final GetCompleteDeck getCompleteDeck;
 
-  SpacedRevisionBloc(this.getSpacedRevision, this.deleteSpacedRevision)
+  Stream<bool> get updates => getSpacedRevisoinUpdates();
+
+  SpacedRevisionBloc(this.getSpacedRevision, this.deleteSpacedRevision,
+      this.getSpacedRevisoinUpdates, this.getCompleteDeck)
       : super(SpacedRevisionInitial()) {
     on<LoadSpacedRevisions>((event, emit) async {
       emit(SpacedRevisionLoading());

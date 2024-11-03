@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/di/injection_container.dart';
 import 'package:learning_assistant/presentation/bloc/event_bloc.dart';
 import 'package:learning_assistant/presentation/bloc/event_details.bloc.dart';
@@ -6,6 +7,10 @@ import 'package:learning_assistant/presentation/bloc/spaced_revision_bloc.dart';
 import 'package:learning_assistant/presentation/pages/add_event_page.dart';
 import 'package:learning_assistant/presentation/pages/event_page.dart';
 import 'package:learning_assistant/presentation/pages/spaced_revision_page.dart';
+import 'package:learning_assistant/ui/cloud/exam_view_mcq.dart';
+import 'package:learning_assistant/ui/cloud/train_view_mcq.dart';
+import 'package:learning_assistant/ui/cloud/validation_view.dart';
+import 'package:learning_assistant/ui/revise/score_card.dart';
 
 class ReminderNavigator extends StatefulWidget {
   const ReminderNavigator({required this.navigatorKey, super.key});
@@ -30,12 +35,25 @@ class ReminderNavigatorState extends State<ReminderNavigator> {
                   return SpacedRevisionPage(
                     spacedRevisionBloc: sl<SpacedRevisionBloc>(),
                   );
-                // return EventPage(
-                //   eventBloc: sl<EventBloc>(),
-                //   eventDetailsBloc: sl<EventDetailsBloc>(),
-                // );
-                // case '/create-entry':
-                //   return AddEventPage(eventBloc: sl<EventBloc>());
+                case '/train':
+                  final textList = settings.arguments as FlashCardDeck;
+                  return TrainViewMcq(group: textList);
+                case '/exam':
+                  final textList = settings.arguments as FlashCardDeck;
+                  return ExamViewMcq(
+                    flashCardGroup: textList,
+                  );
+                case '/validation':
+                  final args = settings.arguments as ValidationParameters;
+                  return ValidationView(
+                    flashCardGroup: args.flashCardGroup,
+                    userAnswers: args.userAnswers,
+                  );
+                case '/results':
+                  final title = settings.arguments as String;
+                  return ScoreCardListScreen(
+                    title: title,
+                  );
                 default:
                   return Container();
               }

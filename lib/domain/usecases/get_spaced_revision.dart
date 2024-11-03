@@ -6,7 +6,7 @@ class GetSpacedRevision {
 
   GetSpacedRevision(this.repository);
 
-  Stream<List<SpacedRevisionEventGroupEntity>> call() {
+  Future<List<SpacedRevisionEventGroupEntity>> call() {
     return repository.getSpacedRevisionEventGroups();
   }
 }

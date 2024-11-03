@@ -9,9 +9,10 @@ abstract class IEventRepository {
   Future<void> updateReviewed(DateTime timeOfEvent, String description);
   Future<void> insertSpacedRevisionEventGroup(
       SpacedRevisionEventGroupEntity group);
-  Stream<List<SpacedRevisionEventGroupEntity>> getSpacedRevisionEventGroups();
+  Future<List<SpacedRevisionEventGroupEntity>> getSpacedRevisionEventGroups();
   Future<bool> isSpacedEventGroupPresent(String deckId);
   Future<void> updateSpacedRevisionScoreWhenDateMatches(
       DateTime date, int score);
   Future<void> deleteSpacedRevisionEventGroup(String id);
+  Stream<bool> watchSpacedRevisionEventGroups();
 }

@@ -135,15 +135,15 @@ class DeckCard extends StatelessWidget {
           back: card['back'],
           backTex: card['back_tex'],
           imageUrl: card['imageUrl'],
-          mcqOptions: card['mcq']['options']
+          mcqOptions: (card['mcq']?['options'] as List<dynamic>?)
                   ?.map<String>((e) => e.toString())
                   .toList() ??
               [],
-          mcqOptionsTex: card['mcq']['options_tex']
+          mcqOptionsTex: (card['mcq']?['options_tex'] as List<dynamic>?)
                   ?.map<String>((e) => e.toString())
                   .toList() ??
               [],
-          correctOptionIndex: card['mcq']['answer_index'],
+          correctOptionIndex: card['mcq']?['answer_index'],
           explanation: card['explanation'],
           explanationTex: card['explanation_tex'],
           mnemonic: card['mnemonic']);

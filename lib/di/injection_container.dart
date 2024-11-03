@@ -6,8 +6,10 @@ import 'package:learning_assistant/data/repositories/event_repository_impl.dart'
 import 'package:learning_assistant/data/result_repository.dart';
 import 'package:learning_assistant/domain/repositories/event_repository.dart';
 import 'package:learning_assistant/domain/usecases/delete_spaced_revision.dart';
+import 'package:learning_assistant/domain/usecases/get_complete_deck..dart';
 import 'package:learning_assistant/domain/usecases/get_events_on_date.dart';
 import 'package:learning_assistant/domain/usecases/get_spaced_revision.dart';
+import 'package:learning_assistant/domain/usecases/get_spaced_revisoin_updates.dart';
 import 'package:learning_assistant/domain/usecases/has_spaced_revision.dart';
 import 'package:learning_assistant/domain/usecases/insert_event_group.dart';
 import 'package:learning_assistant/domain/usecases/set_spaced_revision.dart';
@@ -40,7 +42,7 @@ Future<void> init(Isar isar) async {
   );
 
   sl.registerLazySingleton(
-    () => SpacedRevisionBloc(sl(), sl()),
+    () => SpacedRevisionBloc(sl(), sl(), sl(), sl()),
   );
 
   sl.registerLazySingleton(
@@ -54,6 +56,8 @@ Future<void> init(Isar isar) async {
   sl.registerLazySingleton(() => HasSpacedRevision(sl()));
   sl.registerLazySingleton(() => UpdateSpacedRevision(sl()));
   sl.registerLazySingleton(() => DeleteSpacedRevision(sl()));
+  sl.registerLazySingleton(() => GetSpacedRevisoinUpdates(sl()));
+  sl.registerLazySingleton(() => GetCompleteDeck(sl()));
 
   // External
   sl.registerLazySingleton(() => isar);
