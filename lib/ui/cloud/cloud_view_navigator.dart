@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/flash_card.dart';
+import 'package:learning_assistant/ui/cloud/category_card_new.dart';
 import 'package:learning_assistant/ui/cloud/category_screen.dart';
+import 'package:learning_assistant/ui/cloud/category_screen_new.dart';
+import 'package:learning_assistant/ui/cloud/category_screen_subfolder_new.dart';
 import 'package:learning_assistant/ui/cloud/deck_screen.dart';
 import 'package:learning_assistant/ui/cloud/exam_view_mcq.dart';
 import 'package:learning_assistant/ui/revise/score_card.dart';
@@ -27,7 +30,7 @@ class CloudViewNavigatorState extends State<CloudViewNavigator> {
             builder: (BuildContext context) {
               switch (settings.name) {
                 case '/':
-                  return DecksScreen();
+                  return const CategoryScreenNew();
                 case '/train':
                   final textList = settings.arguments as FlashCardDeck;
                   return TrainViewMcq(group: textList);
@@ -47,14 +50,25 @@ class CloudViewNavigatorState extends State<CloudViewNavigator> {
                   return ScoreCardListScreen(
                     title: title,
                   );
-                case '/category-screen':
+                // case '/category-screen':
+                //   final args = settings.arguments as Map<String, dynamic>;
+                //   final decks = args['decks'] as List<Map<String, dynamic>>;
+                //   final categoryList = args['categoryList'] as List<String>;
+                //   return CategoryScreen(
+                //     decks: decks,
+                //     categoryList: categoryList,
+                //   );
+                case '/category-screen-new':
                   final args = settings.arguments as Map<String, dynamic>;
-                  final decks = args['decks'] as List<Map<String, dynamic>>;
-                  final categoryList = args['categoryList'] as List<String>;
-                  return CategoryScreen(
-                    decks: decks,
-                    categoryList: categoryList,
-                  );
+                  final parentPath = args['parentPath'] as String;
+                  final subFolders =
+                      args['subFolders'] as List<Map<String, dynamic>>;
+                  final parentId = args['folderId'] as String;
+                  return SubfolderScreen(
+                      parentFolderName: parentId,
+                      parentPath: parentPath,
+                      subFolders: subFolders);
+
                 default:
                   return Container();
               }
