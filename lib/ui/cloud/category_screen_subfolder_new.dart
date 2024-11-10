@@ -60,38 +60,40 @@ class _SubfolderScreenState extends State<SubfolderScreen> {
         double width =
             (constraints.maxWidth - (crossAxisCount - 1) * 10) / crossAxisCount;
 
-        return Wrap(
-          spacing: 10, // Horizontal space between items
-          runSpacing: 10, // Vertical space between items
-          children: List.generate(_subFolders.length, (index) {
-            final folder = subFolders[index];
-            if (folder['type'] != 'card') {
-              return SizedBox(
-                width: width,
-                child: CategoryCardNew(
-                  category: folder['id'],
-                  parentPath: '$parentPath/${folder['id']}',
-                  subFolders: folder['subFolders'] ?? [],
+        return SingleChildScrollView(
+          child: Wrap(
+            spacing: 10, // Horizontal space between items
+            runSpacing: 10, // Vertical space between items
+            children: List.generate(_subFolders.length, (index) {
+              final folder = subFolders[index];
+              if (folder['type'] != 'card') {
+                return SizedBox(
+                  width: width,
+                  child: CategoryCardNew(
+                    category: folder['id'],
+                    parentPath: '$parentPath/${folder['id']}',
+                    subFolders: folder['subFolders'] ?? [],
+                    folderId: folder['id'],
+                  ),
+                );
+              } else {
+                final leafNode = DeckIndex(
+                  title: folder['title'] ?? 'Untitled',
+                  deckId: folder['deckId'],
+                  videoUrl: folder['videoUrl'],
+                  mapUrl: folder['mapUrl'],
+                  type: 'card',
+                  isPublic: folder['isPublic'] ?? false,
+                  parentPath: parentPath,
                   folderId: folder['id'],
-                ),
-              );
-            } else {
-              final leafNode = DeckIndex(
-                title: folder['title'] ?? 'Untitled',
-                deckId: folder['deckId'],
-                videoUrl: folder['videoUrl'],
-                mapUrl: folder['mapUrl'],
-                type: 'card',
-                isPublic: folder['isPublic'] ?? false,
-                parentPath: parentPath,
-                folderId: folder['id'],
-              );
-              return SizedBox(
-                width: width,
-                child: DeckCardNew(deck: leafNode.toMap()),
-              );
-            }
-          }),
+                );
+                return SizedBox(
+                  width: width,
+                  child: DeckCardNew(deck: leafNode.toMap()),
+                );
+              }
+            }),
+          ),
         );
       },
     );

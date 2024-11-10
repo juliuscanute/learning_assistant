@@ -45,36 +45,38 @@ class _CategoryScreenNewState extends State<CategoryScreenNew> {
                   (constraints.maxWidth - (crossAxisCount - 1) * 10) /
                       crossAxisCount;
 
-              return Wrap(
-                spacing: 10, // Horizontal space between items
-                runSpacing: 10, // Vertical space between items
-                children: List.generate(folders.length, (index) {
-                  final folder = folders[index];
-                  if (folder['type'] != 'card') {
-                    return SizedBox(
-                      width: width,
-                      child: CategoryCardNew(
-                        category: folder['id'],
-                        parentPath: 'folder/${folder['id']}',
-                        subFolders: folder['subFolders'] ?? [],
-                        folderId: folder['id'],
-                      ),
-                    );
-                  } else {
-                    final leafNode = {
-                      'title': folder['title'] ?? 'Untitled',
-                      'deckId': folder['deckId'],
-                      'videoUrl': folder['videoUrl'],
-                      'mapUrl': folder['mapUrl'],
-                      'type': 'card',
-                      'isPublic': folder['isPublic'] ?? false,
-                    };
-                    return SizedBox(
-                      width: width,
-                      child: DeckCardNew(deck: leafNode),
-                    );
-                  }
-                }),
+              return SingleChildScrollView(
+                child: Wrap(
+                  spacing: 10, // Horizontal space between items
+                  runSpacing: 10, // Vertical space between items
+                  children: List.generate(folders.length, (index) {
+                    final folder = folders[index];
+                    if (folder['type'] != 'card') {
+                      return SizedBox(
+                        width: width,
+                        child: CategoryCardNew(
+                          category: folder['id'],
+                          parentPath: 'folder/${folder['id']}',
+                          subFolders: folder['subFolders'] ?? [],
+                          folderId: folder['id'],
+                        ),
+                      );
+                    } else {
+                      final leafNode = {
+                        'title': folder['title'] ?? 'Untitled',
+                        'deckId': folder['deckId'],
+                        'videoUrl': folder['videoUrl'],
+                        'mapUrl': folder['mapUrl'],
+                        'type': 'card',
+                        'isPublic': folder['isPublic'] ?? false,
+                      };
+                      return SizedBox(
+                        width: width,
+                        child: DeckCardNew(deck: leafNode),
+                      );
+                    }
+                  }),
+                ),
               );
             },
           );
