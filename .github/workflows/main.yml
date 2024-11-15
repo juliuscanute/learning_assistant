@@ -53,4 +53,3 @@ jobs:
         track: internal
         status: completed
         releaseFiles: ./build/app/outputs/bundle/release/app-release.aab
-        changesNotSentForReview: true
