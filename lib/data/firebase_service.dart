@@ -1,18 +1,14 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:learning_assistant/data/service/analytics_service.dart'
+    if (dart.library.io) 'package:learning_assistant/data/service/analytics_service_stub.dart';
+import 'package:learning_assistant/di/injection_container.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+  final AnalyticsService _analyticsService = sl<AnalyticsService>();
 
-  // Fetch deck data with caching
   Future<Map<String, dynamic>> getDeckData(String deckId) async {
-    // Track event
-    await _analytics.logEvent(
-      name: 'get_deck_data',
-      parameters: {'deck_id': deckId},
-    );
     // Fetch from Firestore
     try {
       var deckRef = _firestore.collection('decks').doc(deckId);
@@ -36,6 +32,11 @@ class FirebaseService {
 
       deckData['cards'] = cards;
 
+      // Track event
+      await _analyticsService.logEvent(
+        'get_deck_data',
+        parameters: {'deck_id': deckId, 'deck_title': deckData['title'] ?? ''},
+      );
       return deckData;
     } catch (e) {
       rethrow;
@@ -44,7 +45,8 @@ class FirebaseService {
 
   Stream<List<Map<String, dynamic>>> getFoldersStream() {
     // Track event
-    _analytics.logEvent(name: 'get_folders_stream');
+    _analyticsService.logEvent('get_folders_stream');
+
     return _firestore.collection('folder').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -55,7 +57,8 @@ class FirebaseService {
 
   Future<List<Map<String, dynamic>>> getFolders() async {
     // Track event
-    await _analytics.logEvent(name: 'get_folders');
+    await _analyticsService.logEvent('get_folders');
+
     try {
       var folders = <Map<String, dynamic>>[];
       var folderSnapshot = await _firestore.collection('folder').get();
@@ -74,10 +77,11 @@ class FirebaseService {
 
   Future<List<Map<String, dynamic>>> getSubFolders(String parentPath) async {
     // Track event
-    await _analytics.logEvent(
-      name: 'get_sub_folders',
+    await _analyticsService.logEvent(
+      'get_sub_folders',
       parameters: {'parent_path': parentPath},
     );
+
     try {
       var subFolders = <Map<String, dynamic>>[];
       var subFolderSnapshot = await _firestore.collection(parentPath).get();
@@ -103,6 +107,19 @@ class FirebaseService {
         }
       }
 
+      // Ensure all names and titles are strings and handle null values
+      subFolders.sort((a, b) {
+        String nameA = (a['name'] ?? '').toString().toLowerCase();
+        String nameB = (b['name'] ?? '').toString().toLowerCase();
+        int nameComparison = nameA.compareTo(nameB);
+        if (nameComparison != 0) {
+          return nameComparison;
+        }
+        String titleA = (a['title'] ?? '').toString().toLowerCase();
+        String titleB = (b['title'] ?? '').toString().toLowerCase();
+        return titleA.compareTo(titleB);
+      });
+
       return subFolders;
     } catch (error) {
       print('Error reading subfolders from Firestore: $error');
@@ -110,8 +127,10 @@ class FirebaseService {
     }
   }
 
-  // Fetch list of decks with caching
   Stream<List<Map<String, dynamic>>> getDecksList() async* {
+    // Track event
+    _analyticsService.logEvent('get_decks_list');
+
     // Fetch from Firestore
     try {
       var querySnapshotStream = _firestore

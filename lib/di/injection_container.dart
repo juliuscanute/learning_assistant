@@ -4,6 +4,8 @@ import 'package:learning_assistant/data/card_repository.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/data/repositories/event_repository_impl.dart';
 import 'package:learning_assistant/data/result_repository.dart';
+import 'package:learning_assistant/data/service/analytics_service.dart'
+    if (dart.library.io) 'package:learning_assistant/data/service/analytics_service_stub.dart';
 import 'package:learning_assistant/domain/repositories/event_repository.dart';
 import 'package:learning_assistant/domain/usecases/delete_spaced_revision.dart';
 import 'package:learning_assistant/domain/usecases/get_complete_deck..dart';
@@ -64,5 +66,6 @@ Future<void> init(Isar isar) async {
 
   sl.registerLazySingleton(() => CardsRepository(sl()));
   sl.registerLazySingleton(() => FirebaseService());
+  sl.registerLazySingleton(() => AnalyticsService());
   sl.registerFactory(() => ResultRepository(sl()));
 }
