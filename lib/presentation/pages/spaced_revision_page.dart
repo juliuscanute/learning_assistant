@@ -68,7 +68,7 @@ class _SpacedRevisionPageState extends State<SpacedRevisionPage> {
   }
 }
 
-class ScoreCardsScreen extends StatelessWidget {
+class ScoreCardsScreen extends StatefulWidget {
   final List<ScoreCard> cards;
   final SpacedRevisionBloc spacedRevisionBloc;
 
@@ -79,24 +79,143 @@ class ScoreCardsScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ScoreCardsScreenState createState() => _ScoreCardsScreenState();
+}
+
+class _ScoreCardsScreenState extends State<ScoreCardsScreen> {
+  String _selectedFilter = 'today';
+
+  List<String> filterOptions = [
+    'today',
+    'tomorrow',
+    'on 3rd day',
+    'on 7th day',
+    'on 15th day',
+    'on 30th day',
+    'this week',
+    'this month',
+    'previous week',
+    'previous month',
+    'this year',
+  ];
+
+  List<ScoreCard> getFilteredCards() {
+    DateTime now = DateTime.now();
+    DateTime startDate;
+    DateTime endDate;
+
+    switch (_selectedFilter) {
+      case 'today':
+        startDate = DateTime(now.year, now.month, now.day);
+        endDate = startDate.add(const Duration(days: 1));
+        break;
+      case 'tomorrow':
+        startDate = DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
+        endDate = startDate.add(const Duration(days: 1));
+        break;
+      case 'on 3rd day':
+        startDate = DateTime(now.year, now.month, now.day).add(const Duration(days: 3));
+        endDate = startDate.add(const Duration(days: 1));
+        break;
+      case 'on 7th day':
+        startDate = DateTime(now.year, now.month, now.day).add(const Duration(days: 7));
+        endDate = startDate.add(const Duration(days: 1));
+        break;
+      case 'on 15th day':
+        startDate = DateTime(now.year, now.month, now.day).add(const Duration(days: 15));
+        endDate = startDate.add(const Duration(days: 1));
+        break;
+      case 'on 30th day':
+        startDate = DateTime(now.year, now.month, now.day).add(const Duration(days: 30));
+        endDate = startDate.add(const Duration(days: 1));
+        break;
+      case 'this week':
+        startDate = now.subtract(Duration(days: now.weekday - 1));
+        endDate = startDate.add(const Duration(days: 7));
+        break;
+      case 'this month':
+        startDate = DateTime(now.year, now.month, 1);
+        endDate = DateTime(now.year, now.month + 1, 1);
+        break;
+      case 'previous week':
+        startDate = now.subtract(Duration(days: now.weekday + 6));
+        endDate = startDate.add(const Duration(days: 7));
+        break;
+      case 'previous month':
+        startDate = DateTime(now.year, now.month - 1, 1);
+        endDate = DateTime(now.year, now.month, 1);
+        break;
+      case 'this year':
+        startDate = DateTime(now.year, 1, 1);
+        endDate = DateTime(now.year + 1, 1, 1);
+        break;
+      default:
+        startDate = DateTime(now.year, now.month, now.day);
+        endDate = startDate.add(const Duration(days: 1));
+    }
+
+    return widget.cards.where((card) {
+      return card.entries.any((entry) {
+        DateTime entryDate = DateTime.parse(entry.date);
+        return entryDate.isAfter(startDate) && entryDate.isBefore(endDate);
+      });
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final filteredCards = getFilteredCards();
+
     return Scaffold(
       body: Column(
         children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: cards.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: ScoreCardWidget(
-                    card: cards[index],
-                    spacedRevisionBloc: spacedRevisionBloc,
-                  ),
-                );
-              },
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Text(
+                  'Filter by:',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(width: 8.0),
+                DropdownButton<String>(
+                  value: _selectedFilter,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedFilter = newValue!;
+                    });
+                  },
+                  items: filterOptions.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
+          ),
+          Expanded(
+            child: filteredCards.isEmpty
+                ? Center(
+                    child: Text(
+                      'No spaced revisions available.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount: filteredCards.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: ScoreCardWidget(
+                          card: filteredCards[index],
+                          spacedRevisionBloc: widget.spacedRevisionBloc,
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -266,51 +385,54 @@ class ScoreCardWidget extends StatelessWidget {
               ),
             ),
             // Entries
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: card.entries.length,
-              itemBuilder: (context, index) {
-                final entry = card.entries[index];
-                return Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: theme.dividerColor),
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          formatDate(entry.date),
-                          style: theme.textTheme.bodyMedium,
+            ExpansionTile(
+              title: const Text('Expand time table'),
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: card.entries.length,
+                  itemBuilder: (context, index) {
+                    final entry = card.entries[index];
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: theme.dividerColor),
                         ),
                       ),
-                      SizedBox(
-                        width: 80,
-                        child: Text(
-                          getScoreDisplay(entry.score, card.totalScore),
-                          style: theme.textTheme.bodyMedium,
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 80,
-                        child: Text(
-                          getStatus(
-                              entry.score, card.totalScore, entry.isUpcoming),
-                          style: theme.textTheme.bodyMedium!.copyWith(
-                            color: getStatusColor(
-                                entry.score, card.totalScore, entry.isUpcoming),
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              formatDate(entry.date),
+                              style: theme.textTheme.bodyMedium,
+                            ),
                           ),
-                          textAlign: TextAlign.right,
-                        ),
+                          SizedBox(
+                            width: 80,
+                            child: Text(
+                              getScoreDisplay(entry.score, card.totalScore),
+                              style: theme.textTheme.bodyMedium,
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 80,
+                            child: Text(
+                              getStatus(entry.score, card.totalScore, entry.isUpcoming),
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                color: getStatusColor(entry.score, card.totalScore, entry.isUpcoming),
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ],
             ),
             // Take Test Button
             Padding(
