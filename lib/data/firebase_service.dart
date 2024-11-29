@@ -109,15 +109,22 @@ class FirebaseService {
 
       // Ensure all names and titles are strings and handle null values
       subFolders.sort((a, b) {
-        String nameA = (a['name'] ?? '').toString().toLowerCase();
-        String nameB = (b['name'] ?? '').toString().toLowerCase();
-        int nameComparison = nameA.compareTo(nameB);
-        if (nameComparison != 0) {
-          return nameComparison;
+        bool hasADeckId = a.containsKey('deckId') && a['deckId'] != null;
+        bool hasBDeckId = b.containsKey('deckId') && b['deckId'] != null;
+
+        if (hasADeckId && hasBDeckId) {
+          String titleA = (a['title'] ?? '').toString().toLowerCase();
+          String titleB = (b['title'] ?? '').toString().toLowerCase();
+          return titleA.compareTo(titleB);
+        } else if (hasADeckId && !hasBDeckId) {
+          return 1;
+        } else if (!hasADeckId && hasBDeckId) {
+          return -1;
+        } else {
+          String idA = (a['id'] ?? '').toString().toLowerCase();
+          String idB = (b['id'] ?? '').toString().toLowerCase();
+          return idA.compareTo(idB);
         }
-        String titleA = (a['title'] ?? '').toString().toLowerCase();
-        String titleB = (b['title'] ?? '').toString().toLowerCase();
-        return titleA.compareTo(titleB);
       });
 
       return subFolders;
