@@ -8,6 +8,27 @@ class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AnalyticsService _analyticsService = sl<AnalyticsService>();
 
+  Future<List<Map<String, dynamic>>> searchDecksByTitle(String prefix) async {
+    try {
+      var querySnapshot = await _firestore
+          .collection('decks')
+          .where('normalizedTitle', isGreaterThanOrEqualTo: prefix)
+          .where('normalizedTitle', isLessThan: '${prefix}z')
+          .limit(10)
+          .get();
+
+      var decks = querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['deckId'] = doc.id;
+        return data;
+      }).toList();
+
+      return decks;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> getDeckData(String deckId) async {
     // Fetch from Firestore
     try {

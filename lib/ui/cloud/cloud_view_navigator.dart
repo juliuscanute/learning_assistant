@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:learning_assistant/data/flash_card.dart';
+import 'package:learning_assistant/presentation/bloc/deck_search_bloc.dart';
 import 'package:learning_assistant/ui/cloud/category_card_new.dart';
 import 'package:learning_assistant/ui/cloud/category_screen.dart';
 import 'package:learning_assistant/ui/cloud/category_screen_new.dart';
 import 'package:learning_assistant/ui/cloud/category_screen_subfolder_new.dart';
 import 'package:learning_assistant/ui/cloud/deck_screen.dart';
+import 'package:learning_assistant/ui/cloud/deck_search.dart';
 import 'package:learning_assistant/ui/cloud/exam_view_mcq.dart';
 import 'package:learning_assistant/ui/revise/score_card.dart';
 import 'package:learning_assistant/ui/cloud/train_view_mcq.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
+
+import '../../di/injection_container.dart';
 
 class CloudViewNavigator extends StatefulWidget {
   const CloudViewNavigator({required this.navigatorKey, super.key});
@@ -31,6 +35,10 @@ class CloudViewNavigatorState extends State<CloudViewNavigator> {
               switch (settings.name) {
                 case '/':
                   return const CategoryScreenNew();
+                case '/search':
+                  return DeckSearch(
+                    deckSearchBloc: sl<DeckSearchBloc>(),
+                  );
                 case '/train':
                   final textList = settings.arguments as FlashCardDeck;
                   return TrainViewMcq(group: textList);
