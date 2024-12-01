@@ -23,29 +23,35 @@ class _CategoryScreenNewState extends State<CategoryScreenNew> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: OutlinedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/search');
-              },
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 12.0),
-                side: const BorderSide(color: Colors.grey),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Search here',
-                      style: TextStyle(color: Colors.grey),
-                    ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 16.0,
+              horizontal: 8.0,
+            ),
+            child: SizedBox(
+              height: 56.0,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/search');
+                },
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 12.0),
+                  side: const BorderSide(color: Colors.grey),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                  Icon(Icons.search, color: Colors.grey),
-                ],
+                ),
+                child: const Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Search here',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    Icon(Icons.search, color: Colors.grey),
+                  ],
+                ),
               ),
             ),
           ),

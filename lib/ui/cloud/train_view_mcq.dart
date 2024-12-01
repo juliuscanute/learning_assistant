@@ -462,7 +462,7 @@ class _FlipContainerState extends State<FlipContainer>
           : Theme.of(context).colorScheme.secondary,
       child: Container(
         width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.fromLTRB(8.0, 48, 8.0, 8.0),
         child: SingleChildScrollView(
           child: LaTexT(
               laTeXCode: Text(

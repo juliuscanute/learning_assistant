@@ -64,7 +64,8 @@ class _DeckSearchState extends State<DeckSearch> {
                   icon: const Icon(Icons.search),
                   onPressed: () {
                     if (_searchController.text.length >= 4) {
-                      widget.deckSearchBloc.add(SearchDecks(_searchController.text));
+                      widget.deckSearchBloc
+                          .add(SearchDecks(_searchController.text));
                     }
                   },
                 ),
@@ -114,7 +115,8 @@ class _DeckSearchState extends State<DeckSearch> {
                 } else if (state is DeckSearchError) {
                   return Center(child: Text('Error: ${state.message}'));
                 } else {
-                  return const Center(child: Text('Enter at least 4 characters to search.'));
+                  return const Center(
+                      child: Text('Enter at least 4 characters to search.'));
                 }
               },
             ),
