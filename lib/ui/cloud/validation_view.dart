@@ -42,10 +42,12 @@ class _ValidationViewState extends State<ValidationView> {
   var missedCount = 0;
   var wrongCount = 0;
   bool isButtonVisible = true;
+  List<EvaluationEntry> processedEntries = [];
 
   @override
   void initState() {
     super.initState();
+    processedEntries = _processAnswers();
     spacedRevisionCheckBloc.add(CheckSpacedRevision(widget.flashCardGroup.id));
     spacedRevisionCheckBloc.stream.listen((state) {
       if (state is SpacedRevisionCheckLoaded && state.hasSpacedRevision) {
@@ -60,8 +62,6 @@ class _ValidationViewState extends State<ValidationView> {
 
   @override
   Widget build(BuildContext context) {
-    final List<EvaluationEntry> processedEntries = _processAnswers();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Results"),
