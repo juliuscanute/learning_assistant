@@ -58,6 +58,107 @@ class _ValidationViewState extends State<ValidationView> {
         );
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showScoreDialog();
+    });
+  }
+
+  void _showScoreDialog() {
+    final isScorePerfect = correctCount == processedEntries.length;
+    final color = isScorePerfect ? Colors.green : Colors.red;
+    final scorePercentage = (correctCount / processedEntries.length) * 100;
+    String title;
+
+    if (scorePercentage < 50) {
+      title = 'Try harder';
+    } else if (scorePercentage < 80) {
+      title = 'Better luck next time';
+    } else if (scorePercentage < 100) {
+      title = 'Keep it up';
+    } else {
+      title = 'Great job';
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Container(
+            width: 200, // Adjust width as needed
+            height: 200, // Adjust height as needed
+            alignment: Alignment.center,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Oval border
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    border:
+                        Border.all(color: color, width: 4), // Conditional color
+                    borderRadius:
+                        BorderRadius.circular(100), // Creates the oval shape
+                  ),
+                  width: 150, // Width of the oval
+                  height: 200, // Height of the oval
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Upper half: Correct Count
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          '$correctCount',
+                          style: TextStyle(
+                            color: color, // Conditional text color
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    // Divider line
+                    Container(
+                      width: 100, // Adjust width as needed
+                      height: 2,
+                      color: color, // Conditional color
+                    ),
+                    // Lower half: Total Questions
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          '${processedEntries.length}',
+                          style: TextStyle(
+                            color: color, // Conditional text color
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: TextStyle(color: color), // Conditional text color
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -169,7 +270,7 @@ class _ValidationViewState extends State<ValidationView> {
                             widget.flashCardGroup.cards.length,
                           );
                         },
-                        child: const Text("Set Spaced Revision"),
+                        child: const Text("Spaced Revision"),
                       ),
                     ),
                   );
