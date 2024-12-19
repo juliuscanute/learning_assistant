@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
+import 'package:learning_assistant/data/blog_repository.dart';
 import 'package:learning_assistant/data/card_repository.dart';
 import 'package:learning_assistant/data/firebase_service.dart';
 import 'package:learning_assistant/data/repositories/event_repository_impl.dart';
@@ -22,6 +23,7 @@ import 'package:learning_assistant/presentation/bloc/event_bloc.dart';
 import 'package:learning_assistant/presentation/bloc/event_details.bloc.dart';
 import 'package:learning_assistant/presentation/bloc/spaced_revision_bloc.dart';
 import 'package:learning_assistant/presentation/bloc/spaced_revision_check_bloc.dart';
+import 'package:learning_assistant/ui/blog/blog_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -53,9 +55,12 @@ Future<void> init(Isar isar) async {
     () => SpacedRevisionCheckBloc(sl()),
   );
 
-
   sl.registerLazySingleton(
     () => DeckSearchBloc(sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => BlogBloc(sl()),
   );
   // Use cases
   sl.registerLazySingleton(() => GetEventsOnDate(sl()));
@@ -75,5 +80,6 @@ Future<void> init(Isar isar) async {
   sl.registerLazySingleton(() => CardsRepository(sl()));
   sl.registerLazySingleton(() => FirebaseService());
   sl.registerLazySingleton(() => AnalyticsService());
+  sl.registerLazySingleton(() => BlogRepository());
   sl.registerFactory(() => ResultRepository(sl()));
 }
