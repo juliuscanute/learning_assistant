@@ -26,7 +26,9 @@ class _SubfolderScreenState extends State<SubfolderScreen> {
   @override
   void initState() {
     super.initState();
-    _subFolders = widget.subFolders;
+    _subFolders = widget.subFolders
+        .where((folder) => folder['isPublic'] == true)
+        .toList();
     _refreshSubFolders(); // Refresh subfolders on initialization
   }
 
@@ -34,7 +36,9 @@ class _SubfolderScreenState extends State<SubfolderScreen> {
     final updatedSubFolders =
         await _firebaseService.getSubFolders(widget.parentPath);
     setState(() {
-      _subFolders = updatedSubFolders;
+      _subFolders = updatedSubFolders
+          .where((folder) => folder['isPublic'] == true)
+          .toList();
     });
   }
 
@@ -64,7 +68,7 @@ class _SubfolderScreenState extends State<SubfolderScreen> {
           child: Wrap(
             spacing: 10, // Horizontal space between items
             runSpacing: 10, // Vertical space between items
-            children: List.generate(_subFolders.length, (index) {
+            children: List.generate(subFolders.length, (index) {
               final folder = subFolders[index];
               if (folder['type'] != 'card') {
                 return SizedBox(

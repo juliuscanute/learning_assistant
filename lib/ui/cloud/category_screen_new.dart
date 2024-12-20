@@ -67,7 +67,10 @@ class _CategoryScreenNewState extends State<CategoryScreenNew> {
                   return const Center(child: Text('No folders found'));
                 }
 
-                final folders = snapshot.data ?? [];
+                final folders = snapshot.data
+                        ?.where((folder) => folder['isPublic'] == true)
+                        .toList() ??
+                    [];
 
                 return LayoutBuilder(
                   builder: (context, constraints) {

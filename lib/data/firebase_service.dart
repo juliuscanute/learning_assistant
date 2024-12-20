@@ -71,7 +71,11 @@ class FirebaseService {
     return _firestore.collection('folder').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         final data = doc.data();
-        return {'id': doc.id, 'name': data['name'] ?? ''};
+        return {
+          'id': doc.id,
+          'name': data['name'] ?? '',
+          'isPublic': data['isPublic'] ?? true
+        };
       }).toList();
     });
   }
@@ -87,6 +91,7 @@ class FirebaseService {
         folders.add({
           'id': folder.id,
           'name': folder.data()['name'] ?? '',
+          'isPublic': folder.data()['isPublic'] ?? true,
         });
       }
       return folders;
@@ -114,6 +119,7 @@ class FirebaseService {
             'id': subFolder.id,
             'name': folderData['name'] ?? '',
             'hasSubfolders': true,
+            'isPublic': folderData['isPublic'] ?? true,
           });
         } else {
           subFolders.add({

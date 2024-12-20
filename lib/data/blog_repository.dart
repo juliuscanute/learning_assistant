@@ -13,7 +13,11 @@ class BlogRepository {
       final snapshot = await _firestore.collection('blogFolders').get();
       final items = snapshot.docs.map((doc) {
         final data = doc.data();
-        return {'id': doc.id, 'name': data['name'] ?? ''};
+        return {
+          'id': doc.id,
+          'name': data['name'] ?? '',
+          'isPublic': data['isPublic'] ?? true
+        };
       }).toList();
       items.sort((a, b) => a['name'].compareTo(b['name']));
       return items;
@@ -39,6 +43,7 @@ class BlogRepository {
             'id': subFolder.id,
             'name': folderData['name'] ?? '',
             'hasSubfolders': true,
+            'isPublic': folderData['isPublic'] ?? true,
           });
         } else {
           subFolders.add({
@@ -47,6 +52,7 @@ class BlogRepository {
             'title': folderData['title'] ?? '',
             'type': 'card',
             'hasSubfolders': false,
+            'isPublic': folderData['isPublic'] ?? true,
           });
         }
       }

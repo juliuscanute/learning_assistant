@@ -7,7 +7,6 @@ import 'package:learning_assistant/ui/blog/blog_category_card_new.dart';
 import 'package:learning_assistant/ui/blog/blog_category_event.dart';
 import 'package:learning_assistant/ui/blog/blog_category_state.dart';
 import 'package:learning_assistant/ui/blog/blog_list_item_new.dart';
-import 'package:provider/provider.dart';
 
 class BlogSubfolderScreen extends StatefulWidget {
   final String parentPath;
@@ -39,7 +38,7 @@ class _BlogSubfolderScreenState extends State<BlogSubfolderScreen> {
 
   @override
   void dispose() {
-    // _categoryBloc.close();
+    _categoryBloc.close();
     super.dispose();
   }
 
@@ -54,7 +53,9 @@ class _BlogSubfolderScreenState extends State<BlogSubfolderScreen> {
         body: BlocBuilder<BlogCategoryBloc, BlogCategoryState>(
           builder: (context, state) {
             if (state is BlogCategoriesLoaded) {
-              folders = state.categories;
+              folders = state.categories
+                  .where((folder) => folder['isPublic'] == true)
+                  .toList();
             }
 
             return Stack(

@@ -44,7 +44,9 @@ class _BlogCategoryScreenState extends State<BlogCategoryScreen> {
         body: BlocBuilder<BlogCategoryBloc, BlogCategoryState>(
           builder: (context, state) {
             if (state is BlogCategoriesLoaded) {
-              folders = state.categories;
+              folders = state.categories
+                  .where((folder) => folder['isPublic'] == true)
+                  .toList();
             }
 
             return Stack(
