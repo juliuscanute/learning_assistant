@@ -156,14 +156,14 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
 
   Widget _buildAnswerWidget(
       FlashCard card, List<MapEntry<int, String>> options) {
-    if ((card.mcqOptions != null && card.mcqOptions!.isNotEmpty)) {
+    if (card.mcqOptions != null &&
+        card.mcqOptions!.isNotEmpty &&
+        card.mcqOptionsTex != null &&
+        card.mcqOptionsTex!.isNotEmpty) {
       return Column(
         children: options.map((entry) {
           // Check if mcqOptionsTex is available and use it
-          final optionText =
-              (card.mcqOptionsTex != null && card.mcqOptionsTex!.isNotEmpty)
-                  ? card.mcqOptionsTex![entry.key]
-                  : entry.value;
+          final optionText = card.mcqOptionsTex![entry.key];
 
           return RadioListTile<int>(
             title: Row(
