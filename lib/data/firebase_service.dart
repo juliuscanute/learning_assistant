@@ -128,6 +128,8 @@ class FirebaseService {
             'deckId': folderData['deckId'] ?? '',
             'title': folderData['title'] ?? '',
             'isPublic': folderData['isPublic'] ?? false,
+            'videoUrl': folderData['videoUrl'] ?? '',
+            'mapUrl': folderData['mapUrl'] ?? '',
             'type': 'card',
             'hasSubfolders': false,
           });

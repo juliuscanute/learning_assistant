@@ -39,8 +39,10 @@ class _DeckCardNewState extends State<DeckCardNew> {
               }
             },
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 4.0,
+            alignment: WrapAlignment.start,
             children: [
               if (widget.deck['videoUrl'] != null &&
                   widget.deck['videoUrl'].isNotEmpty)
