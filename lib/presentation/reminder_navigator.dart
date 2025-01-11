@@ -39,9 +39,12 @@ class ReminderNavigatorState extends State<ReminderNavigator> {
                   final textList = settings.arguments as FlashCardDeck;
                   return TrainViewMcq(group: textList);
                 case '/exam':
-                  final textList = settings.arguments as FlashCardDeck;
+                  final args = settings.arguments as Map<String, dynamic>;
+                  final group = args['group'] as FlashCardDeck;
+                  final preference = args['preference'] as TestPreference;
                   return ExamViewMcq(
-                    flashCardGroup: textList,
+                    flashCardGroup: group,
+                    preference: preference,
                   );
                 case '/validation':
                   final args = settings.arguments as ValidationParameters;

@@ -226,15 +226,15 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
                 ),
                 onPressed: isFinishEnabled
                     ? () {
-                        setState(() {
-                          isFinishEnabled = false;
-                          isStartEnabled = true;
+                        showTestPreferenceDialog(context, (preference) {
+                          Navigator.of(context).popAndPushNamed(
+                            '/exam',
+                            arguments: {
+                              'group': widget.group,
+                              'preference': preference,
+                            },
+                          );
                         });
-                        if (autoChange) {
-                          _stopAutoChange();
-                        }
-                        Navigator.of(context)
-                            .popAndPushNamed('/exam', arguments: widget.group);
                       }
                     : null,
                 child: const Text("Finish"),
@@ -245,6 +245,86 @@ class TrainViewWidgetState extends State<TrainViewMcq> {
       ),
     );
   }
+
+  void showTestPreferenceDialog(
+      BuildContext context, Function(TestPreference) onPreferenceSelected) {
+    TestPreference preference = TestPreference.mcq;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Test Preference"),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<TestPreference>(
+                    title: const Text("MCQ"),
+                    value: TestPreference.mcq,
+                    groupValue: preference,
+                    onChanged: (TestPreference? value) {
+                      setState(() {
+                        preference = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<TestPreference>(
+                    title: const Text("Written"),
+                    value: TestPreference.written,
+                    groupValue: preference,
+                    onChanged: (TestPreference? value) {
+                      setState(() {
+                        preference = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<TestPreference>(
+                    title: const Text("Random"),
+                    value: TestPreference.random,
+                    groupValue: preference,
+                    onChanged: (TestPreference? value) {
+                      setState(() {
+                        preference = value!;
+                      });
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                setState(() {
+                  isFinishEnabled = false;
+                  isStartEnabled = true;
+                });
+                if (autoChange) {
+                  _stopAutoChange();
+                }
+                onPreferenceSelected(preference);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+enum TestPreference {
+  mcq,
+  written,
+  random,
 }
 
 class FlipContainer extends StatefulWidget {

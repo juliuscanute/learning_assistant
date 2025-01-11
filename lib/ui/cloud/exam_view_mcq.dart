@@ -1,15 +1,16 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
-import 'package:isar/isar.dart';
 import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/ext/latext.dart';
+import 'package:learning_assistant/ui/cloud/train_view_mcq.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
 
 class ExamViewMcq extends StatefulWidget {
   final FlashCardDeck flashCardGroup;
+  final TestPreference preference;
 
-  const ExamViewMcq({super.key, required this.flashCardGroup});
+  const ExamViewMcq(
+      {super.key, required this.flashCardGroup, required this.preference});
 
   @override
   _ExamViewMcqState createState() => _ExamViewMcqState();
@@ -156,15 +157,26 @@ class _ExamViewMcqState extends State<ExamViewMcq> {
 
   Widget _buildAnswerWidget(
       FlashCard card, List<MapEntry<int, String>> options) {
-    if (card.mcqOptions != null &&
-        card.mcqOptions!.isNotEmpty &&
-        card.mcqOptionsTex != null &&
-        card.mcqOptionsTex!.isNotEmpty) {
+    bool isMCQ = false;
+    switch (widget.preference) {
+      case TestPreference.mcq:
+        isMCQ = true;
+        break;
+      case TestPreference.written:
+        isMCQ = false;
+        break;
+      case TestPreference.random:
+        isMCQ = Random().nextBool();
+        break;
+    }
+    if ((card.mcqOptions != null && card.mcqOptions!.isNotEmpty) && isMCQ) {
       return Column(
         children: options.map((entry) {
           // Check if mcqOptionsTex is available and use it
-          final optionText = card.mcqOptionsTex![entry.key];
-
+          final optionText =
+              (card.mcqOptionsTex != null && card.mcqOptionsTex!.isNotEmpty)
+                  ? card.mcqOptionsTex![entry.key]
+                  : entry.value;
           return RadioListTile<int>(
             title: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
