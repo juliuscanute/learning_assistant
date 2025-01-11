@@ -4,6 +4,7 @@ import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/ext/latext.dart';
 import 'package:learning_assistant/ui/cloud/train_view_mcq.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
+import 'package:learning_assistant/ui/dialogs/test_preference_dialog.dart';
 
 class ExamViewMcq extends StatefulWidget {
   final FlashCardDeck flashCardGroup;

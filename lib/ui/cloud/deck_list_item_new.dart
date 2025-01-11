@@ -4,6 +4,8 @@ import 'package:learning_assistant/data/flash_card.dart';
 import 'package:learning_assistant/di/injection_container.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../dialogs/test_preference_dialog.dart';
+
 class DeckCardNew extends StatefulWidget {
   final Map<String, dynamic> deck;
 
@@ -104,7 +106,15 @@ class _DeckCardNewState extends State<DeckCardNew> {
                 ),
                 onPressed: () async {
                   var group = await fetchCompleteDeck(widget.deck['deckId']);
-                  Navigator.of(context).pushNamed('/exam', arguments: group);
+                  showTestPreferenceDialog(context, (preference) {
+                    Navigator.of(context).pushNamed(
+                      '/exam',
+                      arguments: {
+                        'group': group,
+                        'preference': preference,
+                      },
+                    );
+                  });
                 },
               ),
             ],

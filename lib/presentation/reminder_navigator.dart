@@ -10,6 +10,7 @@ import 'package:learning_assistant/presentation/pages/spaced_revision_page.dart'
 import 'package:learning_assistant/ui/cloud/exam_view_mcq.dart';
 import 'package:learning_assistant/ui/cloud/train_view_mcq.dart';
 import 'package:learning_assistant/ui/cloud/validation_view.dart';
+import 'package:learning_assistant/ui/dialogs/test_preference_dialog.dart';
 import 'package:learning_assistant/ui/revise/score_card.dart';
 
 class ReminderNavigator extends StatefulWidget {
